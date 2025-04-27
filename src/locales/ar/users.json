@@ -1,0 +1,49 @@
+{
+  "page": {
+    "title": "إدارة المستخدم"
+  },
+  "table": {
+    "title": "إدارة المستخدم",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "status": "الحالة",
+    "status_active": "نشط",
+    "status_inactive": "غير نشط",
+    "noUsers": "لم يتم العثور على مستخدمين",
+    "addUser": "إضافة مستخدم"
+  },
+  "modal": {
+    "title": "إضافة مستخدم جديد",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "addUser": "إضافة مستخدم",
+    "cancel": "إلغاء",
+    "close": "إغلاق النافذة",
+    "placeholders": {
+      "firstName": "أدخل الاسم الأول",
+      "lastName": "أدخل اسم العائلة",
+      "email": "أدخل البريد الإلكتروني",
+      "password": "أدخل كلمة المرور"
+    },
+    "errors": {
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "invalidEmail": "صيغة البريد الإلكتروني غير صحيحة",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+      "passwordUpperCase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+      "passwordLowerCase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل",
+      "passwordDigit": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+      "passwordSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*#?&)"
+    }
+  },
+  "updateModal": {
+    "title": "تحديث المستخدم",
+    "updateUser": "تحديث المستخدم"
+  },
+  "userAddedSuccess": "تمت إضافة المستخدم بنجاح",
+  "userUpdatedSuccess": "تم تحديث المستخدم بنجاح"
+}

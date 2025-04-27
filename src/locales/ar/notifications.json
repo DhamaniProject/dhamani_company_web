@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "إدارة الإشعارات"
+  },
+  "table": {
+    "title": "إدارة الإشعارات",
+    "addNotification": "إضافة إشعار",
+    "targetReceivers": "المستلمون المستهدفون",
+    "notificationType": "النوع",
+    "messageTitle": "عنوان الرسالة",
+    "createdAt": "تاريخ الإنشاء",
+    "noNotifications": "لم يتم العثور على إشعارات",
+    "target_all_users": "جميع المستخدمين",
+    "target_product_users": "مستخدمو المنتج",
+    "target_expiring_warranty_users": "مستخدمو الضمان المنتهي",
+    "target_old_records_users": "مستخدمو السجلات القديمة",
+    "type_WARRANTY_EXPIRY": "انتهاء الضمان",
+    "type_PROMOTION": "العروض الترويجية",
+    "type_GENERAL_ANNOUNCEMENT": "إعلان عام",
+    "type_RETURN_DEADLINE": "موعد الإرجاع",
+    "type_EXCHANGE_PERIOD": "فترة الاستبدال",
+    "type_RECALL": "الاستدعاء"
+  },
+  "modal": {
+    "title_view": "تفاصيل الإشعار",
+    "close": "إغلاق",
+    "targetReceivers": "المستلمون المستهدفون",
+    "notificationType": "نوع الإشعار",
+    "product": "المنتج",
+    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
+    "messageTitleAr": "عنوان الرسالة (العربية)",
+    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
+    "messageContentAr": "محتوى الرسالة (العربية)",
+    "createdAt": "تاريخ الإنشاء"
+  },
+  "addModal": {
+    "title": "إنشاء إشعار",
+    "targetReceivers": "المستلمون المستهدفون",
+    "product": "المنتج",
+    "notificationType": "نوع الإشعار",
+    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
+    "messageTitleAr": "عنوان الرسالة (العربية)",
+    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
+    "messageContentAr": "محتوى الرسالة (العربية)",
+    "placeholder_target": "اختر المستلمين المستهدفين",
+    "placeholder_product": "اختر المنتج",
+    "placeholder_type": "اختر نوع الإشعار",
+    "placeholder_title_en": "أدخل العنوان بالإنجليزية",
+    "placeholder_title_ar": "أدخل العنوان بالعربية",
+    "placeholder_content_en": "أدخل المحتوى بالإنجليزية",
+    "placeholder_content_ar": "أدخل المحتوى بالعربية",
+    "submit": "إنشاء الإشعار"
+  },
+  "notificationCreated": "تم إنشاء الإشعار بنجاح",
+  "fetchError": "فشل في جلب الإشعارات",
+  "createError": "فشل في إنشاء الإشعار",
+  "validationError": "يرجى ملء جميع الحقول المطلوبة بشكل صحيح"
+}

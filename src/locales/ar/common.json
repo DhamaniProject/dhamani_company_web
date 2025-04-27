@@ -1,0 +1,22 @@
+{
+  "submit": "إرسال",
+  "cancel": "إلغاء",
+  "back": "رجوع",
+  "home": "الرئيسية",
+  "loading": "جارٍ التحميل...",
+  "required": "هذا الحقل مطلوب",
+  "save": "حفظ",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "confirm": "تأكيد",
+  "success": "تمت العملية بنجاح",
+  "error": "حدث خطأ",
+  "retry": "إعادة المحاولة",
+  "next": "التالي",
+  "previous": "السابق",
+  "english": "الإنجليزية",
+  "arabic": "العربية",
+  "switchToEnglish": "التحويل إلى الإنجليزية",
+  "switchToArabic": "التحويل إلى العربية",
+  "languageSwitcher": "مبدل اللغة"
+}

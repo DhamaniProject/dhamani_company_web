@@ -1,0 +1,15 @@
+{
+  "title": "Log in to Account",
+  "email": "Email address",
+  "password": "Password",
+  "rememberMe": "Remember me",
+  "forgotPassword": "Forgot password?",
+  "signUpPrompt": "Would you like to join Dhamani?",
+  "signUpHere": " Sign up",
+  "signUpLinkAria": "Navigate to sign up page",
+  "errors": {
+    "emptyFields": "Please fill in all fields",
+    "invalidCredentials": "Invalid email or password",
+    "invalidEmail": "Please enter a valid email address"
+  }
+}

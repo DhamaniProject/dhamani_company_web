@@ -1,0 +1,13 @@
+{
+  "page": {
+    "title": "Reviews Management"
+  },
+  "table": {
+    "title": "Reviews Management",
+    "reviewerName": "Reviewer Name",
+    "reviewText": "Review Text",
+    "rating": "Rating",
+    "createdAt": "Created At",
+    "noReviews": "No reviews found"
+  }
+}

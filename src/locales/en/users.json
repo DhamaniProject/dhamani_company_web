@@ -1,0 +1,49 @@
+{
+  "page": {
+    "title": "User Management"
+  },
+  "table": {
+    "title": "User Management",
+    "fullName": "Full Name",
+    "email": "Email",
+    "status": "Status",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "noUsers": "No users found",
+    "addUser": "Add User"
+  },
+  "modal": {
+    "title": "Add New User",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "addUser": "Add User",
+    "cancel": "Cancel",
+    "close": "Close modal",
+    "placeholders": {
+      "firstName": "Enter first name",
+      "lastName": "Enter last name",
+      "email": "Enter email",
+      "password": "Enter password"
+    },
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "invalidEmail": "Invalid email format",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters long",
+      "passwordUpperCase": "Password must contain at least one uppercase letter",
+      "passwordLowerCase": "Password must contain at least one lowercase letter",
+      "passwordDigit": "Password must contain at least one digit",
+      "passwordSpecialChar": "Password must contain at least one special character (@$!%*#?&)"
+    }
+  },
+  "updateModal": {
+    "title": "Update User",
+    "updateUser": "Update User"
+  },
+  "userAddedSuccess": "User added successfully",
+  "userUpdatedSuccess": "User updated successfully"
+}

@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "Notifications Management"
+  },
+  "table": {
+    "title": "Notifications Management",
+    "addNotification": "Add Notification",
+    "targetReceivers": "Target Receivers",
+    "notificationType": "Type",
+    "messageTitle": "Message Title",
+    "createdAt": "Created At",
+    "noNotifications": "No notifications found",
+    "target_all_users": "All Users",
+    "target_product_users": "Product Users",
+    "target_expiring_warranty_users": "Expiring Warranty Users",
+    "target_old_records_users": "Old Records Users",
+    "type_WARRANTY_EXPIRY": "Warranty Expiry",
+    "type_PROMOTION": "Promotion",
+    "type_GENERAL_ANNOUNCEMENT": "General Announcement",
+    "type_RETURN_DEADLINE": "Return Deadline",
+    "type_EXCHANGE_PERIOD": "Exchange Period",
+    "type_RECALL": "Recall"
+  },
+  "modal": {
+    "title_view": "Notification Details",
+    "close": "Close",
+    "targetReceivers": "Target Receivers",
+    "notificationType": "Notification Type",
+    "product": "Product",
+    "messageTitleEn": "Message Title (English)",
+    "messageTitleAr": "Message Title (Arabic)",
+    "messageContentEn": "Message Content (English)",
+    "messageContentAr": "Message Content (Arabic)",
+    "createdAt": "Created At"
+  },
+  "addModal": {
+    "title": "Create Notification",
+    "targetReceivers": "Target Receivers",
+    "product": "Product",
+    "notificationType": "Notification Type",
+    "messageTitleEn": "Message Title (English)",
+    "messageTitleAr": "Message Title (Arabic)",
+    "messageContentEn": "Message Content (English)",
+    "messageContentAr": "Message Content (Arabic)",
+    "placeholder_target": "Select Target Receivers",
+    "placeholder_product": "Select Product",
+    "placeholder_type": "Select Notification Type",
+    "placeholder_title_en": "Enter title in English",
+    "placeholder_title_ar": "Enter title in Arabic",
+    "placeholder_content_en": "Enter content in English",
+    "placeholder_content_ar": "Enter content in Arabic",
+    "submit": "Create Notification"
+  },
+  "notificationCreated": "Notification created successfully",
+  "fetchError": "Failed to fetch notifications",
+  "createError": "Failed to create notification",
+  "validationError": "Please fill all required fields correctly"
+}

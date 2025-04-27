@@ -1,0 +1,58 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "recordsManagement": "Records Management",
+    "companyProfile": "Company Profile",
+    "productsManagement": "Products Management",
+    "notificationsManagement": "Notifications Management",
+    "userManagement": "User Management",
+    "reviews": "Reviews"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "metrics": {
+      "totalWarranties": "Total Warranties",
+      "eligibleReturns": "Eligible Returns",
+      "eligibleExchanges": "Eligible Exchanges",
+      "averageRating": "Average Rating"
+    },
+    "chart": {
+      "title": "Transaction Overview",
+      "transactions": "Transactions"
+    },
+    "table": {
+      "title": "Recent Transactions",
+      "product": "Product",
+      "customerName": "Customer Name",
+      "customerPhone": "Customer Phone",
+      "date": "Date",
+      "type": "Type",
+      "status": "Status",
+      "allTypes": "All Types",
+      "allStatuses": "All Statuses",
+      "warranty": "Warranty",
+      "exchange": "Exchange",
+      "return": "Return",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "filterByPhone": "Filter by Phone Number",
+      "search": "Search",
+      "loading": "Loading...",
+      "noResults": "No transactions found"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
+  }
+}

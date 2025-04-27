@@ -1,0 +1,22 @@
+{
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "back": "Back",
+  "home": "Home",
+  "loading": "Loading...",
+  "required": "This field is required",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "success": "Operation completed successfully",
+  "error": "An error occurred",
+  "retry": "Retry",
+  "next": "Next",
+  "previous": "Previous",
+  "english": "English",
+  "arabic": "Arabic",
+  "switchToEnglish": "Switch to English",
+  "switchToArabic": "Switch to Arabic",
+  "languageSwitcher": "Language switcher"
+}
