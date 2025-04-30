@@ -6,7 +6,8 @@
     "productsManagement": "إدارة المنتجات",
     "notificationsManagement": "إدارة الإشعارات",
     "userManagement": "إدارة المستخدم",
-    "reviews": "المراجعات"
+    "reviews": "المراجعات",
+    "logout": "تسجيل الخروج"
   },
   "title": "لوحة التحكم",
   "metrics": {

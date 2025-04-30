@@ -6,7 +6,8 @@
     "productsManagement": "Products Management",
     "notificationsManagement": "Notifications Management",
     "userManagement": "User Management",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "logout": "Log out"
   },
   "dashboard": {
     "title": "Dashboard",

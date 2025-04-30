@@ -1,4 +1,3 @@
-// src/features/auth/login/Login.tsx
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
@@ -10,15 +9,9 @@ const Login: React.FC = () => {
   const { t } = useTranslation("login");
   const navigate = useNavigate();
 
-  console.log("Login translations:", {
-    title: t("title"),
-    signUpPrompt: t("signUpPrompt"),
-    signUpLinkAria: t("signUpLinkAria"),
-    linkTo: ROUTES.REGISTER,
-  });
+  console.log("Login component rendered");
 
   const handleSuccess = (token: string) => {
-    console.log("Login successful, token:", token);
     navigate(ROUTES.DASHBOARD);
   };
 

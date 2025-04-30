@@ -1,93 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
-const TransactionTable: React.FC = () => {
-  const { t, i18n } = useTranslation("dashboard");
-  const [selectedMonth, setSelectedMonth] = useState("january");
-  const [selectedType, setSelectedType] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [phoneFilter, setPhoneFilter] = useState("");
-  const [filteredTransactions, setFilteredTransactions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Mock data with type and status fields
-  const transactions = [
-    {
-      product: "Apple Watch",
-      customerName: "Anas Alqunaid",
-      customerPhone: "+966 12345678",
-      date: "01/01/2025 12:40PM",
-      type: "warranty",
-      status: "active",
-    },
-    {
-      product: "Apple Watch",
-      customerName: "Ahmed Ali",
-      customerPhone: "+966 12345678",
-      date: "05/01/2025 12:40PM",
-      type: "exchange",
-      status: "inactive",
-    },
-  ];
-
-  const months = [
-    "january",
-    "february",
-    "march",
-    "april",
-    "may",
-    "june",
-    "july",
-    "august",
-    "september",
-    "october",
-    "november",
-    "december",
-  ];
-
-  // Fetch filtered transactions (mock API call)
-  const fetchFilteredTransactions = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const filtered = transactions.filter((transaction) => {
-        // Month filter
-        const transactionMonth = transaction.date.split("/")[1];
-        const monthIndex = months.indexOf(selectedMonth) + 1;
-        const monthMatch =
-          transactionMonth ===
-          (monthIndex < 10 ? `0${monthIndex}` : `${monthIndex}`);
-
-        // Type filter
-        const typeMatch =
-          selectedType === "all" || transaction.type === selectedType;
-
-        // Status filter
-        const statusMatch =
-          selectedStatus === "all" || transaction.status === selectedStatus;
-
-        // Phone number filter
-        const phoneMatch = transaction.customerPhone
-          .toLowerCase()
-          .includes(phoneFilter.toLowerCase());
-
-        return monthMatch && typeMatch && statusMatch && phoneMatch;
-      });
-
-      setFilteredTransactions(filtered);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-      setFilteredTransactions([]);
-    } finally {
-      setIsLoading(false);
-    }
+interface Transaction {
+  product: {
+    id: string;
+    name: string;
+    image: string | null;
+    category: string;
   };
+  customer: {
+    name: string;
+    phone: string;
+  };
+  date: string;
+  type: string[];
+  status: string;
+}
 
-  // Load all transactions initially
-  useEffect(() => {
-    fetchFilteredTransactions();
-  }, []);
+interface TransactionTableProps {
+  transactions: Transaction[];
+  isLoading: boolean;
+}
+
+const TransactionTable: React.FC<TransactionTableProps> = ({
+  transactions,
+  isLoading,
+}) => {
+  const { t, i18n } = useTranslation("dashboard");
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, "0")}/${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()} ${date
+      .getHours()
+      .toString()
+      .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}${
+      date.getHours() >= 12 ? "PM" : "AM"
+    }`;
+  };
 
   return (
     <div
@@ -99,80 +52,10 @@ const TransactionTable: React.FC = () => {
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden font-arabic">
               {/* Header */}
-              <div className="px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 gap-4">
+              <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {t("dashboard.table.title")}
                 </h2>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Month Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    aria-label={t("dashboard.table.title")}
-                  >
-                    {months.map((month) => (
-                      <option key={month} value={month}>
-                        {t(`dashboard.months.${month}`)}
-                      </option>
-                    ))}
-                  </select>
-                  {/* Type Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    aria-label={t("dashboard.table.type")}
-                  >
-                    <option value="all">{t("dashboard.table.allTypes")}</option>
-                    <option value="warranty">
-                      {t("dashboard.table.warranty")}
-                    </option>
-                    <option value="exchange">
-                      {t("dashboard.table.exchange")}
-                    </option>
-                    <option value="return">
-                      {t("dashboard.table.return")}
-                    </option>
-                  </select>
-                  {/* Status Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    aria-label={t("dashboard.table.status")}
-                  >
-                    <option value="all">
-                      {t("dashboard.table.allStatuses")}
-                    </option>
-                    <option value="active">
-                      {t("dashboard.table.status_active")}
-                    </option>
-                    <option value="inactive">
-                      {t("dashboard.table.status_inactive")}
-                    </option>
-                  </select>
-                  {/* Phone Number Filter */}
-                  <input
-                    type="text"
-                    className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    placeholder={t("dashboard.table.filterByPhone")}
-                    value={phoneFilter}
-                    onChange={(e) => setPhoneFilter(e.target.value)}
-                    aria-label={t("dashboard.table.filterByPhone")}
-                  />
-                  {/* Search Button */}
-                  <button
-                    className="py-2 px-4 text-sm font-medium rounded-lg bg-primary text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] disabled:opacity-50 transition-colors duration-200"
-                    onClick={fetchFilteredTransactions}
-                    disabled={isLoading}
-                    aria-label={t("dashboard.table.search")}
-                  >
-                    {isLoading
-                      ? t("dashboard.table.loading")
-                      : t("dashboard.table.search")}
-                  </button>
-                </div>
               </div>
               {/* End Header */}
 
@@ -213,41 +96,53 @@ const TransactionTable: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((transaction, index) => (
+                  {isLoading ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-6 py-4 text-center text-gray-500"
+                      >
+                        {t("dashboard.table.loading")}
+                      </td>
+                    </tr>
+                  ) : transactions.length > 0 ? (
+                    transactions.map((transaction, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-x-2">
                             <img
-                              src="https://via.placeholder.com/40"
-                              alt={transaction.product}
+                              src={
+                                transaction.product.image ||
+                                "https://via.placeholder.com/40"
+                              }
+                              alt={transaction.product.name}
                               className="w-10 h-10 rounded-full"
                             />
                             <span className="text-sm text-gray-800 font-normal">
-                              {transaction.product}
+                              {transaction.product.name}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-gray-800 font-normal">
-                            {transaction.customerName}
+                            {transaction.customer.name}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-gray-800 font-normal">
-                            {transaction.customerPhone}
+                            {transaction.customer.phone}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-gray-800 font-normal">
-                            {transaction.date}
+                            {formatDate(transaction.date)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-x-2">
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                transaction.type === "warranty"
+                                transaction.type.includes("Warranty")
                                   ? "border-green-600 bg-green-600 text-white"
                                   : "border-green-500 text-green-500 hover:bg-green-50"
                               }`}
@@ -257,7 +152,7 @@ const TransactionTable: React.FC = () => {
                             </button>
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                transaction.type === "exchange"
+                                transaction.type.includes("Exchange")
                                   ? "border-pink-600 bg-pink-600 text-white"
                                   : "border-pink-500 text-pink-500 hover:bg-pink-50"
                               }`}
@@ -267,7 +162,7 @@ const TransactionTable: React.FC = () => {
                             </button>
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                transaction.type === "return"
+                                transaction.type.includes("Return")
                                   ? "border-gray-600 bg-gray-600 text-white"
                                   : "border-gray-500 text-gray-500 hover:bg-gray-50"
                               }`}
@@ -280,12 +175,14 @@ const TransactionTable: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`text-sm font-medium ${
-                              transaction.status === "active"
+                              transaction.status.toLowerCase() === "active"
                                 ? "text-green-600"
                                 : "text-gray-600"
                             }`}
                           >
-                            {t(`dashboard.table.status_${transaction.status}`)}
+                            {t(
+                              `dashboard.table.status_${transaction.status.toLowerCase()}`
+                            )}
                           </span>
                         </td>
                       </tr>
@@ -296,9 +193,7 @@ const TransactionTable: React.FC = () => {
                         colSpan={6}
                         className="px-6 py-4 text-center text-gray-500"
                       >
-                        {isLoading
-                          ? t("dashboard.table.loading")
-                          : t("dashboard.table.noResults")}
+                        {t("dashboard.table.noResults")}
                       </td>
                     </tr>
                   )}

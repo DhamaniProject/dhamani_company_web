@@ -28,25 +28,27 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [updatedProduct, setUpdatedProduct] = useState({
     product_name: { en: product.product_name.en, ar: product.product_name.ar },
     product_description: {
-      en: product.product_description?.en || null,
-      ar: product.product_description?.ar || null,
+      en: product.product_description.en || null,
+      ar: product.product_description.ar || null,
     },
     terms_and_notes: {
-      en: product.terms_and_notes?.en || null,
-      ar: product.terms_and_notes?.ar || null,
+      en: product.terms_and_notes.en || null,
+      ar: product.terms_and_notes.ar || null,
     },
-    image: product.image,
+    product_image: product.product_image,
     types: product.types,
     sku: product.sku,
     upc: product.upc || "",
-    category: product.category,
+    category_id: product.category.category_id.toString(),
     warrantyPeriod: product.warrantyPeriod.toString(),
     returnPeriod: product.returnPeriod.toString(),
     exchangePeriod: product.exchangePeriod.toString(),
-    warrantyProvider: product.warrantyProvider || "",
+    warrantyProvider: product.warrantyProvider
+      ? product.warrantyProvider.provider_id
+      : "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(
-    product.image
+    product.product_image
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,7 +59,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setUpdatedProduct({ ...updatedProduct, image: base64String });
+        setUpdatedProduct({ ...updatedProduct, product_image: base64String });
         setImagePreview(base64String);
       };
       reader.readAsDataURL(file);
@@ -85,7 +87,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         !updatedProduct.product_name.ar ||
         !updatedProduct.sku ||
         updatedProduct.types.length === 0 ||
-        !updatedProduct.category ||
+        !updatedProduct.category_id ||
         (updatedProduct.types.includes("warranty") &&
           (isNaN(warrantyPeriod) || warrantyPeriod < 0)) ||
         (updatedProduct.types.includes("return") &&
@@ -113,11 +115,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 ar: updatedProduct.terms_and_notes.ar || null,
               }
             : undefined,
-        image: updatedProduct.image,
+        product_image: updatedProduct.product_image,
         types: updatedProduct.types,
         sku: updatedProduct.sku,
         upc: updatedProduct.upc || null,
-        category: updatedProduct.category,
+        category: { ...product.category, category_id: parseInt(updatedProduct.category_id) },
         warrantyPeriod: updatedProduct.types.includes("warranty")
           ? warrantyPeriod
           : 0,
@@ -127,7 +129,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         exchangePeriod: updatedProduct.types.includes("exchange")
           ? exchangePeriod
           : 0,
-        warrantyProvider: updatedProduct.warrantyProvider || null,
+        warrantyProvider: updatedProduct.warrantyProvider
+          ? { ...product.warrantyProvider, provider_id: updatedProduct.warrantyProvider }
+          : null,
       });
       onClose();
     } catch (err: any) {
@@ -162,6 +166,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
       setIsLoading(false);
     }
   };
+
+  const warrantyProviderName = product.warrantyProvider
+    ? product.warrantyProvider.translations.find(
+        (t) => t.language_id === (i18n.language === "ar" ? 2 : 1)
+      )?.provider_name || product.warrantyProvider.phone_number
+    : tCommon("notAvailable");
 
   return (
     <div className="fixed top-10 right-10 z-50 w-full max-w-2xl">
@@ -226,7 +236,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           <div className="grid gap-6">
             <div className="flex justify-center">
               <img
-                src={product.image}
+                src={product.product_image || "https://via.placeholder.com/150"}
                 alt={product.product_name.en}
                 className="w-48 h-48 rounded-lg object-contain shadow-md border border-gray-200"
               />
@@ -253,7 +263,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.product_description_en")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {product.product_description?.en || tCommon("notAvailable")}
+                  {product.product_description.en || tCommon("notAvailable")}
                 </p>
               </div>
               <div>
@@ -261,7 +271,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.product_description_ar")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {product.product_description?.ar || tCommon("notAvailable")}
+                  {product.product_description.ar || tCommon("notAvailable")}
                 </p>
               </div>
               <div>
@@ -269,7 +279,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.terms_and_notes_en")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {product.terms_and_notes?.en || tCommon("notAvailable")}
+                  {product.terms_and_notes.en || tCommon("notAvailable")}
                 </p>
               </div>
               <div>
@@ -277,7 +287,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.terms_and_notes_ar")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {product.terms_and_notes?.ar || tCommon("notAvailable")}
+                  {product.terms_and_notes.ar || tCommon("notAvailable")}
                 </p>
               </div>
               <div>
@@ -309,7 +319,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.category")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {t(`table.category_${product.category}`)}
+                  {product.category.translations.find(
+                    (t) => t.language_id === (i18n.language === "ar" ? 2 : 1)
+                  )?.name || product.category.default_name}
                 </p>
               </div>
               <div>
@@ -341,7 +353,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   {t("modal.warrantyProvider")}
                 </strong>
                 <p className="text-sm text-gray-800">
-                  {product.warrantyProvider || tCommon("notAvailable")}
+                  {warrantyProviderName}
+                </p>
+              </div>
+              <div>
+                <strong className="text-sm font-medium text-gray-600">
+                  {t("modal.warrantyProviderDetails")}
+                </strong>
+                <p className="text-sm text-gray-800">
+                  {product.warrantyProvider
+                    ? `${product.warrantyProvider.phone_number}, ${
+                        product.warrantyProvider.email || tCommon("notAvailable")
+                      }`
+                    : tCommon("notAvailable")}
                 </p>
               </div>
               <div>
@@ -558,42 +582,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   setUpdatedProduct({ ...updatedProduct, upc: e.target.value })
                 }
               />
-              <div>
-                <label
-                  htmlFor="updateProductCategory"
-                  className="block text-sm mb-2 font-normal"
-                >
-                  {t("modal.category")}
-                </label>
-                <select
-                  id="updateProductCategory"
-                  value={updatedProduct.category}
-                  onChange={(e) =>
-                    setUpdatedProduct({
-                      ...updatedProduct,
-                      category: e.target.value as
-                        | "electronics"
-                        | "clothing"
-                        | "accessories"
-                        | "other",
-                    })
-                  }
-                  className="block w-full border-gray-300 rounded-lg sm:text-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] font-normal"
-                  aria-label={t("modal.category")}
-                >
-                  <option value="">{t("modal.placeholder_category")}</option>
-                  <option value="electronics">
-                    {t("table.category_electronics")}
-                  </option>
-                  <option value="clothing">
-                    {t("table.category_clothing")}
-                  </option>
-                  <option value="accessories">
-                    {t("table.category_accessories")}
-                  </option>
-                  <option value="other">{t("table.category_other")}</option>
-                </select>
-              </div>
               <AuthInput
                 id="updateProductWarrantyPeriod"
                 label={t("modal.warrantyPeriod")}

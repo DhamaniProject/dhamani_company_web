@@ -4,6 +4,7 @@ import Button from "../../../../components/ui/Button";
 import ProductModal from "./ProductModal";
 import AddProductModal from "./AddProductModal";
 import { useProductsTable } from "../hooks/useProductsTable";
+import { useCategories } from "../hooks/useCategories";
 import { Product } from "../types/types";
 
 const ProductsTable: React.FC = () => {
@@ -11,25 +12,26 @@ const ProductsTable: React.FC = () => {
   const { t: tCommon } = useTranslation("common");
   const {
     products,
-    nameFilter,
-    skuFilter,
-    typeFilter,
-    statusFilter,
+    skuUpcFilter,
+    categoryFilter,
     isLoading,
     successMessage,
     error,
     currentPage,
     totalPages,
-    setNameFilter,
-    setSkuFilter,
-    setTypeFilter,
-    setStatusFilter,
+    setSkuUpcFilter,
+    setCategoryFilter,
     setCurrentPage,
     fetchProducts,
     updateProduct,
     deactivateProduct,
     reactivateProduct,
   } = useProductsTable();
+  const {
+    categories,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useCategories();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalMode, setModalMode] = useState<
@@ -38,14 +40,7 @@ const ProductsTable: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [
-    nameFilter,
-    skuFilter,
-    typeFilter,
-    statusFilter,
-    currentPage,
-    fetchProducts,
-  ]);
+  }, [fetchProducts]);
 
   return (
     <div
@@ -62,50 +57,28 @@ const ProductsTable: React.FC = () => {
                   {t("table.title")}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Name Filter */}
                   <input
                     type="text"
                     className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    placeholder={t("table.placeholder_name_filter")}
-                    value={nameFilter}
-                    onChange={(e) => setNameFilter(e.target.value)}
-                    aria-label={t("table.filterByName")}
+                    placeholder={t("table.placeholder_sku_upc_filter")}
+                    value={skuUpcFilter}
+                    onChange={(e) => setSkuUpcFilter(e.target.value)}
+                    aria-label={t("table.filterBySkuOrUpc")}
                   />
-                  {/* SKU Filter */}
-                  <input
-                    type="text"
-                    className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    placeholder={t("table.placeholder_sku_filter")}
-                    value={skuFilter}
-                    onChange={(e) => setSkuFilter(e.target.value)}
-                    aria-label={t("table.filterBySku")}
-                  />
-                  {/* Type Filter */}
                   <select
                     className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    aria-label={t("table.types")}
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    aria-label={t("table.category")}
+                    disabled={isCategoriesLoading || !!categoriesError}
                   >
-                    <option value="all">{t("table.allTypes")}</option>
-                    <option value="warranty">{t("table.type_warranty")}</option>
-                    <option value="exchange">{t("table.type_exchange")}</option>
-                    <option value="return">{t("table.type_return")}</option>
+                    <option value="all">{t("table.allCategories")}</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
-                  {/* Status Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    aria-label={t("table.status")}
-                  >
-                    <option value="all">{t("table.allStatuses")}</option>
-                    <option value="active">{t("table.status_active")}</option>
-                    <option value="inactive">
-                      {t("table.status_inactive")}
-                    </option>
-                  </select>
-                  {/* Search Button */}
                   <Button
                     onClick={fetchProducts}
                     isLoading={isLoading}
@@ -114,7 +87,6 @@ const ProductsTable: React.FC = () => {
                   >
                     {isLoading ? tCommon("loading") : t("table.search")}
                   </Button>
-                  {/* Add Product Button */}
                   <Button
                     onClick={() => setShowAddModal(true)}
                     disabled={isLoading}
@@ -149,7 +121,7 @@ const ProductsTable: React.FC = () => {
                   <span>{t(successMessage)}</span>
                 </div>
               )}
-              {error && (
+              {(error || categoriesError) && (
                 <div
                   className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium m-4"
                   role="alert"
@@ -169,7 +141,7 @@ const ProductsTable: React.FC = () => {
                       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>{t(error)}</span>
+                  <span>{t(error || categoriesError || "fetchError")}</span>
                 </div>
               )}
               {/* Table */}
@@ -205,94 +177,105 @@ const ProductsTable: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {products.length > 0 ? (
-                    products.map((product) => (
-                      <tr
-                        key={product.id}
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          setModalMode("view");
-                        }}
-                        className="cursor-pointer hover:bg-gray-50"
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
+                    products.map((product) => {
+                      const categoryTranslation =
+                        product.category.translations.find(
+                          (t) =>
+                            t.language_id === (i18n.language === "ar" ? 2 : 1)
+                        );
+                      return (
+                        <tr
+                          key={product.id}
+                          onClick={() => {
                             setSelectedProduct(product);
                             setModalMode("view");
-                          }
-                        }}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-x-2">
-                            <img
-                              src={product.image}
-                              alt={product.product_name.en}
-                              className="w-10 h-10 rounded-full"
-                            />
+                          }}
+                          className="cursor-pointer hover:bg-gray-50"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              setSelectedProduct(product);
+                              setModalMode("view");
+                            }
+                          }}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-x-2">
+                              <img
+                                src={
+                                  product.product_image ||
+                                  "https://via.placeholder.com/150"
+                                }
+                                alt={product.product_name.en}
+                                className="w-10 h-10 rounded-full"
+                              />
+                              <span className="text-sm text-gray-800 font-normal">
+                                {i18n.language === "ar"
+                                  ? product.product_name.ar
+                                  : product.product_name.en}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <span className="text-sm text-gray-800 font-normal">
-                              {i18n.language === "ar"
-                                ? product.product_name.ar
-                                : product.product_name.en}
+                              {product.sku}
                             </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {product.sku}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-x-2">
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                product.types.includes("warranty")
-                                  ? "border-green-600 bg-green-600 text-white"
-                                  : "border-green-500 text-green-500 hover:bg-green-50"
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex gap-x-2">
+                              <button
+                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                  product.types.includes("warranty")
+                                    ? "border-green-600 bg-green-600 text-white"
+                                    : "border-green-500 text-green-500 hover:bg-green-50"
+                                }`}
+                                aria-label={t("table.type_warranty")}
+                              >
+                                {t("table.type_warranty")}
+                              </button>
+                              <button
+                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                  product.types.includes("exchange")
+                                    ? "border-pink-600 bg-pink-600 text-white"
+                                    : "border-pink-500 text-pink-500 hover:bg-pink-50"
+                                }`}
+                                aria-label={t("table.type_exchange")}
+                              >
+                                {t("table.type_exchange")}
+                              </button>
+                              <button
+                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                  product.types.includes("return")
+                                    ? "border-gray-600 bg-gray-600 text-white"
+                                    : "border-gray-500 text-gray-500 hover:bg-gray-50"
+                                }`}
+                                aria-label={t("table.type_return")}
+                              >
+                                {t("table.type_return")}
+                              </button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-gray-800 font-normal">
+                              {categoryTranslation?.name ||
+                                product.category.default_name}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`text-sm font-medium ${
+                                product.status === "active"
+                                  ? "text-green-600"
+                                  : "text-gray-600"
                               }`}
-                              aria-label={t("table.type_warranty")}
                             >
-                              {t("table.type_warranty")}
-                            </button>
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                product.types.includes("exchange")
-                                  ? "border-pink-600 bg-pink-600 text-white"
-                                  : "border-pink-500 text-pink-500 hover:bg-pink-50"
-                              }`}
-                              aria-label={t("table.type_exchange")}
-                            >
-                              {t("table.type_exchange")}
-                            </button>
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                product.types.includes("return")
-                                  ? "border-gray-600 bg-gray-600 text-white"
-                                  : "border-gray-500 text-gray-500 hover:bg-gray-50"
-                              }`}
-                              aria-label={t("table.type_return")}
-                            >
-                              {t("table.type_return")}
-                            </button>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {t(`table.category_${product.category}`)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`text-sm font-medium ${
-                              product.status === "active"
-                                ? "text-green-600"
-                                : "text-gray-600"
-                            }`}
-                          >
-                            {t(`table.status_${product.status}`)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                              {t(`table.status_${product.status}`)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td
@@ -306,7 +289,7 @@ const ProductsTable: React.FC = () => {
                 </tbody>
               </table>
               {/* Pagination */}
-              {totalPages > 1 && (
+              {totalPages > 0 && (
                 <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
                   <p className="text-sm text-gray-600">
                     {t("pagination.page", {

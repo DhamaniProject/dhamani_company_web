@@ -1,15 +1,16 @@
 {
   "table": {
     "title": "Products",
+    "category": "Category",
     "product": "Product",
     "sku": "SKU",
     "types": "Types",
-    "category": "Category",
+    "allCategories": "Categories",
     "status": "Status",
     "filterByName": "Filter by Name",
     "placeholder_name_filter": "Enter Name",
     "filterBySku": "Filter by SKU",
-    "placeholder_sku_filter": "Enter SKU",
+    "placeholder_sku_upc_filter": "Enter SKU or UPC",
     "allTypes": "All Types",
     "type_warranty": "Warranty",
     "type_exchange": "Exchange",

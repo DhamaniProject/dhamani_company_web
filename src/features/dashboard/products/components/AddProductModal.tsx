@@ -22,11 +22,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       ar: null as string | null,
     },
     terms_and_notes: { en: null as string | null, ar: null as string | null },
-    image: "",
+    product_image: "",
     types: [] as Array<"warranty" | "exchange" | "return">,
     sku: "",
     upc: "",
-    category: "" as "electronics" | "clothing" | "accessories" | "other",
+    category_id: "",
     warrantyPeriod: "0",
     returnPeriod: "0",
     exchangePeriod: "0",
@@ -42,7 +42,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setNewProduct({ ...newProduct, image: base64String });
+        setNewProduct({ ...newProduct, product_image: base64String });
         setImagePreview(base64String);
       };
       reader.readAsDataURL(file);
@@ -70,7 +70,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         !newProduct.product_name.ar ||
         !newProduct.sku ||
         newProduct.types.length === 0 ||
-        !newProduct.category ||
+        !newProduct.category_id ||
         (newProduct.types.includes("warranty") &&
           (isNaN(warrantyPeriod) || warrantyPeriod < 0)) ||
         (newProduct.types.includes("return") &&
@@ -97,11 +97,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 ar: newProduct.terms_and_notes.ar || null,
               }
             : undefined,
-        image: newProduct.image,
+        product_image: newProduct.product_image || null,
         types: newProduct.types,
         sku: newProduct.sku,
         upc: newProduct.upc || null,
-        category: newProduct.category,
+        category: { category_id: parseInt(newProduct.category_id), default_name: "", translations: [] },
         warrantyPeriod: newProduct.types.includes("warranty")
           ? warrantyPeriod
           : 0,
@@ -109,7 +109,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         exchangePeriod: newProduct.types.includes("exchange")
           ? exchangePeriod
           : 0,
-        warrantyProvider: newProduct.warrantyProvider || null,
+        warrantyProvider: newProduct.warrantyProvider
+          ? { provider_id: newProduct.warrantyProvider, company_id: "", phone_number: "", translations: [] }
+          : null,
         status: "active",
       });
       onClose();
@@ -340,40 +342,16 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 setNewProduct({ ...newProduct, upc: e.target.value })
               }
             />
-            <div>
-              <label
-                htmlFor="newProductCategory"
-                className="block text-sm mb-2 font-normal"
-              >
-                {t("addModal.category")}
-              </label>
-              <select
-                id="newProductCategory"
-                value={newProduct.category}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    category: e.target.value as
-                      | "electronics"
-                      | "clothing"
-                      | "accessories"
-                      | "other",
-                  })
-                }
-                className="block w-full border-gray-300 rounded-lg sm:text-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] font-normal"
-                aria-label={t("addModal.category")}
-              >
-                <option value="">{t("addModal.placeholder_category")}</option>
-                <option value="electronics">
-                  {t("table.category_electronics")}
-                </option>
-                <option value="clothing">{t("table.category_clothing")}</option>
-                <option value="accessories">
-                  {t("table.category_accessories")}
-                </option>
-                <option value="other">{t("table.category_other")}</option>
-              </select>
-            </div>
+            <AuthInput
+              id="newProductCategoryId"
+              label={t("addModal.category_id")}
+              placeholder={t("addModal.placeholder_category_id")}
+              value={newProduct.category_id}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, category_id: e.target.value })
+              }
+              required
+            />
             <AuthInput
               id="newProductWarrantyPeriod"
               label={t("addModal.warrantyPeriod")}
