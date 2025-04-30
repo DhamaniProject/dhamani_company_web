@@ -42,9 +42,7 @@ api.interceptors.response.use(
       localStorage.removeItem("refresh_token");
       window.location.href = "/auth/login";
     }
-    return Promise.reject(
-      error.response?.data || { message: "An error occurred" }
-    );
+    return Promise.reject(error); // Pass through the original AxiosError
   }
 );
 

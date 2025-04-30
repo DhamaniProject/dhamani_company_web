@@ -1,3 +1,15 @@
+export enum ProductStatus {
+  Active = "active",
+  Inactive = "inactive",
+  Discontinued = "discontinued",
+}
+
+export enum ProductType {
+  Warranty = "warranty",
+  Exchange = "exchange",
+  Return = "return",
+}
+
 export interface ProductTranslation {
   language_id: number;
   product_name: string;
@@ -66,12 +78,12 @@ export interface Product {
     en: string | null;
     ar: string | null;
   };
-  types: Array<"warranty" | "exchange" | "return">;
+  types: ProductType[];
   category: Category;
   warrantyPeriod: number;
   returnPeriod: number;
   exchangePeriod: number;
   warrantyProvider: WarrantyProvider | null;
-  status: "active" | "inactive" | "discontinued";
+  status: ProductStatus;
   translations: ProductTranslation[];
 }

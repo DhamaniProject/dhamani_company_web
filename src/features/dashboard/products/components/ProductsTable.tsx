@@ -1,46 +1,354 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
+import { Product, ProductStatus, ProductType } from "../types/types";
+import { useProductModal } from "../hooks/useProductModal";
+import { useProductFilters } from "../hooks/useProductFilters";
+import { useProducts } from "../hooks/useProducts";
+import { useAuth } from "../../../../context/AuthContext";
+import { useCategories } from "../hooks/useCategories";
+import {
+  updateProduct,
+  deactivateProduct,
+  reactivateProduct,
+} from "../services/productService";
 import ProductModal from "./ProductModal";
 import AddProductModal from "./AddProductModal";
-import { useProductsTable } from "../hooks/useProductsTable";
-import { useCategories } from "../hooks/useCategories";
-import { Product } from "../types/types";
+
+interface TableHeaderProps {
+  t: (key: string, options?: Record<string, any>) => string;
+}
+
+const TableHeader: React.FC<TableHeaderProps> = ({ t }) => (
+  <thead className="bg-gray-50">
+    <tr>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.product")}
+        </span>
+      </th>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.sku")}
+        </span>
+      </th>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.types")}
+        </span>
+      </th>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.category")}
+        </span>
+      </th>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.warrantyProvider")}
+        </span>
+      </th>
+      <th scope="col" className="px-6 py-3 text-start">
+        <span className="text-xs font-semibold uppercase text-gray-600">
+          {t("table.status")}
+        </span>
+      </th>
+    </tr>
+  </thead>
+);
+
+interface TableRowProps {
+  product: Product;
+  t: (key: string, options?: Record<string, any>) => string;
+  tCommon: (key: string, options?: Record<string, any>) => string;
+  i18n: any;
+  onRowClick: (product: Product) => void;
+}
+
+const TableRow: React.FC<TableRowProps> = ({
+  product,
+  t,
+  tCommon,
+  i18n,
+  onRowClick,
+}) => {
+  const categoryTranslation = product.category.translations.find(
+    (t) => t.language_id === (i18n.language === "ar" ? 2 : 1)
+  );
+  const warrantyProviderName = product.warrantyProvider
+    ? product.warrantyProvider.translations.find(
+        (t) => t.language_id === (i18n.language === "ar" ? 2 : 1)
+      )?.provider_name || product.warrantyProvider.phone_number
+    : tCommon("notAvailable");
+
+  return (
+    <tr
+      onClick={() => onRowClick(product)}
+      className="cursor-pointer hover:bg-gray-50"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onRowClick(product);
+        }
+      }}
+    >
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center gap-x-2">
+          <img
+            src={product.product_image || "https://via.placeholder.com/150"}
+            alt={product.product_name.en}
+            className="w-10 h-10 rounded-full"
+          />
+          <span className="text-sm text-gray-800 font-normal">
+            {i18n.language === "ar"
+              ? product.product_name.ar
+              : product.product_name.en}
+          </span>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="text-sm text-gray-800 font-normal">{product.sku}</span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex gap-x-2">
+          <button
+            className={`py-1 px-3 text-sm font-medium rounded-full border ${
+              product.types.includes(ProductType.Warranty)
+                ? "border-green-600 bg-green-600 text-white"
+                : "border-green-500 text-green-500 hover:bg-green-50"
+            }`}
+            aria-label={t("table.type_warranty")}
+          >
+            {t("table.type_warranty")}
+          </button>
+          <button
+            className={`py-1 px-3 text-sm font-medium rounded-full border ${
+              product.types.includes(ProductType.Exchange)
+                ? "border-pink-600 bg-pink-600 text-white"
+                : "border-pink-500 text-pink-500 hover:bg-pink-50"
+            }`}
+            aria-label={t("table.type_exchange")}
+          >
+            {t("table.type_exchange")}
+          </button>
+          <button
+            className={`py-1 px-3 text-sm font-medium rounded-full border ${
+              product.types.includes(ProductType.Return)
+                ? "border-gray-600 bg-gray-600 text-white"
+                : "border-gray-500 text-gray-500 hover:bg-gray-50"
+            }`}
+            aria-label={t("table.type_return")}
+          >
+            {t("table.type_return")}
+          </button>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="text-sm text-gray-800 font-normal">
+          {categoryTranslation?.name || product.category.default_name}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="text-sm text-gray-800 font-normal">
+          {warrantyProviderName}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span
+          className={`text-sm font-medium ${
+            product.status === ProductStatus.Active
+              ? "text-green-600"
+              : "text-gray-600"
+          }`}
+        >
+          {t(`table.status_${product.status}`)}
+        </span>
+      </td>
+    </tr>
+  );
+};
+
+interface PaginationProps {
+  t: (key: string, options?: Record<string, any>) => string;
+  currentPage: number;
+  totalPages: number;
+  isLoading: boolean;
+  setCurrentPage: (page: number) => void;
+}
+
+const Pagination: React.FC<PaginationProps> = ({
+  t,
+  currentPage,
+  totalPages,
+  isLoading,
+  setCurrentPage,
+}) => (
+  <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
+    <p className="text-sm text-gray-600">
+      {t("pagination.page", {
+        current: currentPage + 1,
+        total: totalPages,
+      })}
+    </p>
+    <div className="flex gap-2">
+      <Button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+        disabled={currentPage === 0 || isLoading}
+        className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
+        aria-label={t("pagination.previous")}
+      >
+        {t("pagination.previous")}
+      </Button>
+      <Button
+        onClick={() =>
+          setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+        }
+        disabled={currentPage === totalPages - 1 || isLoading}
+        className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+        aria-label={t("pagination.next")}
+      >
+        {t("pagination.next")}
+      </Button>
+    </div>
+  </div>
+);
+
+interface ProductFiltersProps {
+  t: (key: string, options?: Record<string, any>) => string;
+  tCommon: (key: string, options?: Record<string, any>) => string;
+  skuUpcFilter: string;
+  categoryFilter: string;
+  setSkuUpcFilter: (value: string) => void;
+  setCategoryFilter: (value: string) => void;
+  categories: Array<{ id: number; name: string }>;
+  isCategoriesLoading: boolean;
+  categoriesError: string | null;
+  fetchProducts: () => void;
+  isLoading: boolean;
+}
+
+const ProductFilters: React.FC<ProductFiltersProps> = ({
+  t,
+  tCommon,
+  skuUpcFilter,
+  categoryFilter,
+  setSkuUpcFilter,
+  setCategoryFilter,
+  categories,
+  isCategoriesLoading,
+  categoriesError,
+  fetchProducts,
+  isLoading,
+}) => (
+  <div className="flex flex-col sm:flex-row gap-3">
+    <input
+      type="text"
+      className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+      placeholder={t("table.placeholder_sku_upc_filter")}
+      value={skuUpcFilter}
+      onChange={(e) => setSkuUpcFilter(e.target.value)}
+      aria-label={t("table.filterBySkuOrUpc")}
+    />
+    <select
+      className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+      value={categoryFilter}
+      onChange={(e) => setCategoryFilter(e.target.value)}
+      aria-label={t("table.category")}
+      disabled={isCategoriesLoading || !!categoriesError}
+    >
+      <option value="all">{t("table.allCategories")}</option>
+      {categories.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.name}
+        </option>
+      ))}
+    </select>
+    <Button
+      onClick={fetchProducts}
+      isLoading={isLoading}
+      disabled={isLoading}
+      aria-label={t("table.search")}
+    >
+      {isLoading ? tCommon("loading") : t("table.search")}
+    </Button>
+  </div>
+);
 
 const ProductsTable: React.FC = () => {
   const { t, i18n } = useTranslation("products");
   const { t: tCommon } = useTranslation("common");
+  const { user } = useAuth();
   const {
     products,
-    skuUpcFilter,
-    categoryFilter,
     isLoading,
-    successMessage,
     error,
+    successMessage,
     currentPage,
     totalPages,
+    setCurrentPage,
+    setSuccessMessage,
+    fetchProducts,
+  } = useProducts();
+  const {
+    skuUpcFilter,
+    categoryFilter,
     setSkuUpcFilter,
     setCategoryFilter,
-    setCurrentPage,
-    fetchProducts,
-    updateProduct,
-    deactivateProduct,
-    reactivateProduct,
-  } = useProductsTable();
+    debouncedSkuUpcFilter,
+  } = useProductFilters();
   const {
     categories,
     isLoading: isCategoriesLoading,
     error: categoriesError,
   } = useCategories();
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [modalMode, setModalMode] = useState<
-    "view" | "update" | "deactivate" | "reactivate"
-  >("view");
+  const {
+    showAddModal,
+    selectedProduct,
+    modalMode,
+    setShowAddModal,
+    setSelectedProduct,
+    setModalMode,
+  } = useProductModal();
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  const handleRowClick = (product: Product) => {
+    setSelectedProduct(product);
+    setModalMode("view");
+  };
+
+  const handleUpdateProduct = async (
+    id: string,
+    updatedProduct: Partial<Product>
+  ) => {
+    if (!user?.company_id) {
+      throw new Error("noCompanyId");
+    }
+    await updateProduct(user.company_id, id, updatedProduct);
+    setSuccessMessage("productUpdated");
+    await fetchProducts();
+  };
+
+  const handleDeactivateProduct = async (id: string) => {
+    if (!user?.company_id) {
+      throw new Error("noCompanyId");
+    }
+    await deactivateProduct(user.company_id, id);
+    setSuccessMessage("productDeactivated");
+    await fetchProducts();
+  };
+
+  const handleReactivateProduct = async (id: string) => {
+    if (!user?.company_id) {
+      throw new Error("noCompanyId");
+    }
+    await reactivateProduct(user.company_id, id);
+    setSuccessMessage("productReactivated");
+    await fetchProducts();
+  };
+
+  const handleAddProduct = async (newProduct: Partial<Product>) => {
+    setSuccessMessage("productAdded");
+    await fetchProducts();
+  };
 
   return (
     <div
@@ -57,36 +365,19 @@ const ProductsTable: React.FC = () => {
                   {t("table.title")}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    placeholder={t("table.placeholder_sku_upc_filter")}
-                    value={skuUpcFilter}
-                    onChange={(e) => setSkuUpcFilter(e.target.value)}
-                    aria-label={t("table.filterBySkuOrUpc")}
-                  />
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                    aria-label={t("table.category")}
-                    disabled={isCategoriesLoading || !!categoriesError}
-                  >
-                    <option value="all">{t("table.allCategories")}</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                  <Button
-                    onClick={fetchProducts}
+                  <ProductFilters
+                    t={t}
+                    tCommon={tCommon}
+                    skuUpcFilter={skuUpcFilter}
+                    categoryFilter={categoryFilter}
+                    setSkuUpcFilter={setSkuUpcFilter}
+                    setCategoryFilter={setCategoryFilter}
+                    categories={categories}
+                    isCategoriesLoading={isCategoriesLoading}
+                    categoriesError={categoriesError}
+                    fetchProducts={fetchProducts}
                     isLoading={isLoading}
-                    disabled={isLoading}
-                    aria-label={t("table.search")}
-                  >
-                    {isLoading ? tCommon("loading") : t("table.search")}
-                  </Button>
+                  />
                   <Button
                     onClick={() => setShowAddModal(true)}
                     disabled={isLoading}
@@ -146,140 +437,23 @@ const ProductsTable: React.FC = () => {
               )}
               {/* Table */}
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.product")}
-                      </span>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.sku")}
-                      </span>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.types")}
-                      </span>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.category")}
-                      </span>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.status")}
-                      </span>
-                    </th>
-                  </tr>
-                </thead>
+                <TableHeader t={t} />
                 <tbody className="divide-y divide-gray-200">
                   {products.length > 0 ? (
-                    products.map((product) => {
-                      const categoryTranslation =
-                        product.category.translations.find(
-                          (t) =>
-                            t.language_id === (i18n.language === "ar" ? 2 : 1)
-                        );
-                      return (
-                        <tr
-                          key={product.id}
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setModalMode("view");
-                          }}
-                          className="cursor-pointer hover:bg-gray-50"
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              setSelectedProduct(product);
-                              setModalMode("view");
-                            }
-                          }}
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-x-2">
-                              <img
-                                src={
-                                  product.product_image ||
-                                  "https://via.placeholder.com/150"
-                                }
-                                alt={product.product_name.en}
-                                className="w-10 h-10 rounded-full"
-                              />
-                              <span className="text-sm text-gray-800 font-normal">
-                                {i18n.language === "ar"
-                                  ? product.product_name.ar
-                                  : product.product_name.en}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-800 font-normal">
-                              {product.sku}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex gap-x-2">
-                              <button
-                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                  product.types.includes("warranty")
-                                    ? "border-green-600 bg-green-600 text-white"
-                                    : "border-green-500 text-green-500 hover:bg-green-50"
-                                }`}
-                                aria-label={t("table.type_warranty")}
-                              >
-                                {t("table.type_warranty")}
-                              </button>
-                              <button
-                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                  product.types.includes("exchange")
-                                    ? "border-pink-600 bg-pink-600 text-white"
-                                    : "border-pink-500 text-pink-500 hover:bg-pink-50"
-                                }`}
-                                aria-label={t("table.type_exchange")}
-                              >
-                                {t("table.type_exchange")}
-                              </button>
-                              <button
-                                className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                  product.types.includes("return")
-                                    ? "border-gray-600 bg-gray-600 text-white"
-                                    : "border-gray-500 text-gray-500 hover:bg-gray-50"
-                                }`}
-                                aria-label={t("table.type_return")}
-                              >
-                                {t("table.type_return")}
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-800 font-normal">
-                              {categoryTranslation?.name ||
-                                product.category.default_name}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`text-sm font-medium ${
-                                product.status === "active"
-                                  ? "text-green-600"
-                                  : "text-gray-600"
-                              }`}
-                            >
-                              {t(`table.status_${product.status}`)}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })
+                    products.map((product) => (
+                      <TableRow
+                        key={product.id}
+                        product={product}
+                        t={t}
+                        tCommon={tCommon}
+                        i18n={i18n}
+                        onRowClick={handleRowClick}
+                      />
+                    ))
                   ) : (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-6 py-4 text-center text-gray-500"
                       >
                         {isLoading ? tCommon("loading") : t("table.noResults")}
@@ -290,38 +464,13 @@ const ProductsTable: React.FC = () => {
               </table>
               {/* Pagination */}
               {totalPages > 0 && (
-                <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
-                  <p className="text-sm text-gray-600">
-                    {t("pagination.page", {
-                      current: currentPage + 1,
-                      total: totalPages,
-                    })}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 0))
-                      }
-                      disabled={currentPage === 0 || isLoading}
-                      className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
-                      aria-label={t("pagination.previous")}
-                    >
-                      {t("pagination.previous")}
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        setCurrentPage((prev) =>
-                          Math.min(prev + 1, totalPages - 1)
-                        )
-                      }
-                      disabled={currentPage === totalPages - 1 || isLoading}
-                      className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
-                      aria-label={t("pagination.next")}
-                    >
-                      {t("pagination.next")}
-                    </Button>
-                  </div>
-                </div>
+                <Pagination
+                  t={t}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  isLoading={isLoading}
+                  setCurrentPage={setCurrentPage}
+                />
               )}
             </div>
           </div>
@@ -331,10 +480,7 @@ const ProductsTable: React.FC = () => {
       {showAddModal && (
         <AddProductModal
           onClose={() => setShowAddModal(false)}
-          onAdd={async (newProduct) => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            setShowAddModal(false);
-          }}
+          onAdd={handleAddProduct}
         />
       )}
       {selectedProduct && (
@@ -342,9 +488,9 @@ const ProductsTable: React.FC = () => {
           product={selectedProduct}
           mode={modalMode}
           onClose={() => setSelectedProduct(null)}
-          onUpdate={updateProduct}
-          onDeactivate={deactivateProduct}
-          onReactivate={reactivateProduct}
+          onUpdate={handleUpdateProduct}
+          onDeactivate={handleDeactivateProduct}
+          onReactivate={handleReactivateProduct}
           onChangeMode={setModalMode}
         />
       )}
