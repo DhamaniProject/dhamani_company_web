@@ -9,8 +9,8 @@ import { useAuth } from "../../../../context/AuthContext";
 import { useCategories } from "../hooks/useCategories";
 import {
   updateProduct,
+  activateProduct,
   deactivateProduct,
-  reactivateProduct,
 } from "../services/productService";
 import ProductModal from "./ProductModal";
 import AddProductModal from "./AddProductModal";
@@ -279,6 +279,13 @@ const ProductsTable: React.FC = () => {
   const { t: tCommon } = useTranslation("common");
   const { user } = useAuth();
   const {
+    skuUpcFilter,
+    categoryFilter,
+    setSkuUpcFilter,
+    setCategoryFilter,
+    debouncedSkuUpcFilter,
+  } = useProductFilters();
+  const {
     products,
     isLoading,
     error,
@@ -288,14 +295,7 @@ const ProductsTable: React.FC = () => {
     setCurrentPage,
     setSuccessMessage,
     fetchProducts,
-  } = useProducts();
-  const {
-    skuUpcFilter,
-    categoryFilter,
-    setSkuUpcFilter,
-    setCategoryFilter,
-    debouncedSkuUpcFilter,
-  } = useProductFilters();
+  } = useProducts(debouncedSkuUpcFilter, categoryFilter);
   const {
     categories,
     isLoading: isCategoriesLoading,
@@ -336,11 +336,11 @@ const ProductsTable: React.FC = () => {
     await fetchProducts();
   };
 
-  const handleReactivateProduct = async (id: string) => {
+  const handleActivateProduct = async (id: string) => {
     if (!user?.company_id) {
       throw new Error("noCompanyId");
     }
-    await reactivateProduct(user.company_id, id);
+    await activateProduct(user.company_id, id);
     setSuccessMessage("productReactivated");
     await fetchProducts();
   };
@@ -490,7 +490,7 @@ const ProductsTable: React.FC = () => {
           onClose={() => setSelectedProduct(null)}
           onUpdate={handleUpdateProduct}
           onDeactivate={handleDeactivateProduct}
-          onReactivate={handleReactivateProduct}
+          onReactivate={handleActivateProduct} // Updated to use handleActivateProduct
           onChangeMode={setModalMode}
         />
       )}

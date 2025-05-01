@@ -1,4 +1,6 @@
-import { useState, useCallback } from "react";
+// src/features/dashboard/products/hooks/useProducts.ts
+
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../../context/AuthContext";
 import { fetchProducts } from "../services/productService";
@@ -34,6 +36,12 @@ export const useProducts = (
       setTotalPages(1);
       return { success: false, data: [], total_items: 0, total_pages: 1 };
     }
+
+    console.log("Fetching products with filters:", {
+      skuUpcFilter,
+      categoryFilter,
+      currentPage,
+    });
 
     try {
       const response = await fetchProducts(
@@ -79,7 +87,7 @@ export const useProducts = (
           returnPeriod: item.return_period,
           exchangePeriod: item.exchange_period,
           warrantyProvider: item.warranty_provider,
-          status: item.product_status,
+          status: item.product_status, // Now correctly maps "active" or "suspended"
           translations: item.translations,
         };
       });
@@ -110,8 +118,17 @@ export const useProducts = (
   });
 
   const handleFetchProducts = useCallback(() => {
+    console.log("Manually fetching products with filters:", {
+      skuUpcFilter,
+      categoryFilter,
+      currentPage,
+    });
     refetch();
-  }, [refetch]);
+  }, [refetch, skuUpcFilter, categoryFilter, currentPage]);
+
+  useEffect(() => {
+    handleFetchProducts();
+  }, [skuUpcFilter, categoryFilter, handleFetchProducts]);
 
   return {
     products,

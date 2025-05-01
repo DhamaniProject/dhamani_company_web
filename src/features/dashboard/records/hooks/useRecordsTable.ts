@@ -1,144 +1,164 @@
-import { useState, useCallback } from "react";
+// src/features/dashboard/records/hooks/useRecordsTable.ts
 
-interface Record {
-  id: string;
-  product: string;
-  customerName: string;
-  customerPhone: string;
-  date: string;
-  type: "warranty" | "exchange" | "return";
-  status: "active" | "inactive";
-  verificationCode: string;
-  warrantyDaysRemaining: number;
-  returnDaysRemaining: number;
-  exchangeDaysRemaining: number;
-}
+import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { fetchRecords as fetchRecordsFromApi } from "../services/recordService";
+import { Record } from "../types/types";
+import { useAuth } from "../../../../context/AuthContext";
 
 export const useRecordsTable = () => {
-  const [allRecords] = useState<Record[]>([
-    {
-      id: "1",
-      product: "Apple Watch",
-      customerName: "Anas Alqunaid",
-      customerPhone: "+96612345678",
-      date: "01/01/2025",
-      type: "warranty",
-      status: "active",
-      verificationCode: "VER12345",
-      warrantyDaysRemaining: 365,
-      returnDaysRemaining: 0,
-      exchangeDaysRemaining: 30,
-    },
-    {
-      id: "2",
-      product: "Samsung Galaxy",
-      customerName: "Ahmed Ali",
-      customerPhone: "+96687654321",
-      date: "05/01/2025",
-      type: "exchange",
-      status: "inactive",
-      verificationCode: "VER67890",
-      warrantyDaysRemaining: 0,
-      returnDaysRemaining: 0,
-      exchangeDaysRemaining: 0,
-    },
-    {
-      id: "3",
-      product: "Sony Headphones",
-      customerName: "Sara Mohammed",
-      customerPhone: "+96623456789",
-      date: "10/02/2025",
-      type: "return",
-      status: "inactive",
-      verificationCode: "VER54321",
-      warrantyDaysRemaining: 0,
-      returnDaysRemaining: 0,
-      exchangeDaysRemaining: 0,
-    },
-    {
-      id: "4",
-      product: "iPhone 14",
-      customerName: "Khalid Hassan",
-      customerPhone: "+96634567890",
-      date: "15/03/2025",
-      type: "warranty",
-      status: "active",
-      verificationCode: "VER09876",
-      warrantyDaysRemaining: 300,
-      returnDaysRemaining: 14,
-      exchangeDaysRemaining: 60,
-    },
-  ]);
+  const { i18n } = useTranslation();
+  const { user } = useAuth();
   const [records, setRecords] = useState<Record[]>([]);
   const [phoneFilter, setPhoneFilter] = useState("");
-  const [verificationCodeFilter, setVerificationCodeFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const pageSize = 2;
+  const pageSize = 10;
 
   const fetchRecords = useCallback(async () => {
-    setIsLoading(true);
-    setSuccessMessage("");
-    setError("");
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const filtered = allRecords.filter((record) => {
-        const phoneMatch = record.customerPhone
-          .toLowerCase()
-          .includes(phoneFilter.toLowerCase());
-        const verificationCodeMatch = record.verificationCode
-          .toLowerCase()
-          .includes(verificationCodeFilter.toLowerCase());
-        const typeMatch = typeFilter === "all" || record.type === typeFilter;
-        const statusMatch =
-          statusFilter === "all" || record.status === statusFilter;
-        return phoneMatch && verificationCodeMatch && typeMatch && statusMatch;
-      });
-      const start = currentPage * pageSize;
-      const end = start + pageSize;
-      setRecords(filtered.slice(start, end));
-      setTotalPages(Math.ceil(filtered.length / pageSize));
-    } catch (err) {
-      setError("error");
+    if (!user?.company_id) {
+      setError("noCompanyId");
       setRecords([]);
-    } finally {
-      setIsLoading(false);
+      setTotalPages(1);
+      setTotalItems(0);
+      return;
     }
-  }, [
-    phoneFilter,
-    verificationCodeFilter,
-    typeFilter,
-    statusFilter,
-    currentPage,
-    allRecords,
-  ]);
 
-  const verifyRecord = async (id: string) => {
     setIsLoading(true);
     setSuccessMessage("");
     setError("");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccessMessage("verifySuccess");
-    } catch (err) {
-      setError("error");
+      const trimmedPhoneFilter = phoneFilter.trim();
+      const phoneFilterToSend =
+        trimmedPhoneFilter && /^\+?[0-9]\d{1,14}$/.test(trimmedPhoneFilter)
+          ? trimmedPhoneFilter
+          : null;
+
+      const response = await fetchRecordsFromApi(
+        user.company_id,
+        phoneFilterToSend,
+        currentPage + 1,
+        pageSize
+      );
+      const mappedRecords: Record[] = response.data.map((item) => {
+        const enProductTranslation = item.product_translations.find(
+          (t) => t.language_id === 1
+        );
+        const arProductTranslation = item.product_translations.find(
+          (t) => t.language_id === 2
+        );
+        const currentLang = i18n.language === "ar" ? 2 : 1;
+        const productTranslation =
+          item.product_translations.find(
+            (t) => t.language_id === currentLang
+          ) || enProductTranslation;
+
+        // Determine eligibility for warranty, exchange, and return
+        const now = new Date();
+        const eligibleTypes: string[] = [];
+
+        // If the record is inactive, it has no types
+        if (!item.is_active) {
+          // Skip adding types
+        } else {
+          // Warranty eligibility: period not passed (current date <= end date)
+          if (item.warranty_end_date) {
+            const warrantyEndDate = new Date(item.warranty_end_date);
+            if (now <= warrantyEndDate) {
+              eligibleTypes.push("warranty");
+            }
+          }
+
+          // Exchange eligibility
+          if (item.exchange_end_date) {
+            const exchangeEndDate = new Date(item.exchange_end_date);
+            if (now <= exchangeEndDate) {
+              eligibleTypes.push("exchange");
+            }
+          }
+
+          // Return eligibility
+          if (item.return_end_date) {
+            const returnEndDate = new Date(item.return_end_date);
+            if (now <= returnEndDate) {
+              eligibleTypes.push("return");
+            }
+          }
+        }
+
+        // Set type: array of eligible types, or null if none
+        const type = eligibleTypes.length > 0 ? eligibleTypes : null;
+
+        // Calculate remaining days
+        const warrantyDaysRemaining = item.warranty_end_date
+          ? Math.max(
+              Math.ceil(
+                (new Date(item.warranty_end_date).getTime() - now.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              ),
+              0
+            )
+          : 0;
+        const exchangeDaysRemaining = item.exchange_end_date
+          ? Math.max(
+              Math.ceil(
+                (new Date(item.exchange_end_date).getTime() - now.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              ),
+              0
+            )
+          : 0;
+        const returnDaysRemaining = item.return_end_date
+          ? Math.max(
+              Math.ceil(
+                (new Date(item.return_end_date).getTime() - now.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              ),
+              0
+            )
+          : 0;
+
+        const mappedRecord = {
+          ...item,
+          product: productTranslation?.product_name || "Unknown",
+          customerName: `${item.first_name} ${item.last_name}`,
+          customerPhone: item.user_phone_number,
+          date: new Date(item.start_date).toLocaleDateString(),
+          type,
+          status: item.is_active ? "active" : "inactive",
+          verificationCode: item.record_id,
+          warrantyDaysRemaining,
+          returnDaysRemaining,
+          exchangeDaysRemaining,
+        };
+        console.log("Mapped record:", mappedRecord);
+        return mappedRecord;
+      });
+
+      setRecords(mappedRecords);
+      setTotalPages(response.total_pages || 1);
+      setTotalItems(response.total_items || 0);
+      setError("");
+    } catch (err: any) {
+      setError(err.message || "fetchError");
+      setRecords([]);
+      setTotalPages(1);
+      setTotalItems(0);
+      console.log("Fetch records error in hook:", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [phoneFilter, currentPage, i18n.language, user?.company_id]);
 
   return {
     records,
+    allRecords: records,
     phoneFilter,
-    verificationCodeFilter,
-    typeFilter,
-    statusFilter,
     isLoading,
     successMessage,
     error,
@@ -146,12 +166,8 @@ export const useRecordsTable = () => {
     totalPages,
     selectedRecord,
     setPhoneFilter,
-    setVerificationCodeFilter,
-    setTypeFilter,
-    setStatusFilter,
     setCurrentPage,
     setSelectedRecord,
     fetchRecords,
-    verifyRecord,
   };
 };

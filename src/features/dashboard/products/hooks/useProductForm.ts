@@ -16,15 +16,37 @@ interface FormState {
   warrantyProvider: string;
 }
 
+interface EditedFields {
+  product_name_en?: boolean;
+  product_name_ar?: boolean;
+  product_description_en?: boolean;
+  product_description_ar?: boolean;
+  terms_and_notes_en?: boolean;
+  terms_and_notes_ar?: boolean;
+  product_image?: boolean;
+  types?: boolean;
+  sku?: boolean;
+  upc?: boolean;
+  category_id?: boolean;
+  warrantyPeriod?: boolean;
+  returnPeriod?: boolean;
+  exchangePeriod?: boolean;
+  warrantyProvider?: boolean;
+}
+
 interface ProductFormHook {
   formState: FormState;
+  editedFields: EditedFields;
   imagePreview: string | null;
   error: string | null;
   setError: (error: string | null) => void;
-  setFormState: (state: Partial<FormState>) => void;
+  setFormState: (
+    state: Partial<FormState>,
+    edited?: Partial<EditedFields>
+  ) => void;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleTypeChange: (type: ProductType) => void;
-  validateForm: () => boolean;
+  validateForm: (isUpdate?: boolean) => boolean;
   resetForm: () => void;
 }
 
@@ -68,40 +90,102 @@ export const useProductForm = (initialProduct?: Product): ProductFormHook => {
         warrantyProvider: "",
       };
 
-  const [formState, setFormState] = useState<FormState>(initialState);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    initialProduct?.product_image || null
-  );
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<{
+    formState: FormState;
+    editedFields: EditedFields;
+    imagePreview: string | null;
+    error: string | null;
+  }>({
+    formState: initialState,
+    editedFields: {},
+    imagePreview: initialProduct?.product_image || null,
+    error: null,
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormState({ ...formState, product_image: file.name });
-      setImagePreview(URL.createObjectURL(file));
+      setState((prev) => ({
+        ...prev,
+        formState: { ...prev.formState, product_image: file.name },
+        editedFields: { ...prev.editedFields, product_image: true },
+        imagePreview: URL.createObjectURL(file),
+      }));
     }
   };
 
   const handleTypeChange = (type: ProductType) => {
-    setFormState((prev) => {
-      const types = prev.types.includes(type)
-        ? prev.types.filter((t) => t !== type)
-        : [...prev.types, type];
+    setState((prev) => {
+      const types = prev.formState.types.includes(type)
+        ? prev.formState.types.filter((t) => t !== type)
+        : [...prev.formState.types, type];
+      const edited: Partial<EditedFields> = { types: true };
+      if (type === ProductType.Warranty) edited.warrantyPeriod = true;
+      if (type === ProductType.Return) edited.returnPeriod = true;
+      if (type === ProductType.Exchange) edited.exchangePeriod = true;
+
       return {
         ...prev,
-        types,
-        warrantyPeriod: types.includes(ProductType.Warranty)
-          ? prev.warrantyPeriod
-          : "0",
-        returnPeriod: types.includes(ProductType.Return) ? prev.returnPeriod : "0",
-        exchangePeriod: types.includes(ProductType.Exchange)
-          ? prev.exchangePeriod
-          : "0",
+        formState: {
+          ...prev.formState,
+          types,
+          warrantyPeriod: types.includes(ProductType.Warranty)
+            ? prev.formState.warrantyPeriod
+            : "0",
+          returnPeriod: types.includes(ProductType.Return)
+            ? prev.formState.returnPeriod
+            : "0",
+          exchangePeriod: types.includes(ProductType.Exchange)
+            ? prev.formState.exchangePeriod
+            : "0",
+        },
+        editedFields: { ...prev.editedFields, ...edited },
       };
     });
   };
 
-  const validateForm = (): boolean => {
+  const setFormStateWithEdited = (
+    state: Partial<FormState>,
+    edited: Partial<EditedFields> = {}
+  ) => {
+    setState((prev) => ({
+      ...prev,
+      formState: { ...prev.formState, ...state },
+      editedFields: { ...prev.editedFields, ...edited },
+    }));
+  };
+
+  const setError = (error: string | null) => {
+    setState((prev) => ({ ...prev, error }));
+  };
+
+  const validateForm = (isUpdate: boolean = false): boolean => {
+    const { formState } = state;
+    if (isUpdate) {
+      // For updates, only validate edited fields
+      const warrantyPeriod = parseInt(formState.warrantyPeriod);
+      const returnPeriod = parseInt(formState.returnPeriod);
+      const exchangePeriod = parseInt(formState.exchangePeriod);
+
+      if (
+        (state.editedFields.warrantyPeriod &&
+          formState.types.includes(ProductType.Warranty) &&
+          (isNaN(warrantyPeriod) || warrantyPeriod < 0)) ||
+        (state.editedFields.returnPeriod &&
+          formState.types.includes(ProductType.Return) &&
+          (isNaN(returnPeriod) || returnPeriod < 0)) ||
+        (state.editedFields.exchangePeriod &&
+          formState.types.includes(ProductType.Exchange) &&
+          (isNaN(exchangePeriod) || exchangePeriod < 0))
+      ) {
+        setError("updateProduct.error");
+        return false;
+      }
+      setError(null);
+      return true;
+    }
+
+    // For adds, validate all required fields
     const warrantyPeriod = parseInt(formState.warrantyPeriod);
     const returnPeriod = parseInt(formState.returnPeriod);
     const exchangePeriod = parseInt(formState.exchangePeriod);
@@ -127,17 +211,21 @@ export const useProductForm = (initialProduct?: Product): ProductFormHook => {
   };
 
   const resetForm = () => {
-    setFormState(initialState);
-    setImagePreview(initialProduct?.product_image || null);
-    setError(null);
+    setState({
+      formState: initialState,
+      editedFields: {},
+      imagePreview: initialProduct?.product_image || null,
+      error: null,
+    });
   };
 
   return {
-    formState,
-    imagePreview,
-    error,
+    formState: state.formState,
+    editedFields: state.editedFields,
+    imagePreview: state.imagePreview,
+    error: state.error,
     setError,
-    setFormState,
+    setFormState: setFormStateWithEdited,
     handleImageChange,
     handleTypeChange,
     validateForm,

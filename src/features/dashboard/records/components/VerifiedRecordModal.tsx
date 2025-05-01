@@ -1,8 +1,9 @@
-// src/features/dashboard/records/components/RecordModal.tsx
+// src/features/dashboard/records/components/VerifiedRecordModal.tsx
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
+import AuthInput from "../../../auth/common/AuthInput";
 
 interface Record {
   record_id: string;
@@ -45,14 +46,20 @@ interface Record {
   exchangeDaysRemaining: number;
 }
 
-interface RecordModalProps {
+interface VerifiedRecordModalProps {
   record: Record;
   onClose: () => void;
 }
 
-const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
+const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
+  record,
+  onClose,
+}) => {
   const { t, i18n } = useTranslation("records");
   const { t: tCommon } = useTranslation("common");
+  const [deactivationCode, setDeactivationCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const currentLang = i18n.language === "ar" ? 2 : 1;
   const productTranslation = record.product_translations.find(
@@ -62,22 +69,42 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
     (t) => t.language_id === currentLang
   );
 
+  const handleDeactivate = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      if (deactivationCode !== "VALID_CODE") {
+        throw new Error("invalidDeactivationCode");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto border border-gray-200"
         role="dialog"
-        aria-labelledby="modal-title"
+        aria-labelledby="verified-modal-title"
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
-          <h2 id="modal-title" className="text-xl font-semibold text-gray-800">
-            {t("modal.title")}
+          <h2
+            id="verified-modal-title"
+            className="text-xl font-semibold text-gray-800"
+          >
+            {t("verifiedModal.title")}
           </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
-            aria-label={t("modal.close")}
+            aria-label={t("verifiedModal.close")}
+            disabled={isLoading}
           >
             <svg
               className="w-6 h-6"
@@ -95,39 +122,63 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </svg>
           </button>
         </div>
+        {/* Error Message */}
+        {error && (
+          <div
+            className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium mb-4"
+            role="alert"
+            aria-live="polite"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{t(error)}</span>
+          </div>
+        )}
         {/* Record Details */}
         <div className="grid gap-4">
           <h3 className="text-lg font-medium text-gray-700">
-            {t("modal.title")}
+            {t("verifiedModal.title")}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.product")}
+                {t("verifiedModal.product")}
               </strong>
               <p className="text-sm text-gray-800">{record.product}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.customerName")}
+                {t("verifiedModal.customerName")}
               </strong>
               <p className="text-sm text-gray-800">{record.customerName}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.customerPhone")}
+                {t("verifiedModal.customerPhone")}
               </strong>
               <p className="text-sm text-gray-800">{record.customerPhone}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.startDate")}
+                {t("verifiedModal.startDate")}
               </strong>
               <p className="text-sm text-gray-800">{record.date}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.type")}
+                {t("verifiedModal.type")}
               </strong>
               <p className="text-sm text-gray-800">
                 {record.type && record.type.length > 0
@@ -137,7 +188,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.status")}
+                {t("verifiedModal.status")}
               </strong>
               <p
                 className={`text-sm ${
@@ -151,13 +202,13 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.verificationCode")}
+                {t("verifiedModal.verificationCode")}
               </strong>
               <p className="text-sm text-gray-800">{record.verificationCode}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.productDescription")}
+                {t("verifiedModal.productDescription")}
               </strong>
               <p className="text-sm text-gray-800">
                 {productTranslation?.product_description ||
@@ -166,7 +217,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.termsAndNotes")}
+                {t("verifiedModal.termsAndNotes")}
               </strong>
               <p className="text-sm text-gray-800">
                 {productTranslation?.terms_and_notes || tCommon("notAvailable")}
@@ -174,7 +225,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.notes")}
+                {t("verifiedModal.notes")}
               </strong>
               <p className="text-sm text-gray-800">
                 {recordTranslation?.notes || tCommon("notAvailable")}
@@ -183,12 +234,12 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
           </div>
           <div className="border-t border-gray-200 pt-4">
             <h3 className="text-lg font-medium text-gray-700 mb-2">
-              {t("modal.warrantyDetails")}
+              {t("verifiedModal.warrantyDetails")}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.warrantyEndDate")}
+                  {t("verifiedModal.warrantyEndDate")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.warranty_end_date
@@ -198,7 +249,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
               </div>
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.warrantyDaysRemaining")}
+                  {t("verifiedModal.warrantyDaysRemaining")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.warrantyDaysRemaining}
@@ -206,12 +257,12 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
               </div>
             </div>
             <h3 className="text-lg font-medium text-gray-700 mt-4 mb-2">
-              {t("modal.exchangeDetails")}
+              {t("verifiedModal.exchangeDetails")}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.exchangeEndDate")}
+                  {t("verifiedModal.exchangeEndDate")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.exchange_end_date
@@ -221,7 +272,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
               </div>
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.exchangeDaysRemaining")}
+                  {t("verifiedModal.exchangeDaysRemaining")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.exchangeDaysRemaining}
@@ -229,12 +280,12 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
               </div>
             </div>
             <h3 className="text-lg font-medium text-gray-700 mt-4 mb-2">
-              {t("modal.returnDetails")}
+              {t("verifiedModal.returnDetails")}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.returnEndDate")}
+                  {t("verifiedModal.returnEndDate")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.return_end_date
@@ -244,7 +295,7 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
               </div>
               <div>
                 <strong className="text-sm font-medium text-gray-600">
-                  {t("modal.returnDaysRemaining")}
+                  {t("verifiedModal.returnDaysRemaining")}
                 </strong>
                 <p className="text-sm text-gray-800">
                   {record.returnDaysRemaining}
@@ -253,19 +304,43 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
           </div>
         </div>
-        {/* Buttons */}
-        <div className="mt-4 flex justify-end gap-3">
-          <Button
-            onClick={onClose}
-            className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
-            aria-label={t("modal.close")}
-          >
-            {t("modal.close")}
-          </Button>
-        </div>
+        {/* Deactivation Section */}
+        {record.status === "active" && (
+          <div className="mt-6 border-t border-gray-200 pt-4">
+            <h3 className="text-lg font-medium text-gray-700 mb-4">
+              {t("verifiedModal.deactivationSection")}
+            </h3>
+            <AuthInput
+              id="deactivationCode"
+              label={t("verifiedModal.deactivationCode")}
+              placeholder={t("verifiedModal.deactivationCodePlaceholder")}
+              value={deactivationCode}
+              onChange={(e) => setDeactivationCode(e.target.value)}
+              disabled={isLoading}
+            />
+            <div className="mt-4 flex justify-end gap-3">
+              <Button
+                onClick={handleDeactivate}
+                className="py-2 px-4 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700"
+                disabled={!deactivationCode || isLoading}
+                aria-label={t("verifiedModal.deactivate")}
+              >
+                {t("verifiedModal.deactivate")}
+              </Button>
+              <Button
+                onClick={onClose}
+                className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+                disabled={isLoading}
+                aria-label={t("verifiedModal.close")}
+              >
+                {t("verifiedModal.close")}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default RecordModal;
+export default VerifiedRecordModal;

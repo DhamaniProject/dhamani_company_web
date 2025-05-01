@@ -4,6 +4,8 @@ import Button from "../../../../components/ui/Button";
 import AuthInput from "../../../auth/common/AuthInput";
 import { Product, ProductStatus, ProductType } from "../types/types";
 import { useProductForm } from "../hooks/useProductForm";
+import { useCategories } from "../hooks/useCategories";
+import { useWarrantyProviders } from "../hooks/useWarrantyProviders";
 
 interface ProductViewProps {
   product: Product;
@@ -165,9 +167,7 @@ const ProductView: React.FC<ProductViewProps> = ({
           </strong>
           <p
             className={`text-sm ${
-              product.status === ProductStatus.Active
-                ? "text-green-600"
-                : "text-gray-600"
+              product.status === "active" ? "text-green-600" : "text-gray-600"
             }`}
           >
             {t(`table.status_${product.status}`)}
@@ -182,7 +182,7 @@ const ProductView: React.FC<ProductViewProps> = ({
         >
           {t("modal.submitUpdate")}
         </Button>
-        {product.status === ProductStatus.Active && (
+        {product.status === "active" && (
           <Button
             onClick={() => onChangeMode("deactivate")}
             className="py-2 px-4 text-sm font-medium rounded-lg border bg-gray-600 text-white hover:bg-gray-700"
@@ -191,7 +191,7 @@ const ProductView: React.FC<ProductViewProps> = ({
             {t("modal.submitDeactivation")}
           </Button>
         )}
-        {product.status === ProductStatus.Inactive && (
+        {product.status === "suspended" && (
           <Button
             onClick={() => onChangeMode("reactivate")}
             className="py-2 px-4 text-sm font-medium rounded-lg border bg-green-600 text-white hover:bg-green-700"
@@ -214,13 +214,20 @@ const ProductView: React.FC<ProductViewProps> = ({
 
 interface ProductUpdateFormProps {
   t: (key: string, options?: any) => string;
+  tCommon: (key: string) => string;
   formState: any;
+  editedFields: any;
   imagePreview: string | null;
   error: string | null;
-  setFormState: (state: any) => void;
+  setFormState: (state: any, edited?: any) => void;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleTypeChange: (type: ProductType) => void;
-  validateForm: () => boolean;
+  categories: Array<{ id: number; name: string }>;
+  isCategoriesLoading: boolean;
+  warrantyProviders: Array<{ id: string; name: string }>;
+  isWarrantyProvidersLoading: boolean;
+  warrantyProvidersError: string | null;
+  validateForm: (isUpdate?: boolean) => boolean;
   onSubmit: () => void;
   onCancel: () => void;
   isLoading: boolean;
@@ -228,260 +235,342 @@ interface ProductUpdateFormProps {
 
 const ProductUpdateForm: React.FC<ProductUpdateFormProps> = ({
   t,
+  tCommon,
   formState,
+  editedFields,
   imagePreview,
   error,
   setFormState,
   handleImageChange,
   handleTypeChange,
+  categories,
+  isCategoriesLoading,
+  warrantyProviders,
+  isWarrantyProvidersLoading,
+  warrantyProvidersError,
   validateForm,
   onSubmit,
   onCancel,
   isLoading,
-}) => (
-  <div className="grid gap-6">
-    <h3 className="text-lg font-medium text-gray-700">
-      {t("modal.updateSection")}
-    </h3>
-    {error && (
-      <div
-        className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium"
-        role="alert"
-        aria-live="polite"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+}) => {
+  // Check if any field is edited, including types and periods
+  const isFormEdited = Object.values(editedFields).some(
+    (value) => value === true
+  );
+
+  // Debug log to see which fields are marked as edited
+  console.log("Edited fields:", editedFields);
+  console.log("Is form edited:", isFormEdited);
+
+  return (
+    <div className="grid gap-6">
+      <h3 className="text-lg font-medium text-gray-700">
+        {t("modal.updateSection")}
+      </h3>
+      {error && (
+        <div
+          className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium"
+          role="alert"
+          aria-live="polite"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>{t(error)}</span>
-      </div>
-    )}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <AuthInput
-        id="updateProductNameEn"
-        label={t("modal.product_name_en")}
-        placeholder={t("modal.placeholder_name_en")}
-        value={formState.product_name.en}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            product_name: { ...formState.product_name, en: e.target.value },
-          })
-        }
-        required
-      />
-      <AuthInput
-        id="updateProductNameAr"
-        label={t("modal.product_name_ar")}
-        placeholder={t("modal.placeholder_name_ar")}
-        value={formState.product_name.ar}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            product_name: { ...formState.product_name, ar: e.target.value },
-          })
-        }
-        required
-      />
-      <AuthInput
-        id="updateProductDescriptionEn"
-        label={t("modal.product_description_en")}
-        placeholder={t("modal.placeholder_description_en")}
-        value={formState.product_description.en || ""}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            product_description: {
-              ...formState.product_description,
-              en: e.target.value || null,
-            },
-          })
-        }
-        type="textarea"
-      />
-      <AuthInput
-        id="updateProductDescriptionAr"
-        label={t("modal.product_description_ar")}
-        placeholder={t("modal.placeholder_description_ar")}
-        value={formState.product_description.ar || ""}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            product_description: {
-              ...formState.product_description,
-              ar: e.target.value || null,
-            },
-          })
-        }
-        type="textarea"
-      />
-      <AuthInput
-        id="updateProductTermsEn"
-        label={t("modal.terms_and_notes_en")}
-        placeholder={t("modal.placeholder_terms_en")}
-        value={formState.terms_and_notes.en || ""}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            terms_and_notes: {
-              ...formState.terms_and_notes,
-              en: e.target.value || null,
-            },
-          })
-        }
-        type="textarea"
-      />
-      <AuthInput
-        id="updateProductTermsAr"
-        label={t("modal.terms_and_notes_ar")}
-        placeholder={t("modal.placeholder_terms_ar")}
-        value={formState.terms_and_notes.ar || ""}
-        onChange={(e) =>
-          setFormState({
-            ...formState,
-            terms_and_notes: {
-              ...formState.terms_and_notes,
-              ar: e.target.value || null,
-            },
-          })
-        }
-        type="textarea"
-      />
-      <div>
-        <label
-          htmlFor="updateProductImage"
-          className="block text-sm mb-2 font-normal"
-        >
-          {t("modal.imageUpload")}
-        </label>
-        <input
-          id="updateProductImage"
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-primary)] file:text-white hover:file:bg-[var(--color-primary-hover)]"
-          aria-label={t("modal.imageUpload")}
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{t(error)}</span>
+        </div>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <AuthInput
+          id="updateProductNameEn"
+          label={t("modal.product_name_en")}
+          placeholder={t("modal.placeholder_name_en")}
+          value={formState.product_name.en}
+          onChange={(e) =>
+            setFormState(
+              {
+                product_name: { ...formState.product_name, en: e.target.value },
+              },
+              { product_name_en: true }
+            )
+          }
         />
-        {imagePreview && (
-          <img
-            src={imagePreview}
-            alt="Product preview"
-            className="mt-4 w-32 h-32 rounded-lg object-cover"
+        <AuthInput
+          id="updateProductNameAr"
+          label={t("modal.product_name_ar")}
+          placeholder={t("modal.placeholder_name_ar")}
+          value={formState.product_name.ar}
+          onChange={(e) =>
+            setFormState(
+              {
+                product_name: { ...formState.product_name, ar: e.target.value },
+              },
+              { product_name_ar: true }
+            )
+          }
+        />
+        <AuthInput
+          id="updateProductDescriptionEn"
+          label={t("modal.product_description_en")}
+          placeholder={t("modal.placeholder_description_en")}
+          value={formState.product_description.en || ""}
+          onChange={(e) =>
+            setFormState(
+              {
+                product_description: {
+                  ...formState.product_description,
+                  en: e.target.value || null,
+                },
+              },
+              { product_description_en: true }
+            )
+          }
+          type="textarea"
+        />
+        <AuthInput
+          id="updateProductDescriptionAr"
+          label={t("modal.product_description_ar")}
+          placeholder={t("modal.placeholder_description_ar")}
+          value={formState.product_description.ar || ""}
+          onChange={(e) =>
+            setFormState(
+              {
+                product_description: {
+                  ...formState.product_description,
+                  ar: e.target.value || null,
+                },
+              },
+              { product_description_ar: true }
+            )
+          }
+          type="textarea"
+        />
+        <AuthInput
+          id="updateProductTermsEn"
+          label={t("modal.terms_and_notes_en")}
+          placeholder={t("modal.placeholder_terms_en")}
+          value={formState.terms_and_notes.en || ""}
+          onChange={(e) =>
+            setFormState(
+              {
+                terms_and_notes: {
+                  ...formState.terms_and_notes,
+                  en: e.target.value || null,
+                },
+              },
+              { terms_and_notes_en: true }
+            )
+          }
+          type="textarea"
+        />
+        <AuthInput
+          id="updateProductTermsAr"
+          label={t("modal.terms_and_notes_ar")}
+          placeholder={t("modal.placeholder_terms_ar")}
+          value={formState.terms_and_notes.ar || ""}
+          onChange={(e) =>
+            setFormState(
+              {
+                terms_and_notes: {
+                  ...formState.terms_and_notes,
+                  ar: e.target.value || null,
+                },
+              },
+              { terms_and_notes_ar: true }
+            )
+          }
+          type="textarea"
+        />
+        <div>
+          <label
+            htmlFor="updateProductImage"
+            className="block text-sm mb-2 font-normal"
+          >
+            {t("modal.imageUpload")}
+          </label>
+          <input
+            id="updateProductImage"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-primary)] file:text-white hover:file:bg-[var(--color-primary-hover)]"
+            aria-label={t("modal.imageUpload")}
           />
-        )}
-      </div>
-      <div>
-        <label className="block text-sm mb-2 font-normal">
-          {t("modal.types")}
-        </label>
-        <div className="flex flex-col gap-2">
-          {Object.values(ProductType).map((type) => (
-            <label key={type} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formState.types.includes(type)}
-                onChange={() => handleTypeChange(type)}
-                className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300 rounded"
-              />
-              <span className="text-sm">{t(`table.type_${type}`)}</span>
-            </label>
-          ))}
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Product preview"
+              className="mt-4 w-32 h-32 rounded-lg object-cover"
+            />
+          )}
+        </div>
+        <div>
+          <label className="block text-sm mb-2 font-normal">
+            {t("modal.types")}
+          </label>
+          <div className="flex flex-col gap-2">
+            {Object.values(ProductType).map((type) => (
+              <label key={type} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formState.types.includes(type)}
+                  onChange={() => handleTypeChange(type)}
+                  className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-gray-300 rounded"
+                />
+                <span className="text-sm">{t(`table.type_${type}`)}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <AuthInput
+          id="updateProductSku"
+          label={t("modal.sku")}
+          placeholder={t("modal.placeholder_sku")}
+          value={formState.sku}
+          onChange={(e) => setFormState({ sku: e.target.value }, { sku: true })}
+        />
+        <AuthInput
+          id="updateProductUpc"
+          label={t("modal.upc")}
+          placeholder={t("modal.placeholder_upc")}
+          value={formState.upc}
+          onChange={(e) => setFormState({ upc: e.target.value }, { upc: true })}
+        />
+        <div>
+          <label
+            htmlFor="updateProductCategoryId"
+            className="block text-sm mb-2 font-normal"
+          >
+            {t("modal.category")}
+          </label>
+          <select
+            id="updateProductCategoryId"
+            className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] w-full"
+            value={formState.category_id}
+            onChange={(e) =>
+              setFormState(
+                { category_id: e.target.value },
+                { category_id: true }
+              )
+            }
+            disabled={isCategoriesLoading}
+            aria-label={t("modal.category")}
+          >
+            <option value="" disabled>
+              {t("modal.selectCategory")}
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <AuthInput
+          id="updateProductWarrantyPeriod"
+          label={t("modal.warrantyPeriod")}
+          placeholder={t("modal.placeholder_warranty_period")}
+          type="number"
+          min="0"
+          value={formState.warrantyPeriod}
+          onChange={(e) =>
+            setFormState(
+              { warrantyPeriod: e.target.value },
+              { warrantyPeriod: true }
+            )
+          }
+          disabled={!formState.types.includes(ProductType.Warranty)}
+        />
+        <AuthInput
+          id="updateProductReturnPeriod"
+          label={t("modal.returnPeriod")}
+          placeholder={t("modal.placeholder_return_period")}
+          type="number"
+          min="0"
+          value={formState.returnPeriod}
+          onChange={(e) =>
+            setFormState(
+              { returnPeriod: e.target.value },
+              { returnPeriod: true }
+            )
+          }
+          disabled={!formState.types.includes(ProductType.Return)}
+        />
+        <AuthInput
+          id="updateProductExchangePeriod"
+          label={t("modal.exchangePeriod")}
+          placeholder={t("modal.placeholder_exchange_period")}
+          type="number"
+          min="0"
+          value={formState.exchangePeriod}
+          onChange={(e) =>
+            setFormState(
+              { exchangePeriod: e.target.value },
+              { exchangePeriod: true }
+            )
+          }
+          disabled={!formState.types.includes(ProductType.Exchange)}
+        />
+        <div>
+          <label
+            htmlFor="updateProductWarrantyProvider"
+            className="block text-sm mb-2 font-normal"
+          >
+            {t("modal.warrantyProvider")}
+          </label>
+          <select
+            id="updateProductWarrantyProvider"
+            className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] w-full"
+            value={formState.warrantyProvider}
+            onChange={(e) =>
+              setFormState(
+                { warrantyProvider: e.target.value },
+                { warrantyProvider: true }
+              )
+            }
+            disabled={isWarrantyProvidersLoading || !!warrantyProvidersError}
+            aria-label={t("modal.warrantyProvider")}
+          >
+            <option value="">{t("modal.noWarrantyProvider")}</option>
+            {warrantyProviders.map((provider) => (
+              <option key={provider.id} value={provider.id}>
+                {provider.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-      <AuthInput
-        id="updateProductSku"
-        label={t("modal.sku")}
-        placeholder={t("modal.placeholder_sku")}
-        value={formState.sku}
-        onChange={(e) => setFormState({ ...formState, sku: e.target.value })}
-        required
-      />
-      <AuthInput
-        id="updateProductUpc"
-        label={t("modal.upc")}
-        placeholder={t("modal.placeholder_upc")}
-        value={formState.upc}
-        onChange={(e) => setFormState({ ...formState, upc: e.target.value })}
-      />
-      <AuthInput
-        id="updateProductWarrantyPeriod"
-        label={t("modal.warrantyPeriod")}
-        placeholder={t("modal.placeholder_warranty_period")}
-        type="number"
-        min="0"
-        value={formState.warrantyPeriod}
-        onChange={(e) =>
-          setFormState({ ...formState, warrantyPeriod: e.target.value })
-        }
-        required={formState.types.includes(ProductType.Warranty)}
-        disabled={!formState.types.includes(ProductType.Warranty)}
-      />
-      <AuthInput
-        id="updateProductReturnPeriod"
-        label={t("modal.returnPeriod")}
-        placeholder={t("modal.placeholder_return_period")}
-        type="number"
-        min="0"
-        value={formState.returnPeriod}
-        onChange={(e) =>
-          setFormState({ ...formState, returnPeriod: e.target.value })
-        }
-        required={formState.types.includes(ProductType.Return)}
-        disabled={!formState.types.includes(ProductType.Return)}
-      />
-      <AuthInput
-        id="updateProductExchangePeriod"
-        label={t("modal.exchangePeriod")}
-        placeholder={t("modal.placeholder_exchange_period")}
-        type="number"
-        min="0"
-        value={formState.exchangePeriod}
-        onChange={(e) =>
-          setFormState({ ...formState, exchangePeriod: e.target.value })
-        }
-        required={formState.types.includes(ProductType.Exchange)}
-        disabled={!formState.types.includes(ProductType.Exchange)}
-      />
-      <AuthInput
-        id="updateProductWarrantyProvider"
-        label={t("modal.warrantyProvider")}
-        placeholder={t("modal.placeholder_warranty_provider")}
-        value={formState.warrantyProvider}
-        onChange={(e) =>
-          setFormState({ ...formState, warrantyProvider: e.target.value })
-        }
-      />
+      <div className="mt-4 flex justify-end gap-3">
+        <Button
+          onClick={onSubmit}
+          className="py-2 px-4 text-sm font-medium rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
+          disabled={isLoading || !isFormEdited}
+          aria-label={t("modal.submitUpdate")}
+        >
+          {t("modal.submitUpdate")}
+        </Button>
+        <Button
+          onClick={onCancel}
+          className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+          disabled={isLoading}
+          aria-label={t("modal.close")}
+        >
+          {t("modal.close")}
+        </Button>
+      </div>
     </div>
-    <div className="mt-4 flex justify-end gap-3">
-      <Button
-        onClick={onSubmit}
-        className="py-2 px-4 text-sm font-medium rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
-        disabled={isLoading}
-        aria-label={t("modal.submitUpdate")}
-      >
-        {t("modal.submitUpdate")}
-      </Button>
-      <Button
-        onClick={onCancel}
-        className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
-        disabled={isLoading}
-        aria-label={t("modal.close")}
-      >
-        {t("modal.close")}
-      </Button>
-    </div>
-  </div>
-);
+  );
+};
 
 interface ConfirmDialogProps {
   t: (key: string, options?: any) => string;
@@ -553,66 +642,85 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const { t: tCommon } = useTranslation("common");
   const {
     formState,
+    editedFields,
     imagePreview,
     error,
+    setError,
     setFormState,
     handleImageChange,
     handleTypeChange,
     validateForm,
   } = useProductForm(product);
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
+  const {
+    warrantyProviders,
+    isLoading: isWarrantyProvidersLoading,
+    error: warrantyProvidersError,
+  } = useWarrantyProviders();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
-    if (!validateForm()) return;
+    if (!validateForm(true)) return;
     onChangeMode("confirmUpdate");
   };
 
   const handleConfirmUpdate = async () => {
     setIsLoading(true);
     try {
-      await onUpdate(product.id, {
-        product_name: formState.product_name,
-        product_description:
-          formState.product_description.en || formState.product_description.ar
-            ? {
-                en: formState.product_description.en || null,
-                ar: formState.product_description.ar || null,
-              }
-            : undefined,
-        terms_and_notes:
-          formState.terms_and_notes.en || formState.terms_and_notes.ar
-            ? {
-                en: formState.terms_and_notes.en || null,
-                ar: formState.terms_and_notes.ar || null,
-              }
-            : undefined,
-        product_image: formState.product_image,
-        types: formState.types,
-        sku: formState.sku,
-        upc: formState.upc || null,
-        category: {
-          ...product.category,
-          category_id: parseInt(formState.category_id),
-        },
-        warrantyPeriod: formState.types.includes(ProductType.Warranty)
-          ? parseInt(formState.warrantyPeriod)
-          : 0,
-        returnPeriod: formState.types.includes(ProductType.Return)
-          ? parseInt(formState.returnPeriod)
-          : 0,
-        exchangePeriod: formState.types.includes(ProductType.Exchange)
-          ? parseInt(formState.exchangePeriod)
-          : 0,
-        warrantyProvider: formState.warrantyProvider
-          ? {
-              ...product.warrantyProvider,
-              provider_id: formState.warrantyProvider,
-            }
-          : null,
-      });
+      const updateData: any = {};
+      if (editedFields.product_name_en || editedFields.product_name_ar) {
+        updateData.product_name = {
+          ...(editedFields.product_name_en && {
+            en: formState.product_name.en,
+          }),
+          ...(editedFields.product_name_ar && {
+            ar: formState.product_name.ar,
+          }),
+        };
+      }
+      if (
+        editedFields.product_description_en ||
+        editedFields.product_description_ar
+      ) {
+        updateData.product_description = {
+          ...(editedFields.product_description_en && {
+            en: formState.product_description.en || null,
+          }),
+          ...(editedFields.product_description_ar && {
+            ar: formState.product_description.ar || null,
+          }),
+        };
+      }
+      if (editedFields.terms_and_notes_en || editedFields.terms_and_notes_ar) {
+        updateData.terms_and_notes = {
+          ...(editedFields.terms_and_notes_en && {
+            en: formState.terms_and_notes.en || null,
+          }),
+          ...(editedFields.terms_and_notes_ar && {
+            ar: formState.terms_and_notes.ar || null,
+          }),
+        };
+      }
+      if (editedFields.product_image)
+        updateData.product_image = formState.product_image;
+      if (editedFields.types) updateData.types = formState.types;
+      if (editedFields.sku) updateData.sku = formState.sku;
+      if (editedFields.upc) updateData.upc = formState.upc;
+      if (editedFields.category_id)
+        updateData.category_id = formState.category_id;
+      if (editedFields.warrantyPeriod)
+        updateData.warrantyPeriod = formState.warrantyPeriod;
+      if (editedFields.returnPeriod)
+        updateData.returnPeriod = formState.returnPeriod;
+      if (editedFields.exchangePeriod)
+        updateData.exchangePeriod = formState.exchangePeriod;
+      if (editedFields.warrantyProvider)
+        updateData.warrantyProvider = formState.warrantyProvider;
+
+      await onUpdate(product.id, updateData);
       onClose();
     } catch (err: any) {
-      setError(err.message || "error");
+      setError(err.message || "updateProduct.error");
     } finally {
       setIsLoading(false);
     }
@@ -636,7 +744,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       await onReactivate(product.id);
       onClose();
     } catch (err: any) {
-      setError(err.message || "error");
+      const errorMessage = t(err.message || "error");
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -649,7 +758,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         role="dialog"
         aria-labelledby="modal-title"
       >
-        {/* Header */}
         <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
           <h2 id="modal-title" className="text-xl font-semibold text-gray-800">
             {t(`modal.title_${mode}`)}
@@ -689,12 +797,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {mode === "update" && (
           <ProductUpdateForm
             t={t}
+            tCommon={tCommon}
             formState={formState}
+            editedFields={editedFields}
             imagePreview={imagePreview}
             error={error}
             setFormState={setFormState}
             handleImageChange={handleImageChange}
             handleTypeChange={handleTypeChange}
+            categories={categories}
+            isCategoriesLoading={isCategoriesLoading}
+            warrantyProviders={warrantyProviders}
+            isWarrantyProvidersLoading={isWarrantyProvidersLoading}
+            warrantyProvidersError={warrantyProvidersError}
             validateForm={validateForm}
             onSubmit={handleSubmit}
             onCancel={() => onChangeMode("view")}

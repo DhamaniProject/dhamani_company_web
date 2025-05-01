@@ -1,6 +1,6 @@
 export enum ProductStatus {
   Active = "active",
-  Inactive = "inactive",
+  Suspended = "suspended",
   Discontinued = "discontinued",
 }
 
@@ -84,6 +84,6 @@ export interface Product {
   returnPeriod: number;
   exchangePeriod: number;
   warrantyProvider: WarrantyProvider | null;
-  status: ProductStatus;
+  status: ProductStatus; // Updated to use new enum values
   translations: ProductTranslation[];
 }

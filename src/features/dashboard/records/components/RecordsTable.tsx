@@ -1,44 +1,48 @@
-import React, { useEffect } from "react";
+// src/features/dashboard/records/components/RecordsTable.tsx
+
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
 import RecordModal from "./RecordModal";
+import VerifiedRecordModal from "./VerifiedRecordModal";
+import VerifyRecordModal from "./VerifyRecordModal";
 import { useRecordsTable } from "../hooks/useRecordsTable";
+import { Record } from "../types/types";
 
 const RecordsTable: React.FC = () => {
   const { t, i18n } = useTranslation("records");
   const { t: tCommon } = useTranslation("common");
   const {
     records,
+    allRecords,
     phoneFilter,
-    verificationCodeFilter,
-    typeFilter,
-    statusFilter,
     isLoading,
     successMessage,
     error,
     currentPage,
     totalPages,
     setPhoneFilter,
-    setVerificationCodeFilter,
-    setTypeFilter,
-    setStatusFilter,
     setCurrentPage,
     fetchRecords,
-    verifyRecord,
     selectedRecord,
     setSelectedRecord,
   } = useRecordsTable();
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [verifiedRecord, setVerifiedRecord] = useState<Record | null>(null);
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
     fetchRecords();
-  }, [
-    phoneFilter,
-    verificationCodeFilter,
-    typeFilter,
-    statusFilter,
-    currentPage,
-    fetchRecords,
-  ]);
+  }, [phoneFilter, currentPage, fetchRecords]);
+
+  const handlePhoneFilterChange = (value: string) => {
+    setPhoneError("");
+    const trimmedValue = value.trim();
+    if (trimmedValue && !/^\+?[0-9]\d{1,14}$/.test(trimmedValue)) {
+      setPhoneError("invalidPhoneFormat");
+    }
+    setPhoneFilter(trimmedValue);
+  };
 
   return (
     <div
@@ -55,57 +59,30 @@ const RecordsTable: React.FC = () => {
                   {t("table.title")}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Type Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    aria-label={t("table.type")}
-                  >
-                    <option value="all">{t("table.allTypes")}</option>
-                    <option value="warranty">{t("table.warranty")}</option>
-                    <option value="exchange">{t("table.exchange")}</option>
-                    <option value="return">{t("table.return")}</option>
-                  </select>
-                  {/* Status Filter */}
-                  <select
-                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    aria-label={t("table.status")}
-                  >
-                    <option value="all">{t("table.allStatuses")}</option>
-                    <option value="active">{t("table.status_active")}</option>
-                    <option value="inactive">
-                      {t("table.status_inactive")}
-                    </option>
-                  </select>
-                  {/* Phone Number Filter */}
                   <input
                     type="text"
                     className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                     placeholder={t("table.filterByPhone")}
                     value={phoneFilter}
-                    onChange={(e) => setPhoneFilter(e.target.value)}
+                    onChange={(e) => handlePhoneFilterChange(e.target.value)}
                     aria-label={t("table.filterByPhone")}
                   />
-                  {/* Verification Code Filter */}
-                  <input
-                    type="text"
-                    className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                    placeholder={t("table.filterByVerificationCode")}
-                    value={verificationCodeFilter}
-                    onChange={(e) => setVerificationCodeFilter(e.target.value)}
-                    aria-label={t("table.filterByVerificationCode")}
-                  />
-                  {/* Search Button */}
                   <Button
                     onClick={fetchRecords}
                     isLoading={isLoading}
                     disabled={isLoading}
+                    className="min-w-fit py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
                     aria-label={t("table.search")}
                   >
                     {isLoading ? tCommon("loading") : t("table.search")}
+                  </Button>
+                  <Button
+                    onClick={() => setShowVerifyModal(true)}
+                    className="min-w-fit py-2 px-4 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg transition-all"
+                    disabled={isLoading}
+                    aria-label={t("modal.verifyRecord")}
+                  >
+                    {t("modal.verifyRecord")}
                   </Button>
                 </div>
               </div>
@@ -133,7 +110,7 @@ const RecordsTable: React.FC = () => {
                   <span>{t(successMessage)}</span>
                 </div>
               )}
-              {error && (
+              {(error || phoneError) && (
                 <div
                   className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium m-4"
                   role="alert"
@@ -153,7 +130,7 @@ const RecordsTable: React.FC = () => {
                       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>{t(error)}</span>
+                  <span>{t(error || phoneError)}</span>
                 </div>
               )}
               {/* Table */}
@@ -177,7 +154,7 @@ const RecordsTable: React.FC = () => {
                     </th>
                     <th scope="col" className="px-6 py-3 text-start">
                       <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.date")}
+                        {t("table.startDate")}
                       </span>
                     </th>
                     <th scope="col" className="px-6 py-3 text-start">
@@ -196,7 +173,7 @@ const RecordsTable: React.FC = () => {
                   {records.length > 0 ? (
                     records.map((record) => (
                       <tr
-                        key={record.id}
+                        key={record.record_id}
                         onClick={() => setSelectedRecord(record)}
                         className="cursor-pointer hover:bg-gray-50"
                         role="button"
@@ -210,9 +187,16 @@ const RecordsTable: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-x-2">
                             <img
-                              src="https://via.placeholder.com/40"
+                              src={
+                                record.product_image ||
+                                "https://via.placeholder.com/40"
+                              }
                               alt={record.product}
-                              className="w-10 h-10 rounded-full"
+                              className="w-10 h-10 rounded-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src =
+                                  "https://via.placeholder.com/40";
+                              }}
                             />
                             <span className="text-sm text-gray-800 font-normal">
                               {record.product}
@@ -236,36 +220,44 @@ const RecordsTable: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-x-2">
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                record.type === "warranty"
-                                  ? "border-green-600 bg-green-600 text-white"
-                                  : "border-green-500 text-green-500 hover:bg-green-50"
-                              }`}
-                              aria-label={t("table.warranty")}
-                            >
-                              {t("table.warranty")}
-                            </button>
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                record.type === "exchange"
-                                  ? "border-pink-600 bg-pink-600 text-white"
-                                  : "border-pink-500 text-pink-500 hover:bg-pink-50"
-                              }`}
-                              aria-label={t("table.exchange")}
-                            >
-                              {t("table.exchange")}
-                            </button>
-                            <button
-                              className={`py-1 px-3 text-sm font-medium rounded-full border ${
-                                record.type === "return"
-                                  ? "border-gray-600 bg-gray-600 text-white"
-                                  : "border-gray-500 text-gray-500 hover:bg-gray-50"
-                              }`}
-                              aria-label={t("table.return")}
-                            >
-                              {t("table.return")}
-                            </button>
+                            {record.type ? (
+                              <>
+                                <button
+                                  className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                    record.type.includes("warranty")
+                                      ? "border-green-600 bg-green-600 text-white"
+                                      : "border-green-500 text-green-500 hover:bg-green-50"
+                                  }`}
+                                  aria-label={t("table.warranty")}
+                                >
+                                  {t("table.warranty")}
+                                </button>
+                                <button
+                                  className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                    record.type.includes("exchange")
+                                      ? "border-pink-600 bg-pink-600 text-white"
+                                      : "border-pink-500 text-pink-500 hover:bg-pink-50"
+                                  }`}
+                                  aria-label={t("table.exchange")}
+                                >
+                                  {t("table.exchange")}
+                                </button>
+                                <button
+                                  className={`py-1 px-3 text-sm font-medium rounded-full border ${
+                                    record.type.includes("return")
+                                      ? "border-gray-600 bg-gray-600 text-white"
+                                      : "border-gray-500 text-gray-500 hover:bg-gray-50"
+                                  }`}
+                                  aria-label={t("table.return")}
+                                >
+                                  {t("table.return")}
+                                </button>
+                              </>
+                            ) : (
+                              <span className="text-sm text-gray-500">
+                                {t("table.noTypes")}
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -332,21 +324,29 @@ const RecordsTable: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Modal */}
+      {/* Record Modal */}
       {selectedRecord && (
         <RecordModal
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
-          onVerify={verifyRecord}
-          onDeactivate={(id, code) => {
-            return new Promise((resolve, reject) => {
-              if (code === "VALID_CODE") {
-                resolve();
-              } else {
-                reject(new Error("invalidDeactivationCode"));
-              }
-            });
+        />
+      )}
+      {/* Verify Record Modal */}
+      {showVerifyModal && (
+        <VerifyRecordModal
+          onClose={() => setShowVerifyModal(false)}
+          onVerify={(record) => {
+            setVerifiedRecord(record);
+            setShowVerifyModal(false);
           }}
+          records={allRecords}
+        />
+      )}
+      {/* Verified Record Modal */}
+      {verifiedRecord && (
+        <VerifiedRecordModal
+          record={verifiedRecord}
+          onClose={() => setVerifiedRecord(null)}
         />
       )}
     </div>
