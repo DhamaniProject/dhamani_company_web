@@ -151,12 +151,6 @@ const RecordModal: React.FC<RecordModalProps> = ({ record, onClose }) => {
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.verificationCode")}
-              </strong>
-              <p className="text-sm text-gray-800">{record.verificationCode}</p>
-            </div>
-            <div>
-              <strong className="text-sm font-medium text-gray-600">
                 {t("modal.productDescription")}
               </strong>
               <p className="text-sm text-gray-800">

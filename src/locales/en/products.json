@@ -122,5 +122,11 @@
     "badRequestError": "Invalid product data provided",
     "serverError": "An error occurred while updating the product",
     "updateProductError": "Failed to update product"
+  },
+  "pagination": {
+    "pageStart": "Page",
+    "pageMiddle": "of",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

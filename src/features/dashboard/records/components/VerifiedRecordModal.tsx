@@ -1,9 +1,10 @@
 // src/features/dashboard/records/components/VerifiedRecordModal.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
 import AuthInput from "../../../auth/common/AuthInput";
+import { deactivateRecord } from "../services/recordService";
 
 interface Record {
   record_id: string;
@@ -49,17 +50,20 @@ interface Record {
 interface VerifiedRecordModalProps {
   record: Record;
   onClose: () => void;
+  onDeactivateSuccess?: () => void;
 }
 
 const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
   record,
   onClose,
+  onDeactivateSuccess,
 }) => {
   const { t, i18n } = useTranslation("records");
   const { t: tCommon } = useTranslation("common");
   const [deactivationCode, setDeactivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const currentLang = i18n.language === "ar" ? 2 : 1;
   const productTranslation = record.product_translations.find(
@@ -70,20 +74,41 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
   );
 
   const handleDeactivate = async () => {
+    setShowConfirmDialog(true);
+  };
+
+  const confirmDeactivate = async () => {
+    setShowConfirmDialog(false);
     setIsLoading(true);
     setError("");
     try {
-      if (deactivationCode !== "VALID_CODE") {
-        throw new Error("invalidDeactivationCode");
+      await deactivateRecord(deactivationCode);
+      if (onDeactivateSuccess) {
+        onDeactivateSuccess();
       }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       onClose();
     } catch (err: any) {
-      setError(err.message || "error");
+      setError(err.message || "verifiedModal.error");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const cancelDeactivate = () => {
+    setShowConfirmDialog(false);
+  };
+
+  useEffect(() => {
+    console.log("VerifiedRecordModal - Current language:", i18n.language);
+    console.log(
+      "VerifiedRecordModal - Translated verifiedModal.title:",
+      t("verifiedModal.title")
+    );
+    console.log(
+      "VerifiedRecordModal - Translated error (if any):",
+      error ? t(error) : "No error"
+    );
+  }, [i18n.language, error, t]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -92,7 +117,41 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
         role="dialog"
         aria-labelledby="verified-modal-title"
       >
-        {/* Header */}
+        {showConfirmDialog && (
+          <div className="absolute inset-0 z-60 flex items-center justify-center">
+            <div
+              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border border-gray-200"
+              role="dialog"
+              aria-labelledby="confirm-modal-title"
+            >
+              <h3
+                id="confirm-modal-title"
+                className="text-lg font-semibold text-gray-800 mb-4"
+              >
+                {t("verifiedModal.confirmDeactivationTitle")}
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                {t("verifiedModal.confirmDeactivationMessage")}
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button
+                  onClick={cancelDeactivate}
+                  className="py-2 px-4 text-sm font-medium rounded-lg border bg-gray-200 hover:bg-gray-300"
+                  aria-label={t("verifiedModal.cancel")}
+                >
+                  {t("verifiedModal.cancel")}
+                </Button>
+                <Button
+                  onClick={confirmDeactivate}
+                  className="py-2 px-4 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700"
+                  aria-label={t("verifiedModal.deactivate")}
+                >
+                  {t("verifiedModal.deactivate")}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
           <h2
             id="verified-modal-title"
@@ -122,7 +181,6 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
             </svg>
           </button>
         </div>
-        {/* Error Message */}
         {error && (
           <div
             className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium mb-4"
@@ -143,10 +201,9 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>{t(error)}</span>
+            <span>{t(`verifiedModal.${error}`)}</span>
           </div>
         )}
-        {/* Record Details */}
         <div className="grid gap-4">
           <h3 className="text-lg font-medium text-gray-700">
             {t("verifiedModal.title")}
@@ -199,12 +256,6 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
               >
                 {t(`table.status_${record.status}`)}
               </p>
-            </div>
-            <div>
-              <strong className="text-sm font-medium text-gray-600">
-                {t("verifiedModal.verificationCode")}
-              </strong>
-              <p className="text-sm text-gray-800">{record.verificationCode}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
@@ -304,7 +355,6 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
             </div>
           </div>
         </div>
-        {/* Deactivation Section */}
         {record.status === "active" && (
           <div className="mt-6 border-t border-gray-200 pt-4">
             <h3 className="text-lg font-medium text-gray-700 mb-4">

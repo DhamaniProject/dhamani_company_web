@@ -18,6 +18,9 @@ import NotificationsPage from "../features/dashboard/notifications/Notifications
 import ReviewsPage from "../features/dashboard/reviews/ReviewsPage";
 // Users Page
 import UsersPage from "../features/dashboard/users/UsersPage";
+
+import WarrantyProvidersPage from "../features/dashboard/warranty_providers/WarrantyProvidersPage";
+
 import ProtectedRoute from "./ProtectedRoute";
 import { ROUTES } from "../constants/routes";
 
@@ -49,6 +52,7 @@ const AppRoutes = () => {
             { path: "notifications", element: <NotificationsPage /> },
             { path: "reviews", element: <ReviewsPage /> },
             { path: "users", element: <UsersPage /> },
+            { path: "warrantyProviders", element: <WarrantyProvidersPage /> },
           ],
         },
       ],

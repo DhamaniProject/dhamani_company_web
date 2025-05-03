@@ -1,9 +1,9 @@
 {
   "page": {
-    "title": "User Management"
+    "title": "Users"
   },
   "table": {
-    "title": "User Management",
+    "title": "Company Users",
     "fullName": "Full Name",
     "email": "Email",
     "status": "Status",
@@ -13,20 +13,21 @@
     "addUser": "Add User"
   },
   "modal": {
-    "title": "Add New User",
+    "title": "Add User",
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email",
     "password": "Password",
-    "addUser": "Add User",
-    "cancel": "Cancel",
-    "close": "Close modal",
+    "status": "Status",
     "placeholders": {
       "firstName": "Enter first name",
       "lastName": "Enter last name",
       "email": "Enter email",
-      "password": "Enter password"
+      "password": "Enter password",
+      "status": "Select status"
     },
+    "addUser": "Add User",
+    "cancel": "Cancel",
     "errors": {
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required",
@@ -37,13 +38,31 @@
       "passwordUpperCase": "Password must contain at least one uppercase letter",
       "passwordLowerCase": "Password must contain at least one lowercase letter",
       "passwordDigit": "Password must contain at least one digit",
-      "passwordSpecialChar": "Password must contain at least one special character (@$!%*#?&)"
+      "passwordSpecialChar": "Password must contain at least one special character (@$!%*#?&)",
+      "statusRequired": "Status is required"
     }
   },
   "updateModal": {
     "title": "Update User",
     "updateUser": "Update User"
   },
+  "pagination": {
+    "pageStart": "Page",
+    "pageMiddle": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
   "userAddedSuccess": "User added successfully",
-  "userUpdatedSuccess": "User updated successfully"
+  "userUpdatedSuccess": "User updated successfully",
+  "errors": {
+    "fetchUsersError": "Failed to load users",
+    "updateUserError": "Failed to update user",
+    "createUserError": "Failed to create user",
+    "noCompanyId": "No company ID available",
+    "forbiddenError": "You are not authorized to perform this action",
+    "badRequestError": "Invalid request",
+    "notFoundError": "User or company not found",
+    "methodNotAllowedError": "The requested method is not allowed for this endpoint",
+    "emailAlreadyExistsError": "This email is already registered"
+  }
 }

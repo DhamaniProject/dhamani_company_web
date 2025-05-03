@@ -20,7 +20,8 @@
     "noTypes": "لا أنواع"
   },
   "pagination": {
-    "page": "الصفحة {current} من {total}",
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
     "previous": "السابق",
     "next": "التالي"
   },
@@ -46,6 +47,24 @@
     "termsAndNotes": "الشروط والملاحظات",
     "notes": "ملاحظات",
     "verifyRecord": "تحقق من السجل",
+    "addRecord": "إضافة سجل",
+    "addRecordTitle": "إضافة سجل جديد",
+    "userPhoneNumber": "رقم هاتف المستخدم",
+    "userPhoneNumberPlaceholder": "أدخل رقم الهاتف",
+    "notesEn": "ملاحظات (بالإنجليزية)",
+    "notesEnPlaceholder": "أدخل ملاحظات باللغة الإنجليزية",
+    "notesAr": "ملاحظات (بالعربية)",
+    "notesArPlaceholder": "أدخل ملاحظات باللغة العربية",
+    "product": "المنتج",
+    "productSearchPlaceholder": "أدخل SKU أو UPC",
+    "selectProduct": "اختر منتجًا",
+    "productRequired": "يرجى اختيار منتج",
+    "fetchProductsError": "فشل في جلب المنتجات",
+    "addRecordError": "فشل في إضافة السجل",
+    "forbiddenError": "ليس لديك إذن لتنفيذ هذا الإجراء",
+    "notFoundError": "المورد غير موجود",
+    "serverError": "حدث خطأ في الخادم",
+    "noCompanyId": "معرف الشركة مفقود",
     "close": "إغلاق"
   },
   "verifyModal": {
@@ -55,7 +74,10 @@
     "submitVerification": "إرسال التحقق",
     "close": "إغلاق",
     "invalidVerificationCode": "رمز التحقق غير صالح",
-    "error": "حدث خطأ"
+    "error": "حدث خطأ",
+    "verifyRecordError": "فشل في التحقق من السجل",
+    "forbiddenVerifyError": "ليس لديك إذن للتحقق من هذا السجل",
+    "recordNotFoundError": "لم يتم العثور على السجل أو رمز التحقق غير صالح"
   },
   "verifiedModal": {
     "title": "تفاصيل السجل الموثق",
@@ -83,9 +105,17 @@
     "deactivationCodePlaceholder": "أدخل رمز إلغاء التنشيط",
     "deactivate": "إلغاء التنشيط",
     "close": "إغلاق",
+    "cancel": "إلغاء",
+    "confirmDeactivationTitle": "تأكيد إلغاء التنشيط",
+    "confirmDeactivationMessage": "هل أنت متأكد أنك تريد إلغاء تنشيط هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.",
     "invalidDeactivationCode": "رمز إلغاء التنشيط غير صالح",
-    "error": "حدث خطأ"
+    "error": "حدث خطأ",
+    "deactivateRecordError": "فشل في إلغاء تنشيط السجل",
+    "forbiddenDeactivateError": "ليس لديك إذن لإلغاء تنشيط هذا السجل أو السجل تم إلغاء تنشيطه بالفعل",
+    "recordNotFoundDeactivateError": "لم يتم العثور على السجل أو رمز إلغاء التنشيط غير صالح"
   },
+  "addRecordSuccess": "تم إضافة السجل بنجاح",
+  "deactivateSuccess": "تم إلغاء تنشيط السجل بنجاح",
   "verifySuccess": "تم التحقق من السجل بنجاح",
   "error": "حدث خطأ",
   "fetchRecordsError": "فشل في جلب السجلات",

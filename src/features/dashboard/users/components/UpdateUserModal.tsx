@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  status: "Active" | "Inactive";
-}
+import { User } from "../types/types";
 
 interface UpdateUserModalProps {
   user: User;
   onClose: () => void;
-  onUpdate: (user: Omit<User, "status">) => void;
+  onUpdate: (user: User) => void;
 }
 
 const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
@@ -24,12 +17,14 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [email, setEmail] = useState(user.email);
+  const [status, setStatus] = useState<"Active" | "Inactive">(user.status);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     setFirstName(user.firstName);
     setLastName(user.lastName);
     setEmail(user.email);
+    setStatus(user.status);
   }, [user]);
 
   const validateEmail = (email: string) => {
@@ -41,7 +36,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
     const newErrors: { [key: string]: string } = {};
 
     // Validate Email
-    if (!validateEmail(email)) {
+    if (email && !validateEmail(email)) {
       newErrors.email = t("modal.errors.invalidEmail");
     }
 
@@ -49,11 +44,12 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
     if (!firstName) newErrors.firstName = t("modal.errors.firstNameRequired");
     if (!lastName) newErrors.lastName = t("modal.errors.lastNameRequired");
     if (!email) newErrors.email = t("modal.errors.emailRequired");
+    if (!status) newErrors.status = t("modal.errors.statusRequired");
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onUpdate({ id: user.id, firstName, lastName, email });
+      onUpdate({ id: user.id, firstName, lastName, email, status });
     }
   };
 
@@ -99,6 +95,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
               placeholder={t("modal.placeholders.firstName")}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)] focus:ring-opacity-50 text-base py-2"
               aria-label={t("modal.firstName")}
+              aria-invalid={!!errors.firstName}
             />
             {errors.firstName && (
               <p className="mt-2 text-sm text-red-600">{errors.firstName}</p>
@@ -115,6 +112,7 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
               placeholder={t("modal.placeholders.lastName")}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)] focus:ring-opacity-50 text-base py-2"
               aria-label={t("modal.lastName")}
+              aria-invalid={!!errors.lastName}
             />
             {errors.lastName && (
               <p className="mt-2 text-sm text-red-600">{errors.lastName}</p>
@@ -131,9 +129,33 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
               placeholder={t("modal.placeholders.email")}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)] focus:ring-opacity-50 text-base py-2"
               aria-label={t("modal.email")}
+              aria-invalid={!!errors.email}
             />
             {errors.email && (
               <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-base font-medium text-gray-700">
+              {t("modal.status")}
+            </label>
+            <select
+              value={status}
+              onChange={(e) =>
+                setStatus(e.target.value as "Active" | "Inactive")
+              }
+              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)] focus:ring-opacity-50 text-base py-2"
+              aria-label={t("modal.status")}
+              aria-invalid={!!errors.status}
+            >
+              <option value="" disabled>
+                {t("modal.placeholders.status")}
+              </option>
+              <option value="Active">{t("table.status_active")}</option>
+              <option value="Inactive">{t("table.status_inactive")}</option>
+            </select>
+            {errors.status && (
+              <p className="mt-2 text-sm text-red-600">{errors.status}</p>
             )}
           </div>
         </div>

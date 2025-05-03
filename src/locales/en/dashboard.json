@@ -6,6 +6,7 @@
     "productsManagement": "Products Management",
     "notificationsManagement": "Notifications Management",
     "userManagement": "User Management",
+    "warrantyProviders":"Warranty Providers",
     "reviews": "Reviews",
     "logout": "Log out"
   },

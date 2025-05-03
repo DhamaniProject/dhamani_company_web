@@ -1,13 +1,55 @@
 {
   "page": {
-    "title": "Notifications Management"
+    "title": "Notifications"
+  },
+  "addModal": {
+    "title": "Add New Notification",
+    "targetReceivers": "Target Receivers",
+    "placeholder_target": "Select Target Receivers",
+    "notificationType": "Notification Type",
+    "placeholder_type": "Select Notification Type",
+    "messageTitleEn": "Message Title (English)",
+    "placeholder_title_en": "Enter Message Title in English",
+    "messageTitleAr": "Message Title (Arabic)",
+    "placeholder_title_ar": "Enter Message Title in Arabic",
+    "messageContentEn": "Message Content (English)",
+    "placeholder_content_en": "Enter Message Content in English",
+    "messageContentAr": "Message Content (Arabic)",
+    "placeholder_content_ar": "Enter Message Content in Arabic",
+    "skuOrUpc": "SKU or UPC",
+    "placeholder_skuOrUpc": "Enter SKU or UPC",
+    "submit": "Submit",
+    "close": "Close",
+    "confirmAdd": "Confirm Notification Creation",
+    "addConfirmMessage": "Are you sure you want to create this notification?",
+    "cancel": "Cancel",
+    "product": "Product",
+    "placeholder_product": "Choose Product"
+  },
+  "modal": {
+    "title_view": "Notification Details",
+    "targetReceivers": "Target Receivers",
+    "notificationType": "Notification Type",
+    "product": "Product",
+    "sentBy": "Sent By",
+    "messageTitleEn": "Message Title (English)",
+    "messageTitleAr": "Message Title (Arabic)",
+    "messageContentEn": "Message Content (English)",
+    "messageContentAr": "Message Content (Arabic)",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "readStatus": "Read Status",
+    "close": "Close",
+    "placeholder_target": "Select Target Receivers",
+    "placeholder_type": "Select Notification Type",
+    "placeholder_product": "Select Product"
   },
   "table": {
-    "title": "Notifications Management",
+    "title": "Notifications",
     "addNotification": "Add Notification",
-    "targetReceivers": "Target Receivers",
-    "notificationType": "Type",
+    "notificationType": "Notification Type",
     "messageTitle": "Message Title",
+    "messageContent": "Message Content",
     "createdAt": "Created At",
     "noNotifications": "No notifications found",
     "target_all_users": "All Users",
@@ -21,38 +63,27 @@
     "type_EXCHANGE_PERIOD": "Exchange Period",
     "type_RECALL": "Recall"
   },
-  "modal": {
-    "title_view": "Notification Details",
-    "close": "Close",
-    "targetReceivers": "Target Receivers",
-    "notificationType": "Notification Type",
-    "product": "Product",
-    "messageTitleEn": "Message Title (English)",
-    "messageTitleAr": "Message Title (Arabic)",
-    "messageContentEn": "Message Content (English)",
-    "messageContentAr": "Message Content (Arabic)",
-    "createdAt": "Created At"
+  "success": {
+    "notificationCreated": "Notification created successfully"
   },
-  "addModal": {
-    "title": "Create Notification",
-    "targetReceivers": "Target Receivers",
-    "product": "Product",
-    "notificationType": "Notification Type",
-    "messageTitleEn": "Message Title (English)",
-    "messageTitleAr": "Message Title (Arabic)",
-    "messageContentEn": "Message Content (English)",
-    "messageContentAr": "Message Content (Arabic)",
-    "placeholder_target": "Select Target Receivers",
-    "placeholder_product": "Select Product",
-    "placeholder_type": "Select Notification Type",
-    "placeholder_title_en": "Enter title in English",
-    "placeholder_title_ar": "Enter title in Arabic",
-    "placeholder_content_en": "Enter content in English",
-    "placeholder_content_ar": "Enter content in Arabic",
-    "submit": "Create Notification"
+  "errors": {
+    "invalidResponseFormat": "Invalid response format from server",
+    "missingRequiredFields": "Missing required notification fields",
+    "forbiddenError": "You are not authorized to access this resource",
+    "fetchNotificationsError": "Failed to fetch notifications",
+    "noCompanyId": "Company ID is not available",
+    "validationError": "Please fill all required fields",
+    "notFoundError": "No users found for the specified target",
+    "serverError": "Server error occurred while creating the notification",
+    "createNotificationError": "Failed to create notification",
+    "fetchProductsError": "Failed to fetch products",
+    "invalidProductResponseFormat": "Invalid product response format from server",
+    "invalidNotificationType": "Invalid notification type received from server"
   },
-  "notificationCreated": "Notification created successfully",
-  "fetchError": "Failed to fetch notifications",
-  "createError": "Failed to create notification",
-  "validationError": "Please fill all required fields correctly"
+  "pagination": {
+    "pageStart": "Page",
+    "pageMiddle": "of",
+    "previous": "Previous",
+    "next": "Next"
+  }
 }

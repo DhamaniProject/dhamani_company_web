@@ -20,7 +20,8 @@
     "noTypes": "No Types"
   },
   "pagination": {
-    "page": "Page {current} of {total}",
+    "pageStart": "Page",
+    "pageMiddle": "of",
     "previous": "Previous",
     "next": "Next"
   },
@@ -46,6 +47,24 @@
     "termsAndNotes": "Terms and Notes",
     "notes": "Notes",
     "verifyRecord": "Verify Record",
+    "addRecord": "Add Record",
+    "addRecordTitle": "Add New Record",
+    "userPhoneNumber": "User Phone Number",
+    "userPhoneNumberPlaceholder": "Enter phone number",
+    "notesEn": "Notes (English)",
+    "notesEnPlaceholder": "Enter notes in English",
+    "notesAr": "Notes (Arabic)",
+    "notesArPlaceholder": "Enter notes in Arabic",
+    "product": "Product",
+    "productSearchPlaceholder": "Enter the SKU or UPC",
+    "selectProduct": "Select a product",
+    "productRequired": "Please select a product",
+    "fetchProductsError": "Failed to fetch products",
+    "addRecordError": "Failed to add record",
+    "forbiddenError": "You do not have permission to perform this action",
+    "notFoundError": "Resource not found",
+    "serverError": "Server error occurred",
+    "noCompanyId": "Company ID is missing",
     "close": "Close"
   },
   "verifyModal": {
@@ -55,7 +74,10 @@
     "submitVerification": "Submit Verification",
     "close": "Close",
     "invalidVerificationCode": "Invalid verification code",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "verifyRecordError": "Failed to verify record",
+    "forbiddenVerifyError": "You do not have permission to verify this record",
+    "recordNotFoundError": "Record not found or invalid verification code"
   },
   "verifiedModal": {
     "title": "Verified Record Details",
@@ -83,9 +105,17 @@
     "deactivationCodePlaceholder": "Enter deactivation code",
     "deactivate": "Deactivate",
     "close": "Close",
+    "cancel": "Cancel",
+    "confirmDeactivationTitle": "Confirm Deactivation",
+    "confirmDeactivationMessage": "Are you sure you want to deactivate this record? This action cannot be undone.",
     "invalidDeactivationCode": "Invalid deactivation code",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "deactivateRecordError": "Failed to deactivate record",
+    "forbiddenDeactivateError": "You do not have permission to deactivate this record or the record is already deactivated",
+    "recordNotFoundDeactivateError": "Record not found or invalid deactivation code"
   },
+  "addRecordSuccess": "Record added successfully",
+  "deactivateSuccess": "Record deactivated successfully",
   "verifySuccess": "Record verified successfully",
   "error": "An error occurred",
   "fetchRecordsError": "Failed to fetch records",

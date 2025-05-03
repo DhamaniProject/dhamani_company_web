@@ -176,43 +176,6 @@ interface PaginationProps {
   setCurrentPage: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
-  t,
-  currentPage,
-  totalPages,
-  isLoading,
-  setCurrentPage,
-}) => (
-  <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
-    <p className="text-sm text-gray-600">
-      {t("pagination.page", {
-        current: currentPage + 1,
-        total: totalPages,
-      })}
-    </p>
-    <div className="flex gap-2">
-      <Button
-        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-        disabled={currentPage === 0 || isLoading}
-        className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
-        aria-label={t("pagination.previous")}
-      >
-        {t("pagination.previous")}
-      </Button>
-      <Button
-        onClick={() =>
-          setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
-        }
-        disabled={currentPage === totalPages - 1 || isLoading}
-        className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
-        aria-label={t("pagination.next")}
-      >
-        {t("pagination.next")}
-      </Button>
-    </div>
-  </div>
-);
-
 interface ProductFiltersProps {
   t: (key: string, options?: Record<string, any>) => string;
   tCommon: (key: string, options?: Record<string, any>) => string;
@@ -350,6 +313,11 @@ const ProductsTable: React.FC = () => {
     await fetchProducts();
   };
 
+  const currentPageNumber = currentPage + 1;
+  const paginationText = `${t("pagination.pageStart")} ${currentPageNumber} ${t(
+    "pagination.pageMiddle"
+  )} ${totalPages}`;
+
   return (
     <div
       className="max-w-full"
@@ -384,7 +352,7 @@ const ProductsTable: React.FC = () => {
                     className="py-2 px-4 text-sm font-medium rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]"
                     aria-label={t("table.addProduct")}
                   >
-                    {t("table.addProduct")}
+                    +
                   </Button>
                 </div>
               </div>
@@ -463,14 +431,34 @@ const ProductsTable: React.FC = () => {
                 </tbody>
               </table>
               {/* Pagination */}
-              {totalPages > 0 && (
-                <Pagination
-                  t={t}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  isLoading={isLoading}
-                  setCurrentPage={setCurrentPage}
-                />
+              {totalPages > 1 && (
+                <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
+                  <p className="text-sm text-gray-600">{paginationText}</p>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 0))
+                      }
+                      disabled={currentPage === 0 || isLoading}
+                      className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
+                      aria-label={t("pagination.previous")}
+                    >
+                      {t("pagination.previous")}
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, totalPages - 1)
+                        )
+                      }
+                      disabled={currentPage === totalPages - 1 || isLoading}
+                      className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+                      aria-label={t("pagination.next")}
+                    >
+                      {t("pagination.next")}
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

@@ -1,0 +1,89 @@
+{
+  "page": {
+    "title": "مزودو الضمان"
+  },
+  "table": {
+    "title": "مزودو الضمان",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "createdAt": "تاريخ الإنشاء",
+    "status": "الحالة",
+    "status_active": "نشط",
+    "status_inactive": "غير نشط",
+    "noProviders": "لم يتم العثور على مزودي ضمان",
+    "addProvider": "إضافة مزود ضمان"
+  },
+  "modal": {
+    "title": "إضافة مزود ضمان",
+    "title_view": "عرض مزود الضمان",
+    "confirmAddSection": "تأكيد إضافة مزود الضمان",
+    "addConfirm": "هل أنت متأكد من إضافة مزود الضمان هذا؟",
+    "submit": "إرسال",
+    "name_en": "الاسم (بالإنجليزية)",
+    "name_ar": "الاسم (بالعربية)",
+    "provider_name_en": "اسم المزود (بالإنجليزية)",
+    "provider_name_ar": "اسم المزود (بالعربية)",
+    "notes_en": "الملاحظات (بالإنجليزية)",
+    "notes_ar": "الملاحظات (بالعربية)",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address_url": "رابط العنوان",
+    "website_url": "رابط الموقع الإلكتروني",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "password": "كلمة المرور",
+    "status": "الحالة",
+    "placeholders": {
+      "name_en": "أدخل اسم المزود بالإنجليزية",
+      "name_ar": "أدخل اسم المزود بالعربية",
+      "name": "أدخل اسم المزود",
+      "email": "أدخل البريد الإلكتروني",
+      "phone": "أدخل رقم الهاتف (مثال: +1234567890)",
+      "password": "أدخل كلمة المرور",
+      "status": "اختر الحالة"
+    },
+    "addProvider": "إضافة مزود ضمان",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "submitUpdate": "تعديل",
+    "errors": {
+      "nameRequired": "الاسم مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "invalidEmail": "تنسيق البريد الإلكتروني غير صالح",
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "invalidPhone": "تنسيق رقم الهاتف غير صالح (مثال: +1234567890)",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+      "passwordUpperCase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
+      "passwordLowerCase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل",
+      "passwordDigit": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
+      "passwordSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*#?&)",
+      "statusRequired": "الحالة مطلوبة"
+    }
+  },
+  "updateModal": {
+    "title": "تحديث مزود الضمان",
+    "updateProvider": "تحديث المزود"
+  },
+  "pagination": {
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "providerAddedSuccess": "تمت إضافة مزود الضمان بنجاح",
+  "providerUpdatedSuccess": "تم تحديث مزود الضمان بنجاح",
+  "errors": {
+    "fetchProvidersError": "فشل في تحميل مزودي الضمان",
+    "updateProviderError": "فشل في تحديث مزود الضمان",
+    "createProviderError": "فشل في إنشاء مزود الضمان",
+    "noCompanyId": "معرف الشركة غير متوفر",
+    "forbiddenError": "غير مصرح لك باجراء هذا الإجراء",
+    "badRequestError": "طلب غير صالح",
+    "notFoundError": "المزود أو الشركة غير موجود",
+    "methodNotAllowedError": "الطريقة المطلوبة غير مسموح بها لهذا المسار",
+    "emailAlreadyExistsError": "هذا البريد الإلكتروني مسجل بالفعل"
+  }
+}

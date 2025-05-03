@@ -2,12 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchRecords as fetchRecordsFromApi } from "../services/recordService";
+import { fetchRecords as fetchRecordsFromAPI} from "../services/recordService";
 import { Record } from "../types/types";
 import { useAuth } from "../../../../context/AuthContext";
 
 export const useRecordsTable = () => {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation("records");
   const { user } = useAuth();
   const [records, setRecords] = useState<Record[]>([]);
   const [phoneFilter, setPhoneFilter] = useState("");
@@ -39,7 +39,7 @@ export const useRecordsTable = () => {
           ? trimmedPhoneFilter
           : null;
 
-      const response = await fetchRecordsFromApi(
+      const response = await fetchRecordsFromAPI(
         user.company_id,
         phoneFilterToSend,
         currentPage + 1,
@@ -58,31 +58,23 @@ export const useRecordsTable = () => {
             (t) => t.language_id === currentLang
           ) || enProductTranslation;
 
-        // Determine eligibility for warranty, exchange, and return
         const now = new Date();
         const eligibleTypes: string[] = [];
 
-        // If the record is inactive, it has no types
         if (!item.is_active) {
-          // Skip adding types
         } else {
-          // Warranty eligibility: period not passed (current date <= end date)
           if (item.warranty_end_date) {
             const warrantyEndDate = new Date(item.warranty_end_date);
             if (now <= warrantyEndDate) {
               eligibleTypes.push("warranty");
             }
           }
-
-          // Exchange eligibility
           if (item.exchange_end_date) {
             const exchangeEndDate = new Date(item.exchange_end_date);
             if (now <= exchangeEndDate) {
               eligibleTypes.push("exchange");
             }
           }
-
-          // Return eligibility
           if (item.return_end_date) {
             const returnEndDate = new Date(item.return_end_date);
             if (now <= returnEndDate) {
@@ -91,10 +83,8 @@ export const useRecordsTable = () => {
           }
         }
 
-        // Set type: array of eligible types, or null if none
         const type = eligibleTypes.length > 0 ? eligibleTypes : null;
 
-        // Calculate remaining days
         const warrantyDaysRemaining = item.warranty_end_date
           ? Math.max(
               Math.ceil(
@@ -145,7 +135,7 @@ export const useRecordsTable = () => {
       setTotalItems(response.total_items || 0);
       setError("");
     } catch (err: any) {
-      setError(err.message || "fetchError");
+      setError(err.message || "fetchRecordsError");
       setRecords([]);
       setTotalPages(1);
       setTotalItems(0);

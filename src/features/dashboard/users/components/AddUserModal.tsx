@@ -3,7 +3,12 @@ import { useTranslation } from "react-i18next";
 
 interface AddUserModalProps {
   onClose: () => void;
-  onAdd: (user: { firstName: string; lastName: string; email: string }) => void;
+  onAdd: (user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) => void;
 }
 
 const AddUserModal: React.FC<AddUserModalProps> = ({ onClose, onAdd }) => {
@@ -66,7 +71,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onClose, onAdd }) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onAdd({ firstName, lastName, email });
+      onAdd({ firstName, lastName, email, password });
     }
   };
 

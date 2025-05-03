@@ -1,9 +1,9 @@
 {
   "page": {
-    "title": "إدارة المستخدم"
+    "title": "المستخدمون"
   },
   "table": {
-    "title": "إدارة المستخدم",
+    "title": "مستخدمو الشركة",
     "fullName": "الاسم الكامل",
     "email": "البريد الإلكتروني",
     "status": "الحالة",
@@ -13,37 +13,56 @@
     "addUser": "إضافة مستخدم"
   },
   "modal": {
-    "title": "إضافة مستخدم جديد",
+    "title": "إضافة مستخدم",
     "firstName": "الاسم الأول",
-    "lastName": "اسم العائلة",
+    "lastName": "الاسم الأخير",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
-    "addUser": "إضافة مستخدم",
-    "cancel": "إلغاء",
-    "close": "إغلاق النافذة",
+    "status": "الحالة",
     "placeholders": {
       "firstName": "أدخل الاسم الأول",
-      "lastName": "أدخل اسم العائلة",
+      "lastName": "أدخل الاسم الأخير",
       "email": "أدخل البريد الإلكتروني",
-      "password": "أدخل كلمة المرور"
+      "password": "أدخل كلمة المرور",
+      "status": "اختر الحالة"
     },
+    "addUser": "إضافة مستخدم",
+    "cancel": "إلغاء",
     "errors": {
       "firstNameRequired": "الاسم الأول مطلوب",
-      "lastNameRequired": "اسم العائلة مطلوب",
+      "lastNameRequired": "الاسم الأخير مطلوب",
       "emailRequired": "البريد الإلكتروني مطلوب",
-      "invalidEmail": "صيغة البريد الإلكتروني غير صحيحة",
+      "invalidEmail": "تنسيق البريد الإلكتروني غير صالح",
       "passwordRequired": "كلمة المرور مطلوبة",
       "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
       "passwordUpperCase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل",
       "passwordLowerCase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل",
       "passwordDigit": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل",
-      "passwordSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*#?&)"
+      "passwordSpecialChar": "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*#?&)",
+      "statusRequired": "الحالة مطلوبة"
     }
   },
   "updateModal": {
     "title": "تحديث المستخدم",
     "updateUser": "تحديث المستخدم"
   },
+  "pagination": {
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
+    "previous": "السابق",
+    "next": "التالي"
+  },
   "userAddedSuccess": "تمت إضافة المستخدم بنجاح",
-  "userUpdatedSuccess": "تم تحديث المستخدم بنجاح"
+  "userUpdatedSuccess": "تم تحديث المستخدم بنجاح",
+  "errors": {
+    "fetchUsersError": "فشل في تحميل المستخدمين",
+    "updateUserError": "فشل في تحديث المستخدم",
+    "createUserError": "فشل في إنشاء المستخدم",
+    "noCompanyId": "معرف الشركة غير متوفر",
+    "forbiddenError": "غير مصرح لك باجراء هذا الإجراء",
+    "badRequestError": "طلب غير صالح",
+    "notFoundError": "المستخدم أو الشركة غير موجود",
+    "methodNotAllowedError": "الطريقة المطلوبة غير مسموح بها لهذا المسار",
+    "emailAlreadyExistsError": "هذا البريد الإلكتروني مسجل بالفعل"
+  }
 }

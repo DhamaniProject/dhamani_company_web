@@ -6,6 +6,7 @@ import Button from "../../../../components/ui/Button";
 import RecordModal from "./RecordModal";
 import VerifiedRecordModal from "./VerifiedRecordModal";
 import VerifyRecordModal from "./VerifyRecordModal";
+import AddRecordModal from "./AddRecordModal";
 import { useRecordsTable } from "../hooks/useRecordsTable";
 import { Record } from "../types/types";
 
@@ -28,12 +29,14 @@ const RecordsTable: React.FC = () => {
     setSelectedRecord,
   } = useRecordsTable();
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [verifiedRecord, setVerifiedRecord] = useState<Record | null>(null);
   const [phoneError, setPhoneError] = useState("");
+  const [localSuccessMessage, setLocalSuccessMessage] = useState("");
 
   useEffect(() => {
     fetchRecords();
-  }, [phoneFilter, currentPage, fetchRecords]);
+  }, [phoneFilter, currentPage, fetchRecords, i18n.language]);
 
   const handlePhoneFilterChange = (value: string) => {
     setPhoneError("");
@@ -44,6 +47,27 @@ const RecordsTable: React.FC = () => {
     setPhoneFilter(trimmedValue);
   };
 
+  const handleDeactivateSuccess = () => {
+    setLocalSuccessMessage("deactivateSuccess");
+    fetchRecords();
+  };
+
+  const handleAddRecord = (newRecord: {
+    userPhoneNumber: string;
+    notesEn: string;
+    notesAr: string;
+    productId: string;
+  }) => {
+    setLocalSuccessMessage("addRecordSuccess");
+    fetchRecords();
+  };
+
+  // Construct the pagination string manually
+  const currentPageNumber = currentPage + 1;
+  const paginationText = `${t("pagination.pageStart")} ${currentPageNumber} ${t(
+    "pagination.pageMiddle"
+  )} ${totalPages}`;
+
   return (
     <div
       className="max-w-full"
@@ -53,7 +77,6 @@ const RecordsTable: React.FC = () => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden font-arabic">
-              {/* Header */}
               <div className="px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 gap-4">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {t("table.title")}
@@ -78,16 +101,23 @@ const RecordsTable: React.FC = () => {
                   </Button>
                   <Button
                     onClick={() => setShowVerifyModal(true)}
-                    className="min-w-fit py-2 px-4 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg transition-all"
+                    className="min-w-fit py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg transition-all"
                     disabled={isLoading}
                     aria-label={t("modal.verifyRecord")}
                   >
                     {t("modal.verifyRecord")}
                   </Button>
+                  <Button
+                    onClick={() => setShowAddModal(true)}
+                    className="min-w-fit py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover shadow-md hover:shadow-lg transition-all"
+                    disabled={isLoading}
+                    aria-label={t("modal.addRecord")}
+                  >
+                    +
+                  </Button>
                 </div>
               </div>
-              {/* Messages */}
-              {successMessage && (
+              {(successMessage || localSuccessMessage) && (
                 <div
                   className="p-3 border border-green-500 bg-green-50 text-green-700 rounded-lg flex items-center gap-2 font-medium m-4"
                   role="alert"
@@ -107,7 +137,7 @@ const RecordsTable: React.FC = () => {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span>{t(successMessage)}</span>
+                  <span>{t(localSuccessMessage || successMessage)}</span>
                 </div>
               )}
               {(error || phoneError) && (
@@ -130,10 +160,9 @@ const RecordsTable: React.FC = () => {
                       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>{t(error || phoneError)}</span>
+                  <span>{t(phoneError ? `table.${phoneError}` : error)}</span>
                 </div>
               )}
-              {/* Table */}
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -264,7 +293,7 @@ const RecordsTable: React.FC = () => {
                           <span
                             className={`text-sm font-medium ${
                               record.status === "active"
-                                ? "text-green-600"
+                                ? "text-darkGreen"
                                 : "text-gray-600"
                             }`}
                           >
@@ -285,15 +314,9 @@ const RecordsTable: React.FC = () => {
                   )}
                 </tbody>
               </table>
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
-                  <p className="text-sm text-gray-600">
-                    {t("pagination.page", {
-                      current: currentPage + 1,
-                      total: totalPages,
-                    })}
-                  </p>
+                  <p className="text-sm text-gray-600">{paginationText}</p>
                   <div className="flex gap-2">
                     <Button
                       onClick={() =>
@@ -324,14 +347,12 @@ const RecordsTable: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Record Modal */}
       {selectedRecord && (
         <RecordModal
           record={selectedRecord}
           onClose={() => setSelectedRecord(null)}
         />
       )}
-      {/* Verify Record Modal */}
       {showVerifyModal && (
         <VerifyRecordModal
           onClose={() => setShowVerifyModal(false)}
@@ -339,14 +360,19 @@ const RecordsTable: React.FC = () => {
             setVerifiedRecord(record);
             setShowVerifyModal(false);
           }}
-          records={allRecords}
         />
       )}
-      {/* Verified Record Modal */}
+      {showAddModal && (
+        <AddRecordModal
+          onClose={() => setShowAddModal(false)}
+          onAdd={handleAddRecord}
+        />
+      )}
       {verifiedRecord && (
         <VerifiedRecordModal
           record={verifiedRecord}
           onClose={() => setVerifiedRecord(null)}
+          onDeactivateSuccess={handleDeactivateSuccess}
         />
       )}
     </div>

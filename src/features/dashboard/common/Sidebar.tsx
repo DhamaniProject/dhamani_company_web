@@ -62,6 +62,12 @@ const Sidebar = () => {
       exact: true,
     },
     {
+      label: t("sidebar.warrantyProviders"),
+      to: "/dashboard/warrantyProviders",
+      key: "warrantyProviders",
+      exact: true,
+    },
+    {
       label: t("sidebar.companyProfile"),
       to: "/dashboard/profile",
       key: "profile",

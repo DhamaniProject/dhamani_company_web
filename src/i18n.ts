@@ -1,3 +1,5 @@
+// src/i18n.ts
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import enLogin from "./locales/en/login.json";
@@ -20,6 +22,8 @@ import enReviews from "./locales/en/Reviews.json";
 import arReviews from "./locales/ar/Reviews.json";
 import enUsers from "./locales/en/users.json";
 import arUsers from "./locales/ar/users.json";
+import enWarranty from "./locales/en/warranty_providers.json";
+import arWarranty from "./locales/ar/warranty_providers.json";
 
 const resources = {
   en: {
@@ -33,6 +37,7 @@ const resources = {
     notifications: enNotifications,
     reviews: enReviews,
     users: enUsers,
+    warrantyProviders: enWarranty,
   },
   ar: {
     login: arLogin,
@@ -45,6 +50,7 @@ const resources = {
     notifications: arNotifications,
     reviews: arReviews,
     users: arUsers,
+    warrantyProviders: arWarranty,
   },
 };
 
@@ -52,6 +58,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: "en", // Set the initial language
     fallbackLng: "en",
     supportedLngs: ["en", "ar"],
     ns: [
@@ -64,15 +71,26 @@ i18n
       "products",
       "notifications",
       "reviews",
+      "users",
+      "warrantyProviders",
     ],
     defaultNS: "common",
     interpolation: {
       escapeValue: false,
     },
-    debug: true,
+    debug: true, // Enable debug logging
   })
   .then(() => {
     console.log("i18next initialized with language:", i18n.language);
+    console.log("Available namespaces:", i18n.options.ns);
+    console.log(
+      "Records namespace (en):",
+      i18n.getResourceBundle("en", "records")
+    );
+    console.log(
+      "Records namespace (ar):",
+      i18n.getResourceBundle("ar", "records")
+    );
   })
   .catch((err) => {
     console.error("i18next initialization failed:", err);

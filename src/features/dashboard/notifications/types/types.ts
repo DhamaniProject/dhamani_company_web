@@ -32,5 +32,8 @@ export interface Notification {
     | "RECALL";
   messageTitle: { en: string; ar: string };
   messageContent: { en: string; ar: string };
-  createdAt: string; // ISO date string, e.g., "2025-04-27T10:00:00Z"
+  createdAt: string;
+  sentBy: string;
+  updatedAt: string | null;
+  readStatus: string | null;
 }

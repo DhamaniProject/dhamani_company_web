@@ -122,5 +122,11 @@
     "badRequestError": "بيانات المنتج غير صالحة",
     "serverError": "حدث خطأ أثناء تحديث المنتج",
     "updateProductError": "فشل في تحديث المنتج"
+  },
+  "pagination": {
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
+    "previous": "السابق",
+    "next": "التالي"
   }
 }
