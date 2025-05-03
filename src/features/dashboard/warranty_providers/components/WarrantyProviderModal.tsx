@@ -476,59 +476,46 @@ const WarrantyProviderModal: React.FC<WarrantyProviderModalProps> = ({
   const handleSubmit = async () => {
     if (!validateForm()) return;
     if (!onUpdate) {
-      // Mock update since endpoint isn't provided
-      const updatedProvider: Partial<WarrantyProvider> = {
-        name: formState.name.en, // For display purposes
-        email: formState.email,
-        phone: formState.phone,
-        addressUrl: formState.addressUrl,
-        websiteUrl: formState.websiteUrl,
-        translations: [
-          {
-            language_id: 1,
-            provider_name: formState.name.en,
-            notes: formState.notes.en || "",
-          },
-          {
-            language_id: 2,
-            provider_name: formState.name.ar,
-            notes: formState.notes.ar || "",
-          },
-        ],
-      };
       onClose();
       return;
     }
     setIsLoading(true);
     try {
-      const updateData: Partial<WarrantyProvider> = {};
-      if (editedFields.name_en || editedFields.name_ar) {
-        updateData.translations = [
-          ...(editedFields.name_en
-            ? [
-                {
-                  language_id: 1,
-                  provider_name: formState.name.en,
-                  notes: formState.notes.en || "",
-                },
-              ]
-            : []),
-          ...(editedFields.name_ar
-            ? [
-                {
-                  language_id: 2,
-                  provider_name: formState.name.ar,
-                  notes: formState.notes.ar || "",
-                },
-              ]
-            : []),
-        ];
+      const providerData: any = {};
+      const translations: any[] = [];
+
+      if (editedFields.email) providerData.email = formState.email;
+      if (editedFields.phone) providerData.phone_number = formState.phone;
+      if (editedFields.addressUrl) providerData.address_url = formState.addressUrl;
+      if (editedFields.websiteUrl) providerData.website_url = formState.websiteUrl;
+
+      if (editedFields.name_en || editedFields.notes_en) {
+        translations.push({
+          language_id: 1,
+          provider_name: formState.name.en,
+          notes: formState.notes.en || "",
+        });
       }
-      if (editedFields.email) updateData.email = formState.email;
-      if (editedFields.phone) updateData.phone = formState.phone;
-      if (editedFields.addressUrl) updateData.addressUrl = formState.addressUrl;
-      if (editedFields.websiteUrl) updateData.websiteUrl = formState.websiteUrl;
-      await onUpdate(provider.id, updateData);
+
+      if (editedFields.name_ar || editedFields.notes_ar) {
+        translations.push({
+          language_id: 2,
+          provider_name: formState.name.ar,
+          notes: formState.notes.ar || "",
+        });
+      }
+
+      const requestData = {
+        provider: Object.keys(providerData).length > 0 ? providerData : undefined,
+        translations: translations.length > 0 ? translations : undefined,
+      };
+
+      // Remove undefined fields to avoid sending them in the request
+      const cleanedRequestData = Object.fromEntries(
+        Object.entries(requestData).filter(([_, value]) => value !== undefined)
+      );
+
+      await onUpdate(provider.id, cleanedRequestData);
       onClose();
     } catch (err: any) {
       setError(err.message || "updateProviderError");

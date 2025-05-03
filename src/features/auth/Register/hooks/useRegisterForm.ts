@@ -1,228 +1,254 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
+import { useTranslation } from "react-i18next";
+import { registerCompany } from "../services/companyRegisterService";
+import { CompanyRegisterRequest } from "../types/companyRegister";
+import { registerUser } from "../services/userRegisterService";
+import { UserRegisterRequest } from "../types/userRegister";
 
-interface Translation {
-  language: string;
-  name: string;
-  description: string;
-  terms: string;
-}
-
-interface RegisterFormState {
-  companyName: string;
+interface FormData {
+  companyNameEn: string;
+  companyNameAr: string;
+  companyDescriptionEn: string;
+  companyDescriptionAr: string;
+  companyTermsEn: string;
+  companyTermsAr: string;
   phoneNumber: string;
   communicationEmail: string;
   companyWebsite: string;
   addressUrl: string;
   logo: File | null;
-  translations: Translation[];
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 interface FormErrors {
-  companyName?: string;
+  companyNameEn?: string;
+  companyNameAr?: string;
+  companyDescriptionEn?: string;
+  companyDescriptionAr?: string;
+  companyTermsEn?: string;
+  companyTermsAr?: string;
   phoneNumber?: string;
   communicationEmail?: string;
   companyWebsite?: string;
   addressUrl?: string;
   logo?: string;
-  translations?: Array<{ [key: string]: string }>;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+}
+
+interface FormMessage {
+  type: "success" | "error";
+  text: string;
 }
 
 export const useRegisterForm = () => {
-  const [formData, setFormData] = useState<RegisterFormState>({
-    companyName: "",
+  const { t } = useTranslation("register");
+  const navigate = useNavigate();
+  const { register } = useAuth();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState<FormData>({
+    companyNameEn: "",
+    companyNameAr: "",
+    companyDescriptionEn: "",
+    companyDescriptionAr: "",
+    companyTermsEn: "",
+    companyTermsAr: "",
     phoneNumber: "",
     communicationEmail: "",
     companyWebsite: "",
     addressUrl: "",
     logo: null,
-    translations: [{ language: "", name: "", description: "", terms: "" }],
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [success, setSuccess] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-  const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-
-  const updateField = (
-    field: keyof Omit<RegisterFormState, "translations">,
-    value: string | File | null
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
-    setSuccess(false);
-  };
-
-  const updateTranslations = (translations: Translation[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      translations,
-    }));
-    setErrors((prev) => ({ ...prev, translations: undefined }));
-    setSuccess(false);
-  };
-
-  const addTranslation = () => {
-    if (formData.translations.length >= 2) {
-      setErrors({
-        translations: [{ maxTranslations: "errors.maxTranslations" }],
-      });
-      return;
-    }
-
-    const last = formData.translations[formData.translations.length - 1];
-    if (
-      last &&
-      (!last.language ||
-        !last.name.trim() ||
-        !last.description.trim() ||
-        !last.terms.trim())
-    ) {
-      setErrors({
-        translations: [
-          {
-            language: !last.language ? "errors.emptyLanguage" : undefined,
-            name: !last.name.trim() ? "errors.emptyTranslatedName" : undefined,
-            description: !last.description.trim()
-              ? "errors.emptyDescription"
-              : undefined,
-            terms: !last.terms.trim() ? "errors.emptyTerms" : undefined,
-          },
-        ],
-      });
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      translations: [
-        ...prev.translations,
-        { language: "", name: "", description: "", terms: "" },
-      ],
-    }));
-    setErrors({});
-    setSuccess(false);
-  };
-
-  const deleteTranslation = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      translations: prev.translations.filter((_, i) => i !== index),
-    }));
-    setErrors({});
-    setSuccess(false);
-  };
-
-  const validateForm = (): FormErrors => {
+  const validateCompanyInfo = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Company Name
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = "errors.emptyCompanyName";
+    if (!formData.companyNameEn) {
+      newErrors.companyNameEn = "companyNameEnRequired";
     }
-
-    // Phone Number
+    if (!formData.companyNameAr) {
+      newErrors.companyNameAr = "companyNameArRequired";
+    }
+    if (!formData.companyDescriptionEn) {
+      newErrors.companyDescriptionEn = "companyDescriptionEnRequired";
+    }
+    if (!formData.companyDescriptionAr) {
+      newErrors.companyDescriptionAr = "companyDescriptionArRequired";
+    }
+    if (!formData.companyTermsEn) {
+      newErrors.companyTermsEn = "companyTermsEnRequired";
+    }
+    if (!formData.companyTermsAr) {
+      newErrors.companyTermsAr = "companyTermsArRequired";
+    }
     if (!formData.phoneNumber) {
-      newErrors.phoneNumber = "errors.emptyPhoneNumber";
-    } else if (!phoneRegex.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = "errors.invalidPhoneNumber";
+      newErrors.phoneNumber = "phoneNumberRequired";
     }
-
-    // Communication Email
     if (!formData.communicationEmail) {
-      newErrors.communicationEmail = "errors.emptyCommunicationEmail";
-    } else if (!emailRegex.test(formData.communicationEmail)) {
-      newErrors.communicationEmail = "errors.invalidEmail";
+      newErrors.communicationEmail = "communicationEmailRequired";
     }
-
-    // Company Website (optional)
-    if (formData.companyWebsite && !urlRegex.test(formData.companyWebsite)) {
-      newErrors.companyWebsite = "errors.invalidWebsite";
+    if (!formData.companyWebsite) {
+      newErrors.companyWebsite = "companyWebsiteRequired";
     }
-
-    // Address URL (optional)
-    if (formData.addressUrl && !urlRegex.test(formData.addressUrl)) {
-      newErrors.addressUrl = "errors.invalidAddressUrl";
+    if (!formData.addressUrl) {
+      newErrors.addressUrl = "addressUrlRequired";
     }
+    // logo is optional, so no validation
 
-    // Company Logo (optional)
-    if (formData.logo) {
-      const validFormats = ["image/png", "image/jpeg"];
-      if (!validFormats.includes(formData.logo.type)) {
-        newErrors.logo = "errors.invalidLogoFormat";
-      } else if (formData.logo.size > 2 * 1024 * 1024) {
-        newErrors.logo = "errors.logoTooLarge";
-      }
-    }
-
-    // Translations
-    const translationErrors: Array<{ [key: string]: string }> = [];
-    formData.translations.forEach((t) => {
-      const tErrors: { [key: string]: string } = {};
-      if (!t.language) tErrors.language = "errors.emptyLanguage";
-      if (!t.name.trim()) tErrors.name = "errors.emptyTranslatedName";
-      if (!t.description.trim())
-        tErrors.description = "errors.emptyDescription";
-      if (!t.terms.trim()) tErrors.terms = "errors.emptyTerms";
-      translationErrors.push(tErrors);
-    });
-
-    const languages = formData.translations
-      .map((t) => t.language)
-      .filter(Boolean);
-    if (new Set(languages).size !== languages.length) {
-      translationErrors[0] = {
-        ...translationErrors[0],
-        language: "errors.duplicateLanguage",
-      };
-    }
-
-    if (translationErrors.some((e) => Object.keys(e).length > 0)) {
-      newErrors.translations = translationErrors;
-    }
-
-    return newErrors;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (onSuccess: (token: string) => void) => {
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setSuccess(false);
-      return;
+  const validateUserInfo = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.firstName) {
+      newErrors.firstName = "firstNameRequired";
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "lastNameRequired";
+    }
+    if (!formData.email) {
+      newErrors.email = "emailRequired";
+    }
+    if (!formData.password) {
+      newErrors.password = "passwordRequired";
     }
 
-    setIsLoading(true);
-    setErrors({});
-    setSuccess(false);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  const handleChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleTranslationChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleLogoChange = (file: File) => {
+    setFormData((prev) => ({ ...prev, logo: file }));
+  };
+
+  const handleLogoRemove = () => {
+    setFormData((prev) => ({ ...prev, logo: null }));
+  };
+
+  const handleCompanyInfoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormMessage(null);
+    if (!validateCompanyInfo()) return;
+    setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockToken = "mock-jwt-token"; // Replace with real API response
+      // Prepare request body
+      const reqBody: CompanyRegisterRequest = {
+        company_data: {
+          company_name: formData.companyNameEn,
+          communication_email: formData.communicationEmail,
+          phone_number: formData.phoneNumber,
+          website_url: formData.companyWebsite,
+          address_url: formData.addressUrl,
+          company_logo: null, // logo upload skipped for now
+        },
+        translations: [
+          {
+            language_id: 1,
+            company_name: formData.companyNameEn,
+            company_description: formData.companyDescriptionEn,
+            terms_and_conditions: formData.companyTermsEn,
+          },
+          {
+            language_id: 2,
+            company_name: formData.companyNameAr,
+            company_description: formData.companyDescriptionAr,
+            terms_and_conditions: formData.companyTermsAr,
+          },
+        ],
+      };
+      if (formData.logo) {
+        // If you have a logo upload endpoint, handle it here and set company_logo to the URL
+        // For now, skip
+      } else {
+        delete reqBody.company_data.company_logo;
+      }
+      const response = await registerCompany(reqBody);
+      if (response.success) {
+        setCompanyId(response.data.company_id);
+        setCurrentStep(1);
+      } else {
+        setFormMessage({ type: "error", text: "companyRegister.genericError" });
+      }
+    } catch (error: any) {
+      setFormMessage({ type: "error", text: error.message || "companyRegister.genericError" });
+    } finally {
       setIsLoading(false);
-      setSuccess(true);
-      onSuccess(mockToken);
-    } catch (err) {
+    }
+  };
+
+  const handleUserInfoSubmit = async (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) => {
+    setFormMessage(null);
+    if (!validateUserInfo()) return;
+    if (!companyId) {
+      setFormMessage({ type: "error", text: "userRegister.noCompanyId" });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const reqBody: UserRegisterRequest = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        company_id: companyId,
+        password: data.password,
+      };
+      const response = await registerUser(reqBody);
+      if (response.success) {
+        setFormMessage({ type: "success", text: "userRegister.success" });
+        navigate("/auth/login");
+      } else {
+        setFormMessage({ type: "error", text: response.message || "userRegister.genericError" });
+      }
+    } catch (error: any) {
+      setFormMessage({ type: "error", text: error.message || "userRegister.genericError" });
+    } finally {
       setIsLoading(false);
-      setErrors({ serverError: "errors.serverError" });
-      setSuccess(false);
     }
   };
 
   return {
     formData,
-    errors,
-    success,
+    handleChange,
+    handleTranslationChange,
+    handleLogoChange,
+    handleLogoRemove,
+    handleCompanyInfoSubmit,
+    handleUserInfoSubmit,
     isLoading,
-    handleSubmit,
-    updateField,
-    updateTranslations,
-    addTranslation,
-    deleteTranslation,
+    errors,
+    currentStep,
+    setCurrentStep,
+    formMessage,
   };
-};
+}; 

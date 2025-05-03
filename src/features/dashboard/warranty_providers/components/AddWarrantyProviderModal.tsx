@@ -324,9 +324,7 @@ const WarrantyProviderAddForm: React.FC<WarrantyProviderAddFormProps> = ({
 
 interface AddWarrantyProviderModalProps {
   onClose: () => void;
-  onAdd: (
-    newProvider: Omit<WarrantyProvider, "id" | "status" | "createdAt">
-  ) => Promise<void>;
+  onAdd: (newProvider: Omit<WarrantyProvider, "id" | "status" | "createdAt">) => Promise<WarrantyProvider | undefined>;
 }
 
 const AddWarrantyProviderModal: React.FC<AddWarrantyProviderModalProps> = ({
@@ -457,9 +455,13 @@ const AddWarrantyProviderModal: React.FC<AddWarrantyProviderModalProps> = ({
             },
           ],
         };
-      await onAdd(newProvider);
-      resetForm();
-      onClose();
+      const result = await onAdd(newProvider);
+      if (result) {
+        resetForm();
+        onClose();
+      } else {
+        setError("createProviderError");
+      }
     } catch (err: any) {
       setError(err.message || "createProviderError");
     } finally {

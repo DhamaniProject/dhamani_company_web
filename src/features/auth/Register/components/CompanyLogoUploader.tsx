@@ -3,21 +3,24 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   logo: File | null;
+  currentLogoUrl?: string | null;
   onChange: (file: File | null) => void;
   error?: string;
 }
 
-const CompanyLogoUploader: React.FC<Props> = ({ logo, onChange, error }) => {
+const CompanyLogoUploader: React.FC<Props> = ({ logo, currentLogoUrl, onChange, error }) => {
   const { t } = useTranslation("profile");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (logo) {
       setPreviewUrl(URL.createObjectURL(logo));
+    } else if (currentLogoUrl) {
+      setPreviewUrl(currentLogoUrl);
     } else {
       setPreviewUrl(null);
     }
-  }, [logo]);
+  }, [logo, currentLogoUrl]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

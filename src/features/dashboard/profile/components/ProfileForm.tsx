@@ -1,54 +1,57 @@
 import React, { useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AuthInput from "../../../auth/common/AuthInput";
-import Button from "../../../../components/ui/Button";
 import CompanyLogoUploader from "../../../auth/Register/components/CompanyLogoUploader";
-import CompanyTranslationAccordion from "../../../auth/Register/components/CompanyTranslationAccordion";
 import { useProfileForm } from "../hooks/useProfileForm";
+import Button from "../../../../components/ui/Button";
 
 interface ProfileFormProps {
-  onSuccess?: () => void;
+  currentLogoUrl: string | null;
+  onLogoUrlChange: (url: string | null) => void;
 }
 
-const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
+const ProfileForm: React.FC<ProfileFormProps> = ({ 
+  currentLogoUrl,
+  onLogoUrlChange
+}) => {
   const { t } = useTranslation("profile");
   const { t: tCommon } = useTranslation("common");
   const companyNameInputRef = useRef<HTMLInputElement>(null);
   const {
     formData,
     errors,
-    success,
     isLoading,
-    handleSubmit,
+    isInitialLoading,
+    apiError,
     updateField,
     updateTranslations,
     addTranslation,
     deleteTranslation,
+    updateTranslationField,
+    updateCompany,
   } = useProfileForm();
 
   useEffect(() => {
-    companyNameInputRef.current?.focus();
-  }, []);
+    if (!isInitialLoading) {
+      companyNameInputRef.current?.focus();
+    }
+  }, [isInitialLoading]);
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSubmit(() => {
-      if (onSuccess) onSuccess();
-    });
-  };
+  if (isInitialLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
-    <form
-      onSubmit={handleFormSubmit}
-      noValidate
-      aria-labelledby="profile-title"
-      className="font-normal max-w-2xl"
-    >
+    <div className="font-normal max-w-2xl">
       <div className="grid gap-y-4">
-        {/* Success Message */}
-        {success && (
+        {/* API Error Message */}
+        {apiError && (
           <div
-            className="p-3 border border-green-500 bg-green-50 text-green-700 rounded-lg flex items-center gap-2 font-medium"
+            className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium"
             role="alert"
             aria-live="polite"
           >
@@ -63,23 +66,35 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M5 13l4 4L19 7"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>{t("updateSuccess")}</span>
+            <span>{apiError}</span>
           </div>
         )}
+
         {/* Company Details */}
-        <AuthInput
-          id="companyName"
-          label={t("companyName")}
-          placeholder={t("companyNamePlaceholder")}
-          value={formData.companyName}
-          onChange={(e) => updateField("companyName", e.target.value)}
-          ref={companyNameInputRef}
-          required
-          error={errors.companyName ? t(errors.companyName) : undefined}
-        />
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="w-full sm:w-1/2">
+            <AuthInput
+              id="companyNameEn"
+              label="Company Name (English)"
+              value={formData.translations.find(t => t.language === "en")?.name || ""}
+              onChange={e => updateTranslationField("en", "name", e.target.value)}
+              ref={companyNameInputRef}
+              required
+            />
+          </div>
+          <div className="w-full sm:w-1/2">
+            <AuthInput
+              id="companyNameAr"
+              label="Company Name (Arabic)"
+              value={formData.translations.find(t => t.language === "ar")?.name || ""}
+              onChange={e => updateTranslationField("ar", "name", e.target.value)}
+              required
+            />
+          </div>
+        </div>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="w-full sm:w-1/2">
             <AuthInput
@@ -90,6 +105,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
               onChange={(e) => updateField("phoneNumber", e.target.value)}
               required
               error={errors.phoneNumber ? t(errors.phoneNumber) : undefined}
+              disabled={isLoading}
             />
           </div>
           <div className="w-full sm:w-1/2">
@@ -108,6 +124,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
                   ? t(errors.communicationEmail)
                   : undefined
               }
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -122,6 +139,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
               error={
                 errors.companyWebsite ? t(errors.companyWebsite) : undefined
               }
+              disabled={isLoading}
             />
           </div>
           <div className="w-full sm:w-1/2">
@@ -132,26 +150,72 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ onSuccess }) => {
               value={formData.addressUrl}
               onChange={(e) => updateField("addressUrl", e.target.value)}
               error={errors.addressUrl ? t(errors.addressUrl) : undefined}
+              disabled={isLoading}
             />
           </div>
         </div>
         <CompanyLogoUploader
           logo={formData.logo}
-          onChange={(file) => updateField("logo", file)}
+          currentLogoUrl={currentLogoUrl}
+          onChange={(file) => {
+            updateField("logo", file);
+            if (!file) {
+              onLogoUrlChange(null);
+            }
+          }}
           error={errors.logo ? t(errors.logo) : undefined}
+          disabled={isLoading}
         />
-        <CompanyTranslationAccordion
-          translations={formData.translations}
-          onUpdateTranslations={updateTranslations}
-          onAddTranslation={addTranslation}
-          onDeleteTranslation={deleteTranslation}
-          errors={errors.translations}
-        />
-        <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="w-full sm:w-1/2">
+          <AuthInput
+            id="companyDescriptionEn"
+            label="Company Description (English)"
+            value={formData.translations.find(t => t.language === "en")?.description || ""}
+            onChange={e => updateTranslationField("en", "description", e.target.value)}
+            required
+          />
+          </div>
+          <div className="w-full sm:w-1/2">
+            <AuthInput
+              id="companyDescriptionAr"
+              label="Company Description (Arabic)"
+              value={formData.translations.find(t => t.language === "ar")?.description || ""}
+              onChange={e => updateTranslationField("ar", "description", e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="w-full sm:w-1/2">
+            <AuthInput
+              id="companyTermsEn"
+              label="Company Terms & Conditions (English)"
+              value={formData.translations.find(t => t.language === "en")?.terms || ""}
+              onChange={e => updateTranslationField("en", "terms", e.target.value)}
+              required
+            />
+          </div>
+          <div className="w-full sm:w-1/2">
+            <AuthInput
+              id="companyTermsAr"
+              label="Company Terms & Conditions (Arabic)"
+              value={formData.translations.find(t => t.language === "ar")?.terms || ""}
+              onChange={e => updateTranslationField("ar", "terms", e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <Button
+          type="button"
+          onClick={updateCompany}
+          isLoading={isLoading}
+          disabled={isLoading}
+        >
           {tCommon("save")}
         </Button>
       </div>
-    </form>
+    </div>
   );
 };
 

@@ -24,10 +24,17 @@ interface ApiWarrantyProvider {
 }
 
 interface UpdateWarrantyProviderRequest {
-  name?: string;
-  email?: string;
-  phone?: string;
-  status?: "active" | "inactive";
+  provider?: {
+    phone_number?: string;
+    email?: string;
+    address_url?: string;
+    website_url?: string;
+  };
+  translations?: {
+    language_id: number;
+    provider_name: string;
+    notes: string;
+  }[];
 }
 
 interface CreateWarrantyProviderRequest {
@@ -42,6 +49,11 @@ interface CreateWarrantyProviderRequest {
     provider_name: string;
     notes: string;
   }[];
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
 }
 
 export const fetchWarrantyProviders = async (
@@ -72,26 +84,23 @@ export const fetchWarrantyProviders = async (
 };
 
 export const updateWarrantyProvider = async (
-  companyId: string,
   providerId: string,
   providerData: UpdateWarrantyProviderRequest
 ): Promise<ApiWarrantyProvider> => {
   try {
-    // Placeholder: Replace with actual API call
-    // const response = await api.put<ApiWarrantyProvider>(
-    //   `/api/v1/warranty_providers/${companyId}/${providerId}`,
-    //   providerData
-    // );
-    // return response.data;
+    const requestData = {
+      provider: providerData,
+      translations: providerData.translations?.length > 0 ? providerData.translations : undefined,
+    };
 
-    // Mock response for testing
-    const mockProviders: ApiWarrantyProvider[] = [];
-    const updatedProvider = mockProviders.find(
-      (p) => p.provider_id === providerId
+    const response = await api.put<ApiResponse<ApiWarrantyProvider>>(
+      `/api/v1/warranty-providers/${providerId}`,
+      requestData
     );
-    if (!updatedProvider) throw new Error("notFoundError");
-    Object.assign(updatedProvider, providerData);
-    return updatedProvider;
+    if (!response.data.success) {
+      throw new Error("updateProviderError");
+    }
+    return response.data.data;
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
@@ -100,6 +109,7 @@ export const updateWarrantyProvider = async (
       if (status === 404) throw new Error("notFoundError");
       if (status === 400) throw new Error("badRequestError");
       if (status === 405) throw new Error("methodNotAllowedError");
+      if (status === 409) throw new Error("emailAlreadyExistsError");
       throw new Error(message);
     }
     throw new Error("updateProviderError");
