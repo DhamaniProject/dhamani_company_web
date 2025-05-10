@@ -17,7 +17,8 @@
     "allCategories": "جميع الفئات",
     "placeholder_sku_upc_filter": "البحث باستخدام SKU أو UPC",
     "search": "بحث",
-    "noResults": "لم يتم العثور على منتجات"
+    "noResults": "لم يتم العثور على منتجات",
+    "allStatuses": "جميع الحالات"
   },
   "modal": {
     "title_view": "تفاصيل المنتج",

@@ -80,7 +80,8 @@ export const fetchRecords = async (
   companyId: string,
   phoneNumber: string | null,
   page: number,
-  perPage: number
+  perPage: number,
+  status: boolean | undefined
 ): Promise<RecordResponse> => {
   try {
     console.log("Fetching records with params:", {
@@ -88,6 +89,7 @@ export const fetchRecords = async (
       phoneNumber,
       page,
       perPage,
+      status,
     });
     const response = await api.get<RecordResponse>(
       `/api/v1/records/company/${companyId}/full`,
@@ -96,6 +98,7 @@ export const fetchRecords = async (
           phone_number: phoneNumber || undefined,
           page,
           per_page: perPage,
+          status: status,
         },
       }
     );
@@ -231,6 +234,7 @@ export const createRecord = async (
     product_id: string;
     notesEn: string;
     notesAr: string;
+    serial_number: string;
   }
 ): Promise<RecordCreateResponse> => {
   try {
@@ -238,6 +242,7 @@ export const createRecord = async (
       record_data: {
         user_phone_number: recordData.user_phone_number,
         product_id: recordData.product_id,
+        serial_number: recordData.serial_number,
       },
       translations: [
         {

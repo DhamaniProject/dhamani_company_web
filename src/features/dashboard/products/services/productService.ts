@@ -199,11 +199,13 @@ export const fetchProducts = async (
   page: number,
   limit: number,
   search?: string,
-  categoryId?: string
+  categoryId?: string,
+  status?: ProductStatus
 ): Promise<ApiResponse> => {
   const queryParams: Record<string, string | number> = { page, limit };
   if (search) queryParams.search = search;
   if (categoryId && categoryId !== "all") queryParams.category_id = categoryId;
+  if (status) queryParams.status = status;
 
   try {
     const response = await api.get<ApiResponse>(

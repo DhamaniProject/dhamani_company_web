@@ -30,7 +30,7 @@ const UsersTable: React.FC<UsersTableProps> = ({
   )} ${totalPages}`;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" dir="ltr">
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-1.5 min-w-full inline-block align-middle">
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden font-arabic">

@@ -1,6 +1,6 @@
 // src/features/dashboard/records/components/RecordsTable.tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
 import RecordModal from "./RecordModal";
@@ -9,6 +9,7 @@ import VerifyRecordModal from "./VerifyRecordModal";
 import AddRecordModal from "./AddRecordModal";
 import { useRecordsTable } from "../hooks/useRecordsTable";
 import { Record } from "../types/types";
+import debounce from "lodash/debounce";
 
 const RecordsTable: React.FC = () => {
   const { t, i18n } = useTranslation("records");
@@ -27,25 +28,49 @@ const RecordsTable: React.FC = () => {
     fetchRecords,
     selectedRecord,
     setSelectedRecord,
+    statusFilter,
+    setStatusFilter,
   } = useRecordsTable();
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [verifiedRecord, setVerifiedRecord] = useState<Record | null>(null);
   const [phoneError, setPhoneError] = useState("");
   const [localSuccessMessage, setLocalSuccessMessage] = useState("");
+  const [localPhoneFilter, setLocalPhoneFilter] = useState(phoneFilter);
+
+  // Create debounced function for phone filter
+  const debouncedSetPhoneFilter = useCallback(
+    debounce((value: string) => {
+      setPhoneError("");
+      const trimmedValue = value.trim();
+      if (trimmedValue && !/^\+?[0-9]\d{1,14}$/.test(trimmedValue)) {
+        setPhoneError("invalidPhoneFormat");
+      }
+      setPhoneFilter(trimmedValue);
+    }, 1000),
+    []
+  );
+
+  // Update local phone filter when prop changes
+  useEffect(() => {
+    setLocalPhoneFilter(phoneFilter);
+  }, [phoneFilter]);
 
   useEffect(() => {
     fetchRecords();
-  }, [phoneFilter, currentPage, fetchRecords, i18n.language]);
+  }, [phoneFilter, statusFilter, currentPage, fetchRecords, i18n.language]);
 
   const handlePhoneFilterChange = (value: string) => {
-    setPhoneError("");
-    const trimmedValue = value.trim();
-    if (trimmedValue && !/^\+?[0-9]\d{1,14}$/.test(trimmedValue)) {
-      setPhoneError("invalidPhoneFormat");
-    }
-    setPhoneFilter(trimmedValue);
+    setLocalPhoneFilter(value);
+    debouncedSetPhoneFilter(value);
   };
+
+  // Cleanup debounced function
+  useEffect(() => {
+    return () => {
+      debouncedSetPhoneFilter.cancel();
+    };
+  }, [debouncedSetPhoneFilter]);
 
   const handleDeactivateSuccess = () => {
     setLocalSuccessMessage("deactivateSuccess");
@@ -82,11 +107,21 @@ const RecordsTable: React.FC = () => {
                   {t("table.title")}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-3">
+                  <select
+                    className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    aria-label={t("table.filterByStatus")}
+                  >
+                    <option value="all">{t("table.allStatuses")}</option>
+                    <option value="active">{t("table.status_active")}</option>
+                    <option value="inactive">{t("table.status_inactive")}</option>
+                  </select>
                   <input
                     type="text"
                     className="py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                     placeholder={t("table.filterByPhone")}
-                    value={phoneFilter}
+                    value={localPhoneFilter}
                     onChange={(e) => handlePhoneFilterChange(e.target.value)}
                     aria-label={t("table.filterByPhone")}
                   />
@@ -254,8 +289,8 @@ const RecordsTable: React.FC = () => {
                                 <button
                                   className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                     record.type.includes("warranty")
-                                      ? "border-green-600 bg-green-600 text-white"
-                                      : "border-green-500 text-green-500 hover:bg-green-50"
+                                      ? "bg-primary text-white"
+                                      : "border-primary text-primary hover:bg-green-50"
                                   }`}
                                   aria-label={t("table.warranty")}
                                 >
@@ -264,8 +299,8 @@ const RecordsTable: React.FC = () => {
                                 <button
                                   className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                     record.type.includes("exchange")
-                                      ? "border-pink-600 bg-pink-600 text-white"
-                                      : "border-pink-500 text-pink-500 hover:bg-pink-50"
+                                      ? "bg-primary text-white"
+                                      : "border-primary text-primary hover:bg-green-50"
                                   }`}
                                   aria-label={t("table.exchange")}
                                 >
@@ -274,8 +309,8 @@ const RecordsTable: React.FC = () => {
                                 <button
                                   className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                     record.type.includes("return")
-                                      ? "border-gray-600 bg-gray-600 text-white"
-                                      : "border-gray-500 text-gray-500 hover:bg-gray-50"
+                                      ? "bg-primary text-white"
+                                      : "border-primary text-primary hover:bg-green-50"
                                   }`}
                                   aria-label={t("table.return")}
                                 >
@@ -293,7 +328,7 @@ const RecordsTable: React.FC = () => {
                           <span
                             className={`text-sm font-medium ${
                               record.status === "active"
-                                ? "text-darkGreen"
+                                ? "text-primary"
                                 : "text-gray-600"
                             }`}
                           >

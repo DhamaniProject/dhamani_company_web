@@ -54,11 +54,14 @@ const resources = {
   },
 };
 
+// Get the stored language from localStorage or default to 'en'
+const storedLanguage = localStorage.getItem('language') || 'en';
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "en", // Set the initial language
+    lng: storedLanguage, // Use the stored language instead of hardcoded 'en'
     fallbackLng: "en",
     supportedLngs: ["en", "ar"],
     ns: [
@@ -78,7 +81,7 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-    debug: true, // Enable debug logging
+    debug: true,
   })
   .then(() => {
     console.log("i18next initialized with language:", i18n.language);
@@ -95,5 +98,11 @@ i18n
   .catch((err) => {
     console.error("i18next initialization failed:", err);
   });
+
+// Add a function to change language that also updates localStorage
+export const changeLanguage = (language: string) => {
+  localStorage.setItem('language', language);
+  i18n.changeLanguage(language);
+};
 
 export default i18n;

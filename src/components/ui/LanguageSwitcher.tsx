@@ -1,24 +1,12 @@
 // src/components/LanguageSwitcher.tsx
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { changeLanguage } from '../../i18n';
 
 const LanguageSwitcher: React.FC = () => {
   const { i18n, t } = useTranslation("common");
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
 
-  const changeLanguage = (lng: "en" | "ar") => {
-    console.log(`Attempting to change language to: ${lng}`);
-    i18n
-      .changeLanguage(lng)
-      .then(() => {
-        console.log(`Language changed to: ${i18n.language}`);
-        setCurrentLanguage(lng);
-        document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
-      })
-      .catch((err) => {
-        console.error("Failed to change language:", err);
-      });
-  };
 
   useEffect(() => {
     console.log("Current language:", i18n.language);

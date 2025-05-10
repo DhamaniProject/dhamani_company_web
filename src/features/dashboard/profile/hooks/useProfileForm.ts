@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../../context/AuthContext";
-import { fetchCompanyById, updateCompanyById } from "../services/companyService";
+import { fetchCompanyById, updateCompanyById, fetchCompanyApiKey, regenerateCompanyApiKey } from "../services/companyService";
 import { Company, CompanyTranslation } from "../types/company";
 
 interface TranslationForm {
@@ -18,6 +18,7 @@ interface ProfileFormState {
   addressUrl: string;
   logo: File | null;
   translations: TranslationForm[];
+  apiKey: string;
 }
 
 interface FormErrors {
@@ -40,6 +41,7 @@ export const useProfileForm = () => {
     addressUrl: "",
     logo: null,
     translations: [],
+    apiKey: "",
   });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [errors] = useState<FormErrors>({});
@@ -52,13 +54,16 @@ export const useProfileForm = () => {
       if (user?.company_id) {
         try {
           setIsInitialLoading(true);
-          const response = await fetchCompanyById(user.company_id);
-          if (!response.success || !response.data) {
-            setApiError(response.message || "Failed to load company data");
+          const [companyResponse, apiKey] = await Promise.all([
+            fetchCompanyById(user.company_id),
+            fetchCompanyApiKey()
+          ]);
+          if (!companyResponse.success || !companyResponse.data) {
+            setApiError(companyResponse.message || "Failed to load company data");
             setIsInitialLoading(false);
             return;
           }
-          const data: Company = response.data;
+          const data: Company = companyResponse.data;
           // Map by language_id
           const en = data.translations.find(t => t.language_id === 1);
           const ar = data.translations.find(t => t.language_id === 2);
@@ -69,6 +74,7 @@ export const useProfileForm = () => {
             companyWebsite: data.website_url || "",
             addressUrl: data.address_url || "",
             logo: null,
+            apiKey: apiKey || "",
             translations: [
               {
                 language: "en",
@@ -186,6 +192,24 @@ export const useProfileForm = () => {
     }
   };
 
+  const regenerateApiKey = async () => {
+    if (!user?.company_id) return;
+
+    try {
+      setIsLoading(true);
+      const apiKey = await regenerateCompanyApiKey(user.company_id);
+      setFormData(prev => ({
+        ...prev,
+        apiKey
+      }));
+      setApiError(null);
+    } catch (error: any) {
+      setApiError(error?.message || "Failed to regenerate API key");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     formData,
     errors,
@@ -200,5 +224,6 @@ export const useProfileForm = () => {
     deleteTranslation,
     updateTranslationField,
     updateCompany,
+    regenerateApiKey,
   };
 };

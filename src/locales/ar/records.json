@@ -14,6 +14,8 @@
     "status_active": "نشط",
     "status_inactive": "غير نشط",
     "filterByPhone": "تصفية حسب رقم الهاتف",
+    "filterByStatus": "تصفية حسب الحالة",
+    "allStatuses": "جميع الحالات",
     "search": "بحث",
     "noResults": "لم يتم العثور على سجلات",
     "invalidPhoneFormat": "تنسيق الهاتف غير صالح",
@@ -51,11 +53,13 @@
     "addRecordTitle": "إضافة سجل جديد",
     "userPhoneNumber": "رقم هاتف المستخدم",
     "userPhoneNumberPlaceholder": "أدخل رقم الهاتف",
+    "serialNumber": "الرقم التسلسلي",
+    "serialNumberPlaceholder": "أدخل الرقم التسلسلي",
+    "serialNumberRequired": "الرقم التسلسلي مطلوب",
     "notesEn": "ملاحظات (بالإنجليزية)",
     "notesEnPlaceholder": "أدخل ملاحظات باللغة الإنجليزية",
     "notesAr": "ملاحظات (بالعربية)",
     "notesArPlaceholder": "أدخل ملاحظات باللغة العربية",
-    "product": "المنتج",
     "productSearchPlaceholder": "أدخل SKU أو UPC",
     "selectProduct": "اختر منتجًا",
     "productRequired": "يرجى اختيار منتج",
@@ -65,7 +69,8 @@
     "notFoundError": "المورد غير موجود",
     "serverError": "حدث خطأ في الخادم",
     "noCompanyId": "معرف الشركة مفقود",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "noProductsFound": "لم يتم العثور على منتجات"
   },
   "verifyModal": {
     "title": "تحقق من السجل",
@@ -84,6 +89,7 @@
     "product": "المنتج",
     "customerName": "اسم العميل",
     "customerPhone": "رقم هاتف العميل",
+    "serialNumber": "الرقم التسلسلي",
     "startDate": "تاريخ البدء",
     "type": "النوع",
     "status": "الحالة",
@@ -123,5 +129,6 @@
   "badRequestError": "معلمات الطلب غير صالحة",
   "notFoundError": "لم يتم العثور على السجلات",
   "serverError": "حدث خطأ في الخادم",
-  "noCompanyId": "معرف الشركة مفقود"
+  "noCompanyId": "معرف الشركة مفقود",
+  "loading": "جاري التحميل..."
 }

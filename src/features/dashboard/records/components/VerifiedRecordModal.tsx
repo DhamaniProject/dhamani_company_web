@@ -45,6 +45,7 @@ interface Record {
   warrantyDaysRemaining: number;
   returnDaysRemaining: number;
   exchangeDaysRemaining: number;
+  serial_number?: string;
 }
 
 interface VerifiedRecordModalProps {
@@ -226,6 +227,12 @@ const VerifiedRecordModal: React.FC<VerifiedRecordModalProps> = ({
                 {t("verifiedModal.customerPhone")}
               </strong>
               <p className="text-sm text-gray-800">{record.customerPhone}</p>
+            </div>
+            <div>
+              <strong className="text-sm font-medium text-gray-600">
+                {t("verifiedModal.serialNumber")}
+              </strong>
+              <p className="text-sm text-gray-800">{record.serial_number || tCommon("notAvailable")}</p>
             </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">

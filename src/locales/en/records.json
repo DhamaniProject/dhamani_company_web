@@ -14,6 +14,8 @@
     "status_active": "Active",
     "status_inactive": "Inactive",
     "filterByPhone": "Filter by Phone Number",
+    "filterByStatus": "Filter by Status",
+    "allStatuses": "All Statuses",
     "search": "Search",
     "noResults": "No records found",
     "invalidPhoneFormat": "Invalid phone format",
@@ -51,11 +53,13 @@
     "addRecordTitle": "Add New Record",
     "userPhoneNumber": "User Phone Number",
     "userPhoneNumberPlaceholder": "Enter phone number",
+    "serialNumber": "Serial Number",
+    "serialNumberPlaceholder": "Enter serial number",
+    "serialNumberRequired": "Serial number is required",
     "notesEn": "Notes (English)",
     "notesEnPlaceholder": "Enter notes in English",
     "notesAr": "Notes (Arabic)",
     "notesArPlaceholder": "Enter notes in Arabic",
-    "product": "Product",
     "productSearchPlaceholder": "Enter the SKU or UPC",
     "selectProduct": "Select a product",
     "productRequired": "Please select a product",
@@ -65,7 +69,8 @@
     "notFoundError": "Resource not found",
     "serverError": "Server error occurred",
     "noCompanyId": "Company ID is missing",
-    "close": "Close"
+    "close": "Close",
+    "noProductsFound": "No products found"
   },
   "verifyModal": {
     "title": "Verify Record",
@@ -84,6 +89,7 @@
     "product": "Product",
     "customerName": "Customer Name",
     "customerPhone": "Customer Phone",
+    "serialNumber": "Serial Number",
     "startDate": "Start Date",
     "type": "Type",
     "status": "Status",
@@ -123,5 +129,6 @@
   "badRequestError": "Invalid request parameters",
   "notFoundError": "Records not found",
   "serverError": "Server error occurred",
-  "noCompanyId": "Company ID is missing"
+  "noCompanyId": "Company ID is missing",
+  "loading": "Loading..."
 }

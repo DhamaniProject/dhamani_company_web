@@ -114,8 +114,8 @@ const TableRow: React.FC<TableRowProps> = ({
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
               product.types.includes(ProductType.Warranty)
-                ? "border-green-600 bg-green-600 text-white"
-                : "border-green-500 text-green-500 hover:bg-green-50"
+                ? "bg-primary text-white"
+                : "border-primary text-primary hover:bg-green-50"
             }`}
             aria-label={t("table.type_warranty")}
           >
@@ -124,8 +124,8 @@ const TableRow: React.FC<TableRowProps> = ({
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
               product.types.includes(ProductType.Exchange)
-                ? "border-pink-600 bg-pink-600 text-white"
-                : "border-pink-500 text-pink-500 hover:bg-pink-50"
+                ? "bg-primary text-white"
+                : "border-primary text-primary hover:bg-green-50"
             }`}
             aria-label={t("table.type_exchange")}
           >
@@ -134,8 +134,8 @@ const TableRow: React.FC<TableRowProps> = ({
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
               product.types.includes(ProductType.Return)
-                ? "border-gray-600 bg-gray-600 text-white"
-                : "border-gray-500 text-gray-500 hover:bg-gray-50"
+                ? "bg-primary text-white"
+                : "border-primary text-primary hover:bg-green-50"
             }`}
             aria-label={t("table.type_return")}
           >
@@ -157,7 +157,7 @@ const TableRow: React.FC<TableRowProps> = ({
         <span
           className={`text-sm font-medium ${
             product.status === ProductStatus.Active
-              ? "text-green-600"
+              ? "text-primary"
               : "text-gray-600"
           }`}
         >
@@ -181,8 +181,10 @@ interface ProductFiltersProps {
   tCommon: (key: string, options?: Record<string, any>) => string;
   skuUpcFilter: string;
   categoryFilter: string;
+  statusFilter: ProductStatus | "all";
   setSkuUpcFilter: (value: string) => void;
   setCategoryFilter: (value: string) => void;
+  setStatusFilter: (value: ProductStatus | "all") => void;
   categories: Array<{ id: number; name: string }>;
   isCategoriesLoading: boolean;
   categoriesError: string | null;
@@ -195,8 +197,10 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   tCommon,
   skuUpcFilter,
   categoryFilter,
+  statusFilter,
   setSkuUpcFilter,
   setCategoryFilter,
+  setStatusFilter,
   categories,
   isCategoriesLoading,
   categoriesError,
@@ -226,6 +230,16 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
         </option>
       ))}
     </select>
+    <select
+      className="py-2 px-3 pr-8 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value as ProductStatus | "all")}
+      aria-label={t("table.status")}
+    >
+      <option value="all">{t("table.allStatuses")}</option>
+      <option value={ProductStatus.Active}>{t("table.status_active")}</option>
+      <option value={ProductStatus.Suspended}>{t("table.status_suspended")}</option>
+    </select>
     <Button
       onClick={fetchProducts}
       isLoading={isLoading}
@@ -244,8 +258,10 @@ const ProductsTable: React.FC = () => {
   const {
     skuUpcFilter,
     categoryFilter,
+    statusFilter,
     setSkuUpcFilter,
     setCategoryFilter,
+    setStatusFilter,
     debouncedSkuUpcFilter,
   } = useProductFilters();
   const {
@@ -258,7 +274,7 @@ const ProductsTable: React.FC = () => {
     setCurrentPage,
     setSuccessMessage,
     fetchProducts,
-  } = useProducts(debouncedSkuUpcFilter, categoryFilter);
+  } = useProducts(debouncedSkuUpcFilter, categoryFilter, statusFilter);
   const {
     categories,
     isLoading: isCategoriesLoading,
@@ -321,7 +337,7 @@ const ProductsTable: React.FC = () => {
   return (
     <div
       className="max-w-full"
-      dir={i18n.language === "ar" ? "rtl" : undefined}
+      dir={i18n.language === "ar" ? "ltr" : undefined}
     >
       <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">
@@ -338,8 +354,10 @@ const ProductsTable: React.FC = () => {
                     tCommon={tCommon}
                     skuUpcFilter={skuUpcFilter}
                     categoryFilter={categoryFilter}
+                    statusFilter={statusFilter}
                     setSkuUpcFilter={setSkuUpcFilter}
                     setCategoryFilter={setCategoryFilter}
+                    setStatusFilter={setStatusFilter}
                     categories={categories}
                     isCategoriesLoading={isCategoriesLoading}
                     categoriesError={categoriesError}

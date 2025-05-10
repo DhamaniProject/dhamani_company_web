@@ -143,8 +143,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                 transaction.type.includes("Warranty")
-                                  ? "border-green-600 bg-green-600 text-white"
-                                  : "border-green-500 text-green-500 hover:bg-green-50"
+                                  ? "bg-primary text-white"
+                                  : "border-primary text-primary hover:bg-green-50"
                               }`}
                               aria-label={t("dashboard.table.warranty")}
                             >
@@ -153,8 +153,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                 transaction.type.includes("Exchange")
-                                  ? "border-pink-600 bg-pink-600 text-white"
-                                  : "border-pink-500 text-pink-500 hover:bg-pink-50"
+                                  ? "bg-primary text-white"
+                                  : "border-primary text-primary hover:bg-green-50"
                               }`}
                               aria-label={t("dashboard.table.exchange")}
                             >
@@ -163,8 +163,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                             <button
                               className={`py-1 px-3 text-sm font-medium rounded-full border ${
                                 transaction.type.includes("Return")
-                                  ? "border-gray-600 bg-gray-600 text-white"
-                                  : "border-gray-500 text-gray-500 hover:bg-gray-50"
+                                  ? "bg-primary text-white"
+                                  : "border-primary text-primary hover:bg-green-50"
                               }`}
                               aria-label={t("dashboard.table.return")}
                             >
@@ -176,7 +176,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                           <span
                             className={`text-sm font-medium ${
                               transaction.status.toLowerCase() === "active"
-                                ? "text-green-600"
+                                ? "text-primary"
                                 : "text-gray-600"
                             }`}
                           >

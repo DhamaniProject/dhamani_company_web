@@ -64,7 +64,7 @@ const NotificationsTable: React.FC = () => {
   return (
     <div
       className="max-w-full"
-      dir={i18n.language === "ar" ? "rtl" : undefined}
+      dir={i18n.language === "ar" ? "ltr" : undefined}
     >
       <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">

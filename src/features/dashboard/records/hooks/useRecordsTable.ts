@@ -11,6 +11,7 @@ export const useRecordsTable = () => {
   const { user } = useAuth();
   const [records, setRecords] = useState<Record[]>([]);
   const [phoneFilter, setPhoneFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -39,11 +40,22 @@ export const useRecordsTable = () => {
           ? trimmedPhoneFilter
           : null;
 
+      // Convert status filter to boolean or undefined
+      const statusToSend =
+        statusFilter === "active"
+          ? true
+          : statusFilter === "inactive"
+            ? false
+            : undefined; // do not send param for "all"
+
+      console.log("Status to send:", statusToSend);
+
       const response = await fetchRecordsFromAPI(
         user.company_id,
         phoneFilterToSend,
         currentPage + 1,
-        pageSize
+        pageSize,
+        statusToSend
       );
       const mappedRecords: Record[] = response.data.map((item) => {
         const enProductTranslation = item.product_translations.find(
@@ -143,12 +155,13 @@ export const useRecordsTable = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [phoneFilter, currentPage, i18n.language, user?.company_id]);
+  }, [phoneFilter, statusFilter, currentPage, i18n.language, user?.company_id]);
 
   return {
     records,
     allRecords: records,
     phoneFilter,
+    statusFilter,
     isLoading,
     successMessage,
     error,
@@ -156,6 +169,7 @@ export const useRecordsTable = () => {
     totalPages,
     selectedRecord,
     setPhoneFilter,
+    setStatusFilter,
     setCurrentPage,
     setSelectedRecord,
     fetchRecords,

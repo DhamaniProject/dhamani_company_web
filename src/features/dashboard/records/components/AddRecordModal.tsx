@@ -1,11 +1,12 @@
 // src/features/dashboard/records/components/AddRecordModal.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
 import AuthInput from "../../../auth/common/AuthInput";
 import { fetchProducts, createRecord } from "../services/recordService";
 import { useAuth } from "../../../../context/AuthContext";
+import debounce from "lodash/debounce";
 
 interface AddRecordModalProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface AddRecordModalProps {
     notesEn: string;
     notesAr: string;
     productId: string;
+    serialNumber: string;
   }) => void;
 }
 
@@ -24,14 +26,17 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
   const [notesEn, setNotesEn] = useState("");
   const [notesAr, setNotesAr] = useState("");
   const [productId, setProductId] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch products when the modal opens or search query changes
-  useEffect(() => {
-    const loadProducts = async () => {
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
       if (!user?.company_id) {
         setError("modal.noCompanyId");
         return;
@@ -39,15 +44,12 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
 
       setIsLoading(true);
       try {
-        const response = await fetchProducts(
-          user.company_id,
-          searchQuery || null
-        );
+        const response = await fetchProducts(user.company_id, query || null);
         const currentLang = i18n.language === "ar" ? 2 : 1;
         const productList = response.data.map((product) => {
           const translation =
             product.translations.find((t) => t.language_id === currentLang) ||
-            product.translations[0]; // Fallback to first translation if language not found
+            product.translations[0];
           return {
             id: product.product_id,
             name: translation.product_name,
@@ -59,16 +61,41 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
       } finally {
         setIsLoading(false);
       }
+    }, 1000),
+    [user?.company_id, i18n.language]
+  );
+
+  // Initial load of products
+  useEffect(() => {
+    debouncedSearch("");
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
     };
 
-    loadProducts();
-  }, [user?.company_id, i18n.language, searchQuery]); // Add searchQuery to dependencies
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    debouncedSearch(e.target.value);
+  };
 
   const handleAddRecord = async () => {
     setError("");
     setIsLoading(true);
 
-    // Basic validation
     if (!userPhoneNumber || !/^\+?[0-9]\d{1,14}$/.test(userPhoneNumber)) {
       setError("table.invalidPhoneFormat");
       setIsLoading(false);
@@ -84,6 +111,11 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
       setIsLoading(false);
       return;
     }
+    if (!serialNumber.trim()) {
+      setError("modal.serialNumberRequired");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const recordData = {
@@ -91,6 +123,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
         product_id: productId,
         notesEn,
         notesAr,
+        serial_number: serialNumber.trim(),
       };
       await createRecord(user.company_id, recordData);
       onAdd({
@@ -98,6 +131,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
         notesEn,
         notesAr,
         productId,
+        serialNumber,
       });
       onClose();
     } catch (err: any) {
@@ -176,6 +210,14 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
             disabled={isLoading}
           />
           <AuthInput
+            id="serialNumber"
+            label={t("modal.serialNumber")}
+            placeholder={t("modal.serialNumberPlaceholder")}
+            value={serialNumber}
+            onChange={(e) => setSerialNumber(e.target.value)}
+            disabled={isLoading}
+          />
+          <AuthInput
             id="notesEn"
             label={t("modal.notesEn")}
             placeholder={t("modal.notesEnPlaceholder")}
@@ -191,36 +233,75 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ onClose, onAdd }) => {
             onChange={(e) => setNotesAr(e.target.value)}
             disabled={isLoading}
           />
-          <div>
+          <div className="relative">
             <label
-              htmlFor="productSearch"
+              htmlFor="product"
               className="block text-sm font-medium text-gray-600 mb-1"
             >
               {t("modal.product")}
             </label>
-            <input
-              id="productSearch"
-              type="text"
-              className="w-full py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-              placeholder={t("modal.productSearchPlaceholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={isLoading}
-            />
-            <select
-              id="product"
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-              className="mt-2 w-full py-2 px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-              disabled={isLoading}
-            >
-              <option value="">{t("modal.selectProduct")}</option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative" ref={dropdownRef}>
+              <input
+                id="product"
+                type="text"
+                className="w-full py-2 px-3 pr-10 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                placeholder={t("modal.productSearchPlaceholder")}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => setIsDropdownOpen(true)}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                disabled={isLoading}
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    isDropdownOpen ? "transform rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {isLoading ? (
+                    <div className="p-2 text-center text-gray-500">
+                      {t("loading")}
+                    </div>
+                  ) : products.length > 0 ? (
+                    products.map((product) => (
+                      <div
+                        key={product.id}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setProductId(product.id);
+                          setSearchQuery(product.name);
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        {product.name}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-2 text-center text-gray-500">
+                      {t("modal.noProductsFound")}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="mt-6 flex justify-end gap-3">

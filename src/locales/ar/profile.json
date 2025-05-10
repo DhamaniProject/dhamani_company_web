@@ -46,5 +46,8 @@
     "emptyTerms": "يرجى إدخال الشروط والأحكام المترجمة",
     "duplicateLanguage": "يجب أن تكون كل ترجمة بلغة فريدة",
     "maxTranslations": "الحد الأقصى 2 ترجمات"
-  }
+  },
+  "apiKeyLabel": "API Key",
+  "apiKeyDescription": "يُستخدم هذا المفتاح لمصادقة طلبات API. احتفظ به آمنًا ولا تشاركه علنًا أبدًا.",
+  "regenerate": "تجديد"
 }

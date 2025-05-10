@@ -27,7 +27,7 @@ const WarrantyProvidersTable: React.FC<WarrantyProvidersTableProps> = ({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(i18n.language === "ar" ? "ar-SA" : "en-US", {
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -35,7 +35,7 @@ const WarrantyProvidersTable: React.FC<WarrantyProvidersTableProps> = ({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" dir="ltr">
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-1.5 min-w-full inline-block align-middle">
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden font-arabic">

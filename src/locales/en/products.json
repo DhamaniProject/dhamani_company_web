@@ -17,7 +17,8 @@
     "allCategories": "All Categories",
     "placeholder_sku_upc_filter": "Search by SKU or UPC",
     "search": "Search",
-    "noResults": "No products found"
+    "noResults": "No products found",
+    "allStatuses": "All Statuses"
   },
   "modal": {
     "title_view": "Product Details",

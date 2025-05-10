@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../../context/AuthContext";
 import { fetchProducts } from "../services/productService";
-import { Product, ProductType } from "../types/types";
+import { Product, ProductType, ProductStatus } from "../types/types";
 
 interface ProductsHook {
   products: Product[];
@@ -20,7 +20,8 @@ interface ProductsHook {
 
 export const useProducts = (
   skuUpcFilter: string,
-  categoryFilter: string
+  categoryFilter: string,
+  statusFilter: ProductStatus | "all"
 ): ProductsHook => {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,6 +41,7 @@ export const useProducts = (
     console.log("Fetching products with filters:", {
       skuUpcFilter,
       categoryFilter,
+      statusFilter,
       currentPage,
     });
 
@@ -49,7 +51,8 @@ export const useProducts = (
         currentPage + 1,
         10,
         skuUpcFilter,
-        categoryFilter
+        categoryFilter,
+        statusFilter !== "all" ? statusFilter : undefined
       );
       const mappedProducts: Product[] = response.data.map((item) => {
         const types: ProductType[] = [];
@@ -87,7 +90,7 @@ export const useProducts = (
           returnPeriod: item.return_period,
           exchangePeriod: item.exchange_period,
           warrantyProvider: item.warranty_provider,
-          status: item.product_status, // Now correctly maps "active" or "suspended"
+          status: item.product_status,
           translations: item.translations,
         };
       });
@@ -102,7 +105,7 @@ export const useProducts = (
       setTotalPages(1);
       return { success: false, data: [], total_items: 0, total_pages: 1 };
     }
-  }, [user?.company_id, skuUpcFilter, categoryFilter, currentPage]);
+  }, [user?.company_id, skuUpcFilter, categoryFilter, statusFilter, currentPage]);
 
   const { isLoading, refetch } = useQuery({
     queryKey: [
@@ -110,6 +113,7 @@ export const useProducts = (
       user?.company_id,
       skuUpcFilter,
       categoryFilter,
+      statusFilter,
       currentPage,
     ],
     queryFn: fetchProductsData,
@@ -121,14 +125,15 @@ export const useProducts = (
     console.log("Manually fetching products with filters:", {
       skuUpcFilter,
       categoryFilter,
+      statusFilter,
       currentPage,
     });
     refetch();
-  }, [refetch, skuUpcFilter, categoryFilter, currentPage]);
+  }, [refetch, skuUpcFilter, categoryFilter, statusFilter, currentPage]);
 
   useEffect(() => {
     handleFetchProducts();
-  }, [skuUpcFilter, categoryFilter, handleFetchProducts]);
+  }, [skuUpcFilter, categoryFilter, statusFilter, handleFetchProducts]);
 
   return {
     products,

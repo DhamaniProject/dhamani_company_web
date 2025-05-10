@@ -46,5 +46,8 @@
     "emptyTerms": "Please enter translated terms and conditions",
     "duplicateLanguage": "Each translation must have a unique language",
     "maxTranslations": "Maximum of 2 translations allowed"
-  }
+  },
+  "apiKeyLabel": "API Key",
+  "apiKeyDescription": "This key is used to authenticate API requests. Keep it secure and never share it publicly.",
+  "regenerate": "Regenerate"
 }
