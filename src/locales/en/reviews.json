@@ -1,13 +1,37 @@
 {
   "page": {
-    "title": "Reviews Management"
+    "title": "Reviews"
   },
   "table": {
-    "title": "Reviews Management",
-    "reviewerName": "Reviewer Name",
-    "reviewText": "Review Text",
+    "title": "User Reviews",
+    "reviewerName": "Reviewer",
+    "reviewText": "Review",
     "rating": "Rating",
+    "createdAt": "Date",
+    "noReviews": "No reviews found",
+    "minRatingPlaceholder": "Min Rating (1-5)",
+    "maxRatingPlaceholder": "Max Rating (1-5)",
+    "search": "Search"
+  },
+  "modal": {
+    "title": "Review Details",
+    "reviewerName": "Reviewer",
+    "rating": "Rating",
+    "reviewText": "Review Text",
     "createdAt": "Created At",
-    "noReviews": "No reviews found"
+    "close": "Close"
+  },
+  "pagination": {
+    "pageStart": "Page",
+    "pageMiddle": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "errors": {
+    "fetchReviewsError": "Failed to load reviews",
+    "noCompanyId": "No company ID available",
+    "forbiddenError": "You are not authorized to view reviews",
+    "badRequestError": "Invalid request. Ensure ratings are between 1 and 5.",
+    "notFoundError": "No reviews found for this company"
   }
 }

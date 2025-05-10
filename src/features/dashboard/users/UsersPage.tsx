@@ -1,86 +1,88 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import UsersTable from "./components/UsersTable";
 import AddUserModal from "./components/AddUserModal";
 import UpdateUserModal from "./components/UpdateUserModal";
-
-// Mock user data (replace with actual API call in the future)
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  status: "Active" | "Inactive";
-}
-
-const mockUsers: User[] = [
-  {
-    id: "1",
-    firstName: "Ali",
-    lastName: "Hassan",
-    email: "ali.hassan@example.com",
-    status: "Active",
-  },
-  {
-    id: "2",
-    firstName: "Fatima",
-    lastName: "Youssef",
-    email: "fatima.youssef@example.com",
-    status: "Inactive",
-  },
-  {
-    id: "3",
-    firstName: "Khaled",
-    lastName: "Mahmoud",
-    email: "khaled.mahmoud@example.com",
-    status: "Active",
-  },
-];
+import { useUsers } from "./hooks/useUsers";
+import { User } from "./types/types";
+import { updateUser, createUser } from "./services/userService";
+import { useAuth } from "../../../context/AuthContext";
 
 const UsersPage: React.FC = () => {
   const { t, i18n } = useTranslation("users");
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    users,
+    isLoading,
+    error,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    fetchUsers,
+  } = useUsers();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Simulate fetching users (replace with actual API call)
-    setIsLoading(true);
-    setTimeout(() => {
-      setUsers(mockUsers);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+  const { user } = useAuth();
 
-  const handleAddUser = (newUser: Omit<User, "id" | "status">) => {
-    // Simulate adding a user (replace with actual API call)
-    const user: User = {
-      id: (users.length + 1).toString(),
-      ...newUser,
-      status: "Active", // Default status for new users
-    };
-    setUsers((prevUsers) => [...prevUsers, user]);
-    setSuccessMessage("userAddedSuccess");
-    setShowAddModal(false);
-    setTimeout(() => setSuccessMessage(null), 3000); // Clear message after 3 seconds
+  const handleAddUser = async (
+    newUser: Omit<User, "id" | "status"> & { password: string }
+  ) => {
+    if (!user?.company_id) {
+      setErrorMessage("noCompanyId");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+
+    try {
+      const requestBody = {
+        first_name: newUser.firstName,
+        last_name: newUser.lastName,
+        email: newUser.email,
+        company_id: user.company_id,
+        password: newUser.password,
+      };
+      await createUser(requestBody);
+      setSuccessMessage("userAddedSuccess");
+      setShowAddModal(false);
+      setTimeout(() => setSuccessMessage(null), 3000);
+      fetchUsers(); // Refresh users after adding
+    } catch (error: any) {
+      setErrorMessage(error.message || "createUserError");
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
   };
 
-  const handleUpdateUser = (updatedUser: Omit<User, "status">) => {
-    // Simulate updating a user (replace with actual API call)
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === updatedUser.id
-          ? { ...user, ...updatedUser }
-          : user
-      )
-    );
-    setSuccessMessage("userUpdatedSuccess");
-    setShowUpdateModal(false);
-    setTimeout(() => setSuccessMessage(null), 3000); // Clear message after 3 seconds
+  const handleUpdateUser = async (updatedUser: User) => {
+    if (!user?.company_id) {
+      setErrorMessage("noCompanyId");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+
+    try {
+      const requestBody: any = {};
+      if (updatedUser.firstName !== selectedUser?.firstName)
+        requestBody.first_name = updatedUser.firstName;
+      if (updatedUser.lastName !== selectedUser?.lastName)
+        requestBody.last_name = updatedUser.lastName;
+      if (updatedUser.email !== selectedUser?.email)
+        requestBody.email = updatedUser.email;
+      if (updatedUser.status !== selectedUser?.status)
+        requestBody.status =
+          updatedUser.status === "Active" ? "active" : "inactive";
+
+      await updateUser(user.company_id, updatedUser.id, requestBody);
+      setSuccessMessage("userUpdatedSuccess");
+      setShowUpdateModal(false);
+      setTimeout(() => setSuccessMessage(null), 3000);
+      fetchUsers(); // Refresh users after updating
+    } catch (error: any) {
+      setErrorMessage(error.message || "updateUserError");
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
   };
 
   const handleEditUser = (user: User) => {
@@ -123,7 +125,7 @@ const UsersPage: React.FC = () => {
           <span>{t(successMessage)}</span>
         </div>
       )}
-      {error && (
+      {(error || errorMessage) && (
         <div
           className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium mb-4"
           role="alert"
@@ -143,12 +145,15 @@ const UsersPage: React.FC = () => {
               d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>{t(error)}</span>
+          <span>{t(`errors.${error || errorMessage}`)}</span>
         </div>
       )}
       <UsersTable
         users={users}
         isLoading={isLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
         onEdit={handleEditUser}
         onAdd={() => setShowAddModal(true)}
       />

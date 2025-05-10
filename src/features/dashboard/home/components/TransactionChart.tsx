@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,6 +13,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
+import { getTransactionChartData } from "../services/dashboardService";
 
 ChartJS.register(
   CategoryScale,
@@ -26,57 +28,37 @@ ChartJS.register(
 
 const TransactionChart: React.FC = () => {
   const { t, i18n } = useTranslation("dashboard");
-  const [selectedMonth, setSelectedMonth] = useState("january");
 
-  const months = [
-    "january",
-    "february",
-    "march",
-    "april",
-    "may",
-    "june",
-    "july",
-    "august",
-    "september",
-    "october",
-    "november",
-    "december",
-  ];
-
-  // Get the month index (1-12) for the selected month
-  const monthIndex = months.indexOf(selectedMonth) + 1;
-  const monthStr = monthIndex < 10 ? `0${monthIndex}` : `${monthIndex}`;
-
-  // Generate labels for 30 days
-  const labels = Array.from({ length: 30 }, (_, i) => {
-    const day = (i + 1).toString().padStart(2, "0");
-    return `${day}/${monthStr}/25`;
+  const {
+    data: chartResponse,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["transactionChart"],
+    queryFn: getTransactionChartData,
+    retry: false,
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Generate mock transaction data for 30 days
-  // Extend the existing pattern and add more data
-  const baseTransactions = [
-    200, 300, 400, 868, 500, 600, 550, 700, 650, 600, 500, 450,
-  ];
-  const transactions = Array.from({ length: 30 }, (_, i) => {
-    if (i < baseTransactions.length) {
-      return baseTransactions[i];
-    }
-    // Generate random data for remaining days (between 200 and 900 to stay within chart range)
-    return Math.floor(Math.random() * (900 - 200 + 1)) + 200;
-  });
+  const labels =
+    chartResponse?.data.map((entry) => {
+      const date = new Date(entry.date);
+      return `${date.getDate().toString().padStart(2, "0")}/${(
+        date.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
+    }) || [];
 
-  const mockData = {
-    labels,
-    transactions,
-  };
+  const transactions =
+    chartResponse?.data.map((entry) => entry.transactionCount) || [];
 
   const chartData = {
-    labels: mockData.labels,
+    labels,
     datasets: [
       {
         label: t("dashboard.chart.transactions"),
-        data: mockData.transactions,
+        data: transactions,
         borderColor: "rgb(34, 197, 94)",
         backgroundColor: "rgba(34, 197, 94, 0.1)",
         fill: true,
@@ -110,44 +92,53 @@ const TransactionChart: React.FC = () => {
           display: false,
         },
         ticks: {
-          maxTicksLimit: 10, // Limit the number of ticks to avoid clutter
+          maxTicksLimit: 10,
         },
       },
       y: {
         beginAtZero: true,
-        max: 1000,
+        max: 10,
         ticks: {
-          stepSize: 200,
+          stepSize: 2,
         },
       },
     },
   };
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg max-w-full p-6">
+        <h2 className="text-xl font-semibold font-arabic text-gray-800">
+          {t("dashboard.chart.title")}
+        </h2>
+        <p className="text-red-500">
+          Error loading chart data: {error.message}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
       className="bg-white rounded-xl shadow-lg max-w-full"
       dir={i18n.language === "ar" ? "ltr" : undefined}
     >
-      <div className="flex justify-between items-center p-6 pb-4">
+      <div className="p-6 pb-4">
         <h2 className="text-xl font-semibold font-arabic text-gray-800">
           {t("dashboard.chart.title")}
         </h2>
-        <select
-          className="py-2 px-3 text-sm font-arabic font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          aria-label={t("dashboard.chart.title")}
-        >
-          {months.map((month) => (
-            <option key={month} value={month}>
-              {t(`dashboard.months.${month}`)}
-            </option>
-          ))}
-        </select>
       </div>
-      <div className="h-64 px-6 pb-6">
-        <Line data={chartData} options={options} />
-      </div>
+      {isLoading ? (
+        <div className="h-64 px-6 pb-6 flex items-center justify-center">
+          <div className="animate-pulse text-gray-500">
+            {t("dashboard.table.loading")}
+          </div>
+        </div>
+      ) : (
+        <div className="h-64 px-6 pb-6">
+          <Line data={chartData} options={options} />
+        </div>
+      )}
     </div>
   );
 };

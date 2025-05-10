@@ -1,13 +1,55 @@
 {
   "page": {
-    "title": "إدارة الإشعارات"
+    "title": "الإشعارات"
+  },
+  "addModal": {
+    "title": "إضافة إشعار جديد",
+    "targetReceivers": "المستلمون المستهدفون",
+    "placeholder_target": "اختر المستلمين المستهدفين",
+    "notificationType": "نوع الإشعار",
+    "placeholder_type": "اختر نوع الإشعار",
+    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
+    "placeholder_title_en": "أدخل عنوان الرسالة بالإنجليزية",
+    "messageTitleAr": "عنوان الرسالة (العربية)",
+    "placeholder_title_ar": "أدخل عنوان الرسالة بالعربية",
+    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
+    "placeholder_content_en": "أدخل محتوى الرسالة بالإنجليزية",
+    "messageContentAr": "محتوى الرسالة (العربية)",
+    "placeholder_content_ar": "أدخل محتوى الرسالة بالعربية",
+    "skuOrUpc": "SKU أو UPC",
+    "placeholder_skuOrUpc": "أدخل SKU أو UPC",
+    "submit": "إرسال",
+    "close": "إغلاق",
+    "confirmAdd": "تأكيد إنشاء الإشعار",
+    "addConfirmMessage": "هل أنت متأكد من إنشاء هذا الإشعار؟",
+    "cancel": "إلغاء",
+    "product": "المنتج",
+    "placeholder_product": "اختر المنتج"
+  },
+  "modal": {
+    "title_view": "تفاصيل الإشعار",
+    "targetReceivers": "المستلمون المستهدفون",
+    "notificationType": "نوع الإشعار",
+    "product": "المنتج",
+    "sentBy": "تم الإرسال بواسطة",
+    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
+    "messageTitleAr": "عنوان الرسالة (العربية)",
+    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
+    "messageContentAr": "محتوى الرسالة (العربية)",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "readStatus": "حالة القراءة",
+    "close": "إغلاق",
+    "placeholder_target": "اختر المستلمين المستهدفين",
+    "placeholder_type": "اختر نوع الإشعار",
+    "placeholder_product": "اختر المنتج"
   },
   "table": {
-    "title": "إدارة الإشعارات",
+    "title": "الإشعارات",
     "addNotification": "إضافة إشعار",
-    "targetReceivers": "المستلمون المستهدفون",
-    "notificationType": "النوع",
+    "notificationType": "نوع الإشعار",
     "messageTitle": "عنوان الرسالة",
+    "messageContent": "محتوى الرسالة",
     "createdAt": "تاريخ الإنشاء",
     "noNotifications": "لم يتم العثور على إشعارات",
     "target_all_users": "جميع المستخدمين",
@@ -15,44 +57,33 @@
     "target_expiring_warranty_users": "مستخدمو الضمان المنتهي",
     "target_old_records_users": "مستخدمو السجلات القديمة",
     "type_WARRANTY_EXPIRY": "انتهاء الضمان",
-    "type_PROMOTION": "العروض الترويجية",
+    "type_PROMOTION": "العرض الترويجي",
     "type_GENERAL_ANNOUNCEMENT": "إعلان عام",
     "type_RETURN_DEADLINE": "موعد الإرجاع",
     "type_EXCHANGE_PERIOD": "فترة الاستبدال",
     "type_RECALL": "الاستدعاء"
   },
-  "modal": {
-    "title_view": "تفاصيل الإشعار",
-    "close": "إغلاق",
-    "targetReceivers": "المستلمون المستهدفون",
-    "notificationType": "نوع الإشعار",
-    "product": "المنتج",
-    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
-    "messageTitleAr": "عنوان الرسالة (العربية)",
-    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
-    "messageContentAr": "محتوى الرسالة (العربية)",
-    "createdAt": "تاريخ الإنشاء"
+  "success": {
+    "notificationCreated": "تم إنشاء الإشعار بنجاح"
   },
-  "addModal": {
-    "title": "إنشاء إشعار",
-    "targetReceivers": "المستلمون المستهدفون",
-    "product": "المنتج",
-    "notificationType": "نوع الإشعار",
-    "messageTitleEn": "عنوان الرسالة (الإنجليزية)",
-    "messageTitleAr": "عنوان الرسالة (العربية)",
-    "messageContentEn": "محتوى الرسالة (الإنجليزية)",
-    "messageContentAr": "محتوى الرسالة (العربية)",
-    "placeholder_target": "اختر المستلمين المستهدفين",
-    "placeholder_product": "اختر المنتج",
-    "placeholder_type": "اختر نوع الإشعار",
-    "placeholder_title_en": "أدخل العنوان بالإنجليزية",
-    "placeholder_title_ar": "أدخل العنوان بالعربية",
-    "placeholder_content_en": "أدخل المحتوى بالإنجليزية",
-    "placeholder_content_ar": "أدخل المحتوى بالعربية",
-    "submit": "إنشاء الإشعار"
+  "errors": {
+    "invalidResponseFormat": "تنسيق الاستجابة غير صالح من الخادم",
+    "missingRequiredFields": "حقول الإشعار المطلوبة مفقودة",
+    "forbiddenError": "غير مخول للوصول إلى هذا المورد",
+    "fetchNotificationsError": "فشل في جلب الإشعارات",
+    "noCompanyId": "معرف الشركة غير متوفر",
+    "validationError": "يرجى ملء جميع الحقول المطلوبة",
+    "notFoundError": "لم يتم العثور على مستخدمين للهدف المحدد",
+    "serverError": "حدث خطأ في الخادم أثناء إنشاء الإشعار",
+    "createNotificationError": "فشل في إنشاء الإشعار",
+    "fetchProductsError": "فشل في جلب المنتجات",
+    "invalidProductResponseFormat": "تنسيق استجابة المنتج غير صالح من الخادم",
+    "invalidNotificationType": "نوع الإشعار غير صالح من الخادم"
   },
-  "notificationCreated": "تم إنشاء الإشعار بنجاح",
-  "fetchError": "فشل في جلب الإشعارات",
-  "createError": "فشل في إنشاء الإشعار",
-  "validationError": "يرجى ملء جميع الحقول المطلوبة بشكل صحيح"
+  "pagination": {
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
+    "previous": "السابق",
+    "next": "التالي"
+  }
 }

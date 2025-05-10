@@ -1,0 +1,89 @@
+{
+  "page": {
+    "title": "Warranty Providers"
+  },
+  "table": {
+    "title": "Warranty Providers",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "createdAt": "Created At",
+    "status": "Status",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "noProviders": "No warranty providers found",
+    "addProvider": "Add Provider"
+  },
+  "modal": {
+    "title": "Add Warranty Provider",
+    "title_view": "View Warranty Provider",
+    "confirmAddSection": "Confirm Add Warranty Provider",
+    "addConfirm": "Are you sure you want to add this warranty provider?",
+    "submit": "Submit",
+    "name_en": "Name (English)",
+    "name_ar": "Name (Arabic)",
+    "provider_name_en": "Provider Name (English)",
+    "provider_name_ar": "Provider Name (Arabic)",
+    "notes_en": "Notes (English)",
+    "notes_ar": "Notes (Arabic)",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address_url": "Address URL",
+    "website_url": "Website URL",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "password": "Password",
+    "status": "Status",
+    "placeholders": {
+      "name_en": "Enter provider name in English",
+      "name_ar": "Enter provider name in Arabic",
+      "name": "Enter provider name",
+      "email": "Enter email",
+      "phone": "Enter phone number (e.g., +1234567890)",
+      "password": "Enter password",
+      "status": "Select status"
+    },
+    "addProvider": "Add Provider",
+    "cancel": "Cancel",
+    "close": "Close",
+    "submitUpdate": "Edit",
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "invalidEmail": "Invalid email format",
+      "phoneRequired": "Phone number is required",
+      "invalidPhone": "Invalid phone number format (e.g., +1234567890)",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters long",
+      "passwordUpperCase": "Password must contain at least one uppercase letter",
+      "passwordLowerCase": "Password must contain at least one lowercase letter",
+      "passwordDigit": "Password must contain at least one digit",
+      "passwordSpecialChar": "Password must contain at least one special character (@$!%*#?&)",
+      "statusRequired": "Status is required"
+    }
+  },
+  "updateModal": {
+    "title": "Update Warranty Provider",
+    "updateProvider": "Update Provider"
+  },
+  "pagination": {
+    "pageStart": "Page",
+    "pageMiddle": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "providerAddedSuccess": "Warranty provider added successfully",
+  "providerUpdatedSuccess": "Warranty provider updated successfully",
+  "errors": {
+    "fetchProvidersError": "Failed to load warranty providers",
+    "updateProviderError": "Failed to update warranty provider",
+    "createProviderError": "Failed to create warranty provider",
+    "noCompanyId": "No company ID available",
+    "forbiddenError": "You are not authorized to perform this action",
+    "badRequestError": "Invalid request",
+    "notFoundError": "Provider or company not found",
+    "methodNotAllowedError": "The requested method is not allowed for this endpoint",
+    "emailAlreadyExistsError": "This email is already registered"
+  }
+}

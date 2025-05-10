@@ -6,7 +6,9 @@
     "productsManagement": "Products Management",
     "notificationsManagement": "Notifications Management",
     "userManagement": "User Management",
-    "reviews": "Reviews"
+    "warrantyProviders":"Warranty Providers",
+    "reviews": "Reviews",
+    "logout": "Log out"
   },
   "dashboard": {
     "title": "Dashboard",

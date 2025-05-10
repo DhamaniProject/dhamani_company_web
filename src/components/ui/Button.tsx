@@ -39,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {isLoading ? (
-        <span className="flex items-center gap-2">
+        <span className="flex items-center justify-center w-full">
           <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
             <circle
               cx="12"
@@ -51,7 +51,6 @@ const Button: React.FC<ButtonProps> = ({
             />
             <path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
-          {t("loading")}
         </span>
       ) : (
         children

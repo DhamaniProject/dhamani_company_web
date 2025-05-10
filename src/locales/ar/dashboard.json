@@ -6,38 +6,42 @@
     "productsManagement": "إدارة المنتجات",
     "notificationsManagement": "إدارة الإشعارات",
     "userManagement": "إدارة المستخدم",
-    "reviews": "المراجعات"
+    "warrantyProviders": "مزودو الضمان",
+    "reviews": "المراجعات",
+    "logout": "تسجيل الخروج"
   },
-  "title": "لوحة التحكم",
-  "metrics": {
-    "totalWarranties": "إجمالي الضمانات",
-    "eligibleReturns": "الإرجاعات المؤهلة",
-    "eligibleExchanges": "الاستبدالات المؤهلة",
-    "averageRating": "متوسط التقييم"
-  },
-  "chart": {
-    "title": "نظرة عامة على المعاملات",
-    "transactions": "المعاملات"
-  },
-  "table": {
-    "title": "المعاملات الأخيرة",
-    "product": "المنتج",
-    "customerName": "اسم العميل",
-    "customerPhone": "رقم هاتف العميل",
-    "date": "التاريخ",
-    "type": "النوع",
-    "status": "الحالة",
-    "allTypes": "جميع الأنواع",
-    "allStatuses": "جميع الحالات",
-    "warranty": "الضمان",
-    "exchange": "الاستبدال",
-    "return": "الإرجاع",
-    "status_active": "نشط",
-    "status_inactive": "غير نشط",
-    "filterByPhone": "تصفية حسب رقم الهاتف",
-    "search": "بحث",
-    "loading": "جارٍ التحميل...",
-    "noResults": "لم يتم العثور على معاملات"
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "metrics": {
+      "totalWarranties": "إجمالي الضمانات",
+      "eligibleReturns": "الإرجاعات المؤهلة",
+      "eligibleExchanges": "الاستبدالات المؤهلة",
+      "averageRating": "متوسط التقييم"
+    },
+    "chart": {
+      "title": "نظرة عامة على المعاملات",
+      "transactions": "المعاملات"
+    },
+    "table": {
+      "title": "المعاملات الأخيرة",
+      "product": "المنتج",
+      "customerName": "اسم العميل",
+      "customerPhone": "رقم هاتف العميل",
+      "date": "التاريخ",
+      "type": "النوع",
+      "status": "الحالة",
+      "allTypes": "جميع الأنواع",
+      "allStatuses": "جميع الحالات",
+      "warranty": "الضمان",
+      "exchange": "الاستبدال",
+      "return": "الإرجاع",
+      "status_active": "نشط",
+      "status_inactive": "غير نشط",
+      "filterByPhone": "تصفية حسب رقم الهاتف",
+      "search": "بحث",
+      "loading": "جارٍ التحميل...",
+      "noResults": "لم يتم العثور على معاملات"
+    }
   },
   "months": {
     "january": "يناير",

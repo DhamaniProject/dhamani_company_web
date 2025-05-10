@@ -9,7 +9,10 @@
   "signUpLinkAria": "Navigate to sign up page",
   "errors": {
     "emptyFields": "Please fill in all fields",
+    "emptyEmail": "Please enter your email",
+    "emptyPassword": "Please enter your password",
+    "invalidEmail": "Please enter a valid email address",
     "invalidCredentials": "Invalid email or password",
-    "invalidEmail": "Please enter a valid email address"
+    "serverError": "An error occurred. Please try again later"
   }
 }

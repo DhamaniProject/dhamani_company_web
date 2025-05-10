@@ -1,94 +1,116 @@
-// src/features/auth/hooks/useLoginForm.ts
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { login } from "../services/loginAuthService";
+import { useAuth } from "../../../../context/AuthContext";
 
-interface LoginFormState {
+export interface FormState {
   email: string;
   password: string;
   rememberMe: boolean;
-  error: string;
-  isLoading: boolean;
 }
 
 export const useLoginForm = () => {
-  const [state, setState] = useState<LoginFormState>({
+  const [formState, setFormState] = useState<FormState>({
     email: "",
     password: "",
     rememberMe: false,
-    error: "",
-    isLoading: false,
   });
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { refetchUser, setIsSubmitting } = useAuth();
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  console.log("useLoginForm rendered, globalError:", globalError); // Debug log
 
-  const updateField = (
-    field: keyof Omit<LoginFormState, "error" | "isLoading">,
-    value: string | boolean
-  ) => {
-    setState((prev) => ({
-      ...prev,
-      [field]: value,
-      error: "", // Clear error on input change
-    }));
+  const updateField = (field: keyof FormState, value: string | boolean) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+    if (field === "email" || field === "password") {
+      if (fieldErrors[field]) {
+        setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+      }
+      if (globalError) {
+        setGlobalError(null);
+      }
+    }
   };
 
-  const validateForm = (): string => {
-    if (!state.email && !state.password) {
-      return "errors.emptyFields";
-    }
-    if (!state.email) {
-      return "errors.emptyFields";
-    }
-    if (!state.password) {
-      return "errors.emptyFields";
-    }
-    if (!emailRegex.test(state.email)) {
-      return "errors.invalidEmail";
-    }
-    return "";
+  const validateFields = () => {
+    const errors: { email?: string; password?: string } = {};
+    const { email, password } = formState;
+
+    if (!email) errors.email = "emptyEmail";
+    else if (!/\S+@\S+\.\S+/.test(email)) errors.email = "invalidEmail";
+
+    if (!password) errors.password = "emptyPassword";
+
+    return errors;
   };
 
   const handleSubmit = async (
-    e: FormEvent<HTMLFormElement>,
+    e: React.FormEvent<HTMLFormElement>,
     onSuccess: (token: string) => void
   ) => {
     e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      setState((prev) => ({ ...prev, error: validationError }));
+    e.stopPropagation();
+    console.log("handleSubmit: Form submitted"); // Debug log
+
+    const errors = validateFields();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      console.log("Validation errors:", errors); // Debug log
       return;
     }
 
-    setState((prev) => ({ ...prev, isLoading: true, error: "" }));
+    setIsLoading(true);
+    setFieldErrors({});
+    setGlobalError(null);
+    setIsSubmitting(true); // Disable useQuery
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
 
     try {
-      // Mock API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate invalid credentials for specific email/password
-          if (
-            state.email === "test@example.com" &&
-            state.password === "wrong"
-          ) {
-            reject(new Error("errors.invalidCredentials"));
-          } else {
-            resolve({ token: "mock-token" });
-          }
-        }, 1000);
-      }).then((response: any) => {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        onSuccess(response.token);
+      const response = await login({
+        email: formState.email,
+        password: formState.password,
       });
-    } catch (err: any) {
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: err.message || "errors.invalidCredentials",
-      }));
+
+      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("refresh_token", response.refresh_token);
+      console.log("Tokens stored, calling refetchUser"); // Debug log
+
+      await refetchUser();
+      console.log("refetchUser complete, calling onSuccess"); // Debug log
+      onSuccess(response.access_token);
+    } catch (error: any) {
+      console.error("Login error:", error); // Debug log
+      const errorCode =
+        error.code || error.response?.data?.code || "serverError";
+      const newError =
+        errorCode === "INVALID_CREDENTIALS" || error.response?.status === 401
+          ? "invalidCredentials"
+          : "serverError";
+      console.log("Setting globalError:", newError); // Debug log
+      setGlobalError(newError);
+      // Log to check persistence
+      setTimeout(() => {
+        console.log("After 3s, globalError is:", globalError); // Debug log
+      }, 3000);
+    } finally {
+      setIsLoading(false);
+      setIsSubmitting(false); // Re-enable useQuery
+      console.log("Form submission complete, isLoading:", false); // Debug log
     }
   };
 
   return {
-    ...state,
+    email: formState.email,
+    password: formState.password,
+    rememberMe: formState.rememberMe,
+    fieldErrors,
+    globalError,
+    isLoading,
     handleSubmit,
     updateField,
   };

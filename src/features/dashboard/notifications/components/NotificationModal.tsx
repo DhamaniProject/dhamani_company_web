@@ -6,7 +6,7 @@ import { Notification, Product } from "../types/types";
 interface NotificationModalProps {
   notification: Notification;
   onClose: () => void;
-  products?: Product[]; // Optional, for displaying product name
+  products?: Product[];
 }
 
 const NotificationModal: React.FC<NotificationModalProps> = ({
@@ -57,18 +57,18 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <strong className="text-sm font-medium text-gray-600">
-                {t("modal.targetReceivers")}
-              </strong>
-              <p className="text-sm text-gray-800">
-                {t(`table.target_${notification.targetReceivers}`)}
-              </p>
-            </div>
-            <div>
-              <strong className="text-sm font-medium text-gray-600">
                 {t("modal.notificationType")}
               </strong>
               <p className="text-sm text-gray-800">
                 {t(`table.type_${notification.notificationType}`)}
+              </p>
+            </div>
+            <div>
+              <strong className="text-sm font-medium text-gray-600">
+                {t("modal.targetReceivers")}
+              </strong>
+              <p className="text-sm text-gray-800">
+                {t(`table.target_${notification.targetReceivers}`)}
               </p>
             </div>
             {notification.productId && product && (
@@ -83,6 +83,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                 </p>
               </div>
             )}
+            <div>
+              <strong className="text-sm font-medium text-gray-600">
+                {t("modal.sentBy")}
+              </strong>
+              <p className="text-sm text-gray-800">{notification.sentBy}</p>
+            </div>
             <div>
               <strong className="text-sm font-medium text-gray-600">
                 {t("modal.messageTitleEn")}
@@ -121,6 +127,24 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               </strong>
               <p className="text-sm text-gray-800">
                 {new Date(notification.createdAt).toLocaleString()}
+              </p>
+            </div>
+            {notification.updatedAt && (
+              <div>
+                <strong className="text-sm font-medium text-gray-600">
+                  {t("modal.updatedAt")}
+                </strong>
+                <p className="text-sm text-gray-800">
+                  {new Date(notification.updatedAt).toLocaleString()}
+                </p>
+              </div>
+            )}
+            <div>
+              <strong className="text-sm font-medium text-gray-600">
+                {t("modal.readStatus")}
+              </strong>
+              <p className="text-sm text-gray-800">
+                {notification.readStatus || tCommon("notAvailable")}
               </p>
             </div>
           </div>

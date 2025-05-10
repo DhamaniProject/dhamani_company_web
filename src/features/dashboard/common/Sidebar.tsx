@@ -1,15 +1,22 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../../context/AuthContext";
+import { logout } from "../../auth/login/services/loginAuthService";
 
 const Sidebar = () => {
   const { t, i18n } = useTranslation("dashboard");
   const isRtl = i18n.language === "ar";
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  // Mock logged-in user data (replace with actual user data from auth context or API)
-  const loggedInUser = {
-    name: "Anas Alqunaid",
-    companyLogo: "/dhamaniLogo2.svg", // Placeholder for customer's company logo
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const navItemClass =
@@ -55,11 +62,20 @@ const Sidebar = () => {
       exact: true,
     },
     {
+      label: t("sidebar.warrantyProviders"),
+      to: "/dashboard/warrantyProviders",
+      key: "warrantyProviders",
+      exact: true,
+    },
+    {
       label: t("sidebar.companyProfile"),
       to: "/dashboard/profile",
       key: "profile",
     },
   ];
+
+  // Combine first_name and last_name for display
+  const fullName = user ? `${user.first_name} ${user.last_name}` : "User";
 
   return (
     <aside
@@ -78,12 +94,34 @@ const Sidebar = () => {
             aria-label="Dhamani logo"
           />
           {/* Company Logo */}
-          <img
-            src={loggedInUser.companyLogo}
-            alt={`${loggedInUser.name}'s company logo`}
-            className="h-10 w-10 rounded-full border border-gray-200 object-contain p-1"
-            aria-label="Company logo"
-          />
+          {isLoading ? (
+            <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+          ) : user?.company_logo ? (
+            <img
+              src={user.company_logo}
+              alt={t("sidebar.companyLogoAlt", { companyName: fullName })}
+              className="h-10 w-10 rounded-full border border-gray-200 object-contain p-1"
+              aria-label="Company logo"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-full border border-gray-200 p-1 flex items-center justify-center bg-gray-100">
+              <svg
+                className="h-6 w-6 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label={t("sidebar.placeholderCompanyLogoAlt")}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h-2m-6 0H3m6-10h6m-6 4h6"
+                />
+              </svg>
+            </div>
+          )}
           {/* Username */}
           <div
             className="flex items-center gap-2"
@@ -104,9 +142,13 @@ const Sidebar = () => {
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
               />
             </svg>
-            <span className="text-sm font-medium text-gray-800">
-              {loggedInUser.name}
-            </span>
+            {isLoading ? (
+              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+            ) : (
+              <span className="text-sm font-medium text-gray-800">
+                {fullName}
+              </span>
+            )}
           </div>
         </div>
 
@@ -129,6 +171,31 @@ const Sidebar = () => {
             </NavLink>
           ))}
         </nav>
+
+        {/* Logout Button */}
+        <div className="mt-auto">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-red-600 rounded-lg hover:bg-red-100 hover:text-red-800 transition-colors"
+            aria-label={t("sidebar.logout")}
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m5 4v-7a3 3 0 00-3-3H5"
+              />
+            </svg>
+            {t("sidebar.logout")}
+          </button>
+        </div>
       </div>
     </aside>
   );

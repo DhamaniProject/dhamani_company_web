@@ -18,5 +18,6 @@
   "arabic": "Arabic",
   "switchToEnglish": "Switch to English",
   "switchToArabic": "Switch to Arabic",
-  "languageSwitcher": "Language switcher"
+  "languageSwitcher": "Language switcher",
+  "notAvailable": "Not Available"
 }

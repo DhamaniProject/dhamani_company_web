@@ -17,19 +17,54 @@ const NotificationsTable: React.FC = () => {
     error,
     fetchNotifications,
     createNotification,
+    totalNotifications,
+    currentPage,
+    setCurrentPage,
+    fetchProducts,
   } = useNotificationsTable();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
+  const limit = 10;
 
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    console.log(
+      "NotificationsTable useEffect triggered with page:",
+      currentPage
+    );
+    fetchNotifications(limit, (currentPage - 1) * limit);
+  }, [fetchNotifications, currentPage]);
+
+  const totalPages = Math.ceil(totalNotifications / limit);
+
+  const handlePageChange = (page: number) => {
+    console.log("Changing page to:", page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Log notifications for debugging
+  console.log("Rendering notifications:", notifications);
+
+  // Fallback UI for missing company_id
+  if (error === "noCompanyId") {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        {t("errors.noCompanyId")}
+      </div>
+    );
+  }
+
+  const currentPageNumber = currentPage + 1;
+  const paginationText = `${t("pagination.pageStart")} ${currentPageNumber} ${t(
+    "pagination.pageMiddle"
+  )} ${totalPages}`;
 
   return (
     <div
       className="max-w-full"
-      dir={i18n.language === "ar" ? "rtl" : undefined}
+      dir={i18n.language === "ar" ? "ltr" : undefined}
     >
       <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">
@@ -72,10 +107,10 @@ const NotificationsTable: React.FC = () => {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span>{t(successMessage)}</span>
+                  <span>{t(`success.${successMessage}`)}</span>
                 </div>
               )}
-              {error && (
+              {error && error !== "noCompanyId" && (
                 <div
                   className="p-3 border border-red-500 bg-red-50 text-red-700 rounded-lg flex items-center gap-2 font-medium m-4"
                   role="alert"
@@ -95,18 +130,13 @@ const NotificationsTable: React.FC = () => {
                       d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>{t(error)}</span>
+                  <span>{t(`errors.${error}`)}</span>
                 </div>
               )}
               {/* Table */}
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-start">
-                      <span className="text-xs font-semibold uppercase text-gray-600">
-                        {t("table.targetReceivers")}
-                      </span>
-                    </th>
                     <th scope="col" className="px-6 py-3 text-start">
                       <span className="text-xs font-semibold uppercase text-gray-600">
                         {t("table.notificationType")}
@@ -119,6 +149,11 @@ const NotificationsTable: React.FC = () => {
                     </th>
                     <th scope="col" className="px-6 py-3 text-start">
                       <span className="text-xs font-semibold uppercase text-gray-600">
+                        {t("table.messageContent")}
+                      </span>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-start">
+                      <span className="text-xs font-semibold uppercase text-gray-600">
                         {t("table.createdAt")}
                       </span>
                     </th>
@@ -126,45 +161,62 @@ const NotificationsTable: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {notifications.length > 0 ? (
-                    notifications.map((notification) => (
-                      <tr
-                        key={notification.id}
-                        onClick={() => setSelectedNotification(notification)}
-                        className="cursor-pointer hover:bg-gray-50"
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            setSelectedNotification(notification);
-                          }
-                        }}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {t(`table.target_${notification.targetReceivers}`)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {t(`table.type_${notification.notificationType}`)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {i18n.language === "ar"
-                              ? notification.messageTitle.ar
-                              : notification.messageTitle.en}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-gray-800 font-normal">
-                            {new Date(
-                              notification.createdAt
-                            ).toLocaleDateString()}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    notifications
+                      .map((notification) => {
+                        if (!notification || !notification.notificationType) {
+                          console.warn(
+                            "Skipping invalid notification:",
+                            notification
+                          );
+                          return null;
+                        }
+                        return (
+                          <tr
+                            key={notification.id}
+                            onClick={() =>
+                              setSelectedNotification(notification)
+                            }
+                            className="cursor-pointer hover:bg-gray-50"
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                setSelectedNotification(notification);
+                              }
+                            }}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-sm text-gray-800 font-normal">
+                                {t(
+                                  `table.type_${notification.notificationType}`
+                                )}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-sm text-gray-800 font-normal">
+                                {i18n.language === "ar"
+                                  ? notification.messageTitle.ar
+                                  : notification.messageTitle.en}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-sm text-gray-800 font-normal">
+                                {i18n.language === "ar"
+                                  ? notification.messageContent.ar
+                                  : notification.messageContent.en}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-sm text-gray-800 font-normal">
+                                {new Date(
+                                  notification.createdAt
+                                ).toLocaleDateString()}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                      .filter((row): row is JSX.Element => row !== null)
                   ) : (
                     <tr>
                       <td
@@ -179,6 +231,35 @@ const NotificationsTable: React.FC = () => {
                   )}
                 </tbody>
               </table>
+              {totalPages > 1 && (
+                <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
+                  <p className="text-sm text-gray-600">{paginationText}</p>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 0))
+                      }
+                      disabled={currentPage === 0 || isLoading}
+                      className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
+                      aria-label={t("pagination.previous")}
+                    >
+                      {t("pagination.previous")}
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, totalPages - 1)
+                        )
+                      }
+                      disabled={currentPage === totalPages - 1 || isLoading}
+                      className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+                      aria-label={t("pagination.next")}
+                    >
+                      {t("pagination.next")}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -189,6 +270,7 @@ const NotificationsTable: React.FC = () => {
           onClose={() => setShowAddModal(false)}
           onAdd={createNotification}
           products={products}
+          fetchProducts={fetchProducts}
         />
       )}
       {selectedNotification && (

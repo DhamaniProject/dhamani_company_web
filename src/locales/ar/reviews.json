@@ -1,13 +1,37 @@
 {
   "page": {
-    "title": "إدارة المراجعات"
+    "title": "التقييمات"
   },
   "table": {
-    "title": "إدارة المراجعات",
-    "reviewerName": "اسم المراجع",
-    "reviewText": "نص المراجعة",
+    "title": "تقييمات المستخدمين",
+    "reviewerName": "المراجع",
+    "reviewText": "التقييم",
     "rating": "التقييم",
+    "createdAt": "التاريخ",
+    "noReviews": "لم يتم العثور على تقييمات",
+    "minRatingPlaceholder": "الحد الأدنى للتقييم (1-5)",
+    "maxRatingPlaceholder": "الحد الأقصى للتقييم (1-5)",
+    "search": "بحث"
+  },
+  "modal": {
+    "title": "تفاصيل التقييم",
+    "reviewerName": "المراجع",
+    "rating": "التقييم",
+    "reviewText": "نص التقييم",
     "createdAt": "تاريخ الإنشاء",
-    "noReviews": "لم يتم العثور على مراجعات"
+    "close": "إغلاق"
+  },
+  "pagination": {
+    "pageStart": "الصفحة",
+    "pageMiddle": "من",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "errors": {
+    "fetchReviewsError": "فشل في تحميل التقييمات",
+    "noCompanyId": "معرف الشركة غير متوفر",
+    "forbiddenError": "غير مصرح لك بمشاهدة التقييمات",
+    "badRequestError": "طلب غير صالح. تأكد من أن التقييمات بين 1 و5.",
+    "notFoundError": "لم يتم العثور على تقييمات لهذه الشركة"
   }
 }

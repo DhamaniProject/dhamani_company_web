@@ -1,3 +1,5 @@
+// src/i18n.ts
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import enLogin from "./locales/en/login.json";
@@ -20,6 +22,8 @@ import enReviews from "./locales/en/Reviews.json";
 import arReviews from "./locales/ar/Reviews.json";
 import enUsers from "./locales/en/users.json";
 import arUsers from "./locales/ar/users.json";
+import enWarranty from "./locales/en/warranty_providers.json";
+import arWarranty from "./locales/ar/warranty_providers.json";
 
 const resources = {
   en: {
@@ -33,6 +37,7 @@ const resources = {
     notifications: enNotifications,
     reviews: enReviews,
     users: enUsers,
+    warrantyProviders: enWarranty,
   },
   ar: {
     login: arLogin,
@@ -45,13 +50,18 @@ const resources = {
     notifications: arNotifications,
     reviews: arReviews,
     users: arUsers,
+    warrantyProviders: arWarranty,
   },
 };
+
+// Get the stored language from localStorage or default to 'en'
+const storedLanguage = localStorage.getItem('language') || 'en';
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: storedLanguage, // Use the stored language instead of hardcoded 'en'
     fallbackLng: "en",
     supportedLngs: ["en", "ar"],
     ns: [
@@ -64,6 +74,8 @@ i18n
       "products",
       "notifications",
       "reviews",
+      "users",
+      "warrantyProviders",
     ],
     defaultNS: "common",
     interpolation: {
@@ -73,9 +85,24 @@ i18n
   })
   .then(() => {
     console.log("i18next initialized with language:", i18n.language);
+    console.log("Available namespaces:", i18n.options.ns);
+    console.log(
+      "Records namespace (en):",
+      i18n.getResourceBundle("en", "records")
+    );
+    console.log(
+      "Records namespace (ar):",
+      i18n.getResourceBundle("ar", "records")
+    );
   })
   .catch((err) => {
     console.error("i18next initialization failed:", err);
   });
+
+// Add a function to change language that also updates localStorage
+export const changeLanguage = (language: string) => {
+  localStorage.setItem('language', language);
+  i18n.changeLanguage(language);
+};
 
 export default i18n;

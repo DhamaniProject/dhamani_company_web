@@ -1,18 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import Button from "../../../../components/ui/Button";
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  status: "Active" | "Inactive";
-}
+import { User } from "../types/types";
 
 interface UsersTableProps {
   users: User[];
   isLoading: boolean;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
   onEdit: (user: User) => void;
   onAdd: () => void;
 }
@@ -20,14 +16,21 @@ interface UsersTableProps {
 const UsersTable: React.FC<UsersTableProps> = ({
   users,
   isLoading,
+  currentPage,
+  totalPages,
+  onPageChange,
   onEdit,
   onAdd,
 }) => {
   const { t, i18n } = useTranslation("users");
   const { t: tCommon } = useTranslation("common");
 
+  const paginationText = `${t("pagination.pageStart")} ${currentPage + 1} ${t(
+    "pagination.pageMiddle"
+  )} ${totalPages}`;
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" dir="ltr">
       <div className="-m-1.5 overflow-x-auto">
         <div className="p-1.5 min-w-full inline-block align-middle">
           <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden font-arabic">
@@ -118,6 +121,30 @@ const UsersTable: React.FC<UsersTableProps> = ({
                 )}
               </tbody>
             </table>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 flex justify-between items-center border-t border-gray-200">
+                <p className="text-sm text-gray-600">{paginationText}</p>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => onPageChange(currentPage - 1)}
+                    disabled={currentPage === 0 || isLoading}
+                    className="py-2 px-4 text-sm font-medium rounded-lg bg-primary hover:bg-primary-hover"
+                    aria-label={t("pagination.previous")}
+                  >
+                    {t("pagination.previous")}
+                  </Button>
+                  <Button
+                    onClick={() => onPageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages - 1 || isLoading}
+                    className="py-2 px-4 text-sm font-medium rounded-lg border bg-primary hover:bg-primary-hover"
+                    aria-label={t("pagination.next")}
+                  >
+                    {t("pagination.next")}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
