@@ -256,7 +256,7 @@ const RecordsTable: React.FC = () => {
                                 "https://via.placeholder.com/40"
                               }
                               alt={record.product}
-                              className="w-10 h-10 rounded-full object-cover"
+                              className="w-10 h-10 object-cover"
                               onError={(e) => {
                                 e.currentTarget.src =
                                   "https://via.placeholder.com/40";

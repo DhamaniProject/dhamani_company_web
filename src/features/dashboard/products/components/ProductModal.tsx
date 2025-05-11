@@ -650,6 +650,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     handleImageChange,
     handleTypeChange,
     validateForm,
+    uploadProductImage,
   } = useProductForm(product);
   const { categories, isLoading: isCategoriesLoading } = useCategories();
   const {
@@ -701,8 +702,23 @@ const ProductModal: React.FC<ProductModalProps> = ({
           }),
         };
       }
-      if (editedFields.product_image)
-        updateData.product_image = formState.product_image;
+      if (editedFields.product_image) {
+        console.log('formState.product_image:', formState.product_image);
+        if (formState.product_image instanceof File) {
+          console.log('Uploading product image...');
+          try {
+            updateData.product_image = await uploadProductImage(formState.product_image, product.category.company_id || product.category.category_id);
+            console.log('Uploaded image URL:', updateData.product_image);
+          } catch (err) {
+            console.error('Product image upload error:', err);
+            setError('Product image upload error: ' + (err?.message || err));
+            setIsLoading(false);
+            return;
+          }
+        } else {
+          updateData.product_image = formState.product_image;
+        }
+      }
       if (editedFields.types) updateData.types = formState.types;
       if (editedFields.sku) updateData.sku = formState.sku;
       if (editedFields.upc) updateData.upc = formState.upc;

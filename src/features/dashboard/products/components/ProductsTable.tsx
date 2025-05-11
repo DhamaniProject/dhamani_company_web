@@ -97,7 +97,7 @@ const TableRow: React.FC<TableRowProps> = ({
           <img
             src={product.product_image || "https://via.placeholder.com/150"}
             alt={product.product_name.en}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10"
           />
           <span className="text-sm text-gray-800 font-normal">
             {i18n.language === "ar"
@@ -113,7 +113,7 @@ const TableRow: React.FC<TableRowProps> = ({
         <div className="flex gap-x-2">
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
-              product.types.includes(ProductType.Warranty)
+              product.types.includes(ProductType.Warranty) || product.warrantyPeriod > 0
                 ? "bg-primary text-white"
                 : "border-primary text-primary hover:bg-green-50"
             }`}
@@ -123,7 +123,7 @@ const TableRow: React.FC<TableRowProps> = ({
           </button>
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
-              product.types.includes(ProductType.Exchange)
+              product.types.includes(ProductType.Exchange) || product.exchangePeriod > 0
                 ? "bg-primary text-white"
                 : "border-primary text-primary hover:bg-green-50"
             }`}
@@ -133,7 +133,7 @@ const TableRow: React.FC<TableRowProps> = ({
           </button>
           <button
             className={`py-1 px-3 text-sm font-medium rounded-full border ${
-              product.types.includes(ProductType.Return)
+              product.types.includes(ProductType.Return) || product.returnPeriod > 0
                 ? "bg-primary text-white"
                 : "border-primary text-primary hover:bg-green-50"
             }`}

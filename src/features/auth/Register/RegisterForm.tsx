@@ -7,6 +7,47 @@ import CompanyLogoUpload from "./components/CompanyLogoUpload";
 import UserRegistrationForm from "./components/UserRegistrationForm";
 import RegistrationSteps from "./components/RegistrationSteps";
 
+// New TextAreaField component
+const TextAreaField = ({
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  required,
+  error,
+  className = ""
+}: {
+  id: string;
+  label: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  required?: boolean;
+  error?: string;
+  className?: string;
+}) => (
+  <div className={`flex flex-col gap-1 ${className}`}>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+    <textarea
+      id={id}
+      className={`w-full min-h-[120px] rounded-lg border border-gray-300 focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)] bg-white px-3 py-2 text-base text-gray-800 placeholder-gray-400 transition-all duration-150 resize-y shadow-sm ${error ? "border-red-500" : ""}`}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      required={required}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${id}-error` : undefined}
+    />
+    {error && (
+      <span id={`${id}-error`} className="text-sm text-red-600 mt-1">{error}</span>
+    )}
+  </div>
+);
+
 const RegisterForm: React.FC = () => {
   const { t } = useTranslation("register");
   const {
@@ -92,54 +133,6 @@ const RegisterForm: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="w-full sm:w-1/2">
                 <AuthInput
-                  id="companyDescriptionEn"
-                  label={t("companyDescriptionEn")}
-                  placeholder={t("companyDescriptionEnPlaceholder")}
-                  value={formData.companyDescriptionEn}
-                  onChange={(e) => handleTranslationChange("companyDescriptionEn", e.target.value)}
-                  required
-                  error={errors.companyDescriptionEn ? t(errors.companyDescriptionEn) : undefined}
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <AuthInput
-                  id="companyDescriptionAr"
-                  label={t("companyDescriptionAr")}
-                  placeholder={t("companyDescriptionArPlaceholder")}
-                  value={formData.companyDescriptionAr}
-                  onChange={(e) => handleTranslationChange("companyDescriptionAr", e.target.value)}
-                  required
-                  error={errors.companyDescriptionAr ? t(errors.companyDescriptionAr) : undefined}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-full sm:w-1/2">
-                <AuthInput
-                  id="companyTermsEn"
-                  label={t("companyTermsEn")}
-                  placeholder={t("companyTermsEnPlaceholder")}
-                  value={formData.companyTermsEn}
-                  onChange={(e) => handleTranslationChange("companyTermsEn", e.target.value)}
-                  required
-                  error={errors.companyTermsEn ? t(errors.companyTermsEn) : undefined}
-                />
-              </div>
-              <div className="w-full sm:w-1/2">
-                <AuthInput
-                  id="companyTermsAr"
-                  label={t("companyTermsAr")}
-                  placeholder={t("companyTermsArPlaceholder")}
-                  value={formData.companyTermsAr}
-                  onChange={(e) => handleTranslationChange("companyTermsAr", e.target.value)}
-                  required
-                  error={errors.companyTermsAr ? t(errors.companyTermsAr) : undefined}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-full sm:w-1/2">
-                <AuthInput
                   id="phoneNumber"
                   label={t("phoneNumber")}
                   placeholder={t("phoneNumberPlaceholder")}
@@ -186,12 +179,44 @@ const RegisterForm: React.FC = () => {
                 />
               </div>
             </div>
-            <CompanyLogoUpload
-              onLogoChange={handleLogoChange}
-              onLogoRemove={handleLogoRemove}
-              logo={formData.logo}
-              error={errors.logo ? t(errors.logo) : undefined}
-            />
+            <div className="flex flex-col gap-4">
+              <TextAreaField
+                id="companyDescriptionEn"
+                label={t("companyDescriptionEn")}
+                placeholder={t("companyDescriptionEnPlaceholder")}
+                value={formData.companyDescriptionEn}
+                onChange={(e) => handleTranslationChange("companyDescriptionEn", e.target.value)}
+                required
+                error={errors.companyDescriptionEn ? t(errors.companyDescriptionEn) : undefined}
+              />
+              <TextAreaField
+                id="companyDescriptionAr"
+                label={t("companyDescriptionAr")}
+                placeholder={t("companyDescriptionArPlaceholder")}
+                value={formData.companyDescriptionAr}
+                onChange={(e) => handleTranslationChange("companyDescriptionAr", e.target.value)}
+                required
+                error={errors.companyDescriptionAr ? t(errors.companyDescriptionAr) : undefined}
+              />
+              <TextAreaField
+                id="companyTermsEn"
+                label={t("companyTermsEn")}
+                placeholder={t("companyTermsEnPlaceholder")}
+                value={formData.companyTermsEn}
+                onChange={(e) => handleTranslationChange("companyTermsEn", e.target.value)}
+                required
+                error={errors.companyTermsEn ? t(errors.companyTermsEn) : undefined}
+              />
+              <TextAreaField
+                id="companyTermsAr"
+                label={t("companyTermsAr")}
+                placeholder={t("companyTermsArPlaceholder")}
+                value={formData.companyTermsAr}
+                onChange={(e) => handleTranslationChange("companyTermsAr", e.target.value)}
+                required
+                error={errors.companyTermsAr ? t(errors.companyTermsAr) : undefined}
+              />
+            </div>
             <Button type="submit" isLoading={isLoading} disabled={isLoading}>
               {t("nextStep")}
             </Button>

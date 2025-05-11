@@ -1,0 +1,128 @@
+"filename", "language", "TypeScript", "CSS", "TypeScript JSX", "JSON", "XML", "comment", "blank", "total"
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\App.tsx", "TypeScript JSX", 0, 0, 6, 0, 0, 0, 3, 9
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\assets\react.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 1
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\components\common\PrelineScript.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 2, 6, 31
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\components\ui\Button.tsx", "TypeScript JSX", 0, 0, 56, 0, 0, 1, 6, 63
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\components\ui\LanguageSwitcher.tsx", "TypeScript JSX", 0, 0, 47, 0, 0, 1, 6, 54
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\constants\routes.ts", "TypeScript", 12, 0, 0, 0, 0, 1, 1, 14
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\context\AuthContext.tsx", "TypeScript JSX", 0, 0, 65, 0, 0, 0, 8, 73
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\Register.tsx", "TypeScript JSX", 0, 0, 41, 0, 0, 0, 5, 46
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\RegisterForm.tsx", "TypeScript JSX", 0, 0, 252, 0, 0, 1, 7, 260
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\RegisterPage.tsx", "TypeScript JSX", 0, 0, 5, 0, 0, 0, 3, 8
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\components\CompanyLogoUpload.tsx", "TypeScript JSX", 0, 0, 125, 0, 0, 0, 7, 132
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\components\CompanyLogoUploader.tsx", "TypeScript JSX", 0, 0, 90, 0, 0, 0, 7, 97
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\components\RegistrationSteps.tsx", "TypeScript JSX", 0, 0, 51, 0, 0, 0, 4, 55
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\components\UserRegistrationForm.tsx", "TypeScript JSX", 0, 0, 91, 0, 0, 0, 5, 96
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\hooks\useRegisterForm.ts", "TypeScript", 240, 0, 0, 0, 0, 3, 19, 262
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\services\companyRegisterService.ts", "TypeScript", 25, 0, 0, 0, 0, 1, 1, 27
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\services\userRegisterService.ts", "TypeScript", 20, 0, 0, 0, 0, 0, 1, 21
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\types\companyRegister.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 1, 46
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\Register\types\userRegister.ts", "TypeScript", 20, 0, 0, 0, 0, 0, 1, 21
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\common\AuthInput.tsx", "TypeScript JSX", 0, 0, 46, 0, 0, 1, 4, 51
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\common\BlobsBackground.tsx", "TypeScript JSX", 0, 0, 51, 0, 0, 4, 5, 60
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\AuthForm.tsx", "TypeScript JSX", 0, 0, 138, 0, 0, 1, 12, 151
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\Login.tsx", "TypeScript JSX", 0, 0, 41, 0, 0, 0, 6, 47
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\LoginPage.tsx", "TypeScript JSX", 0, 0, 5, 0, 0, 0, 3, 8
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\hooks\useLoginForm.ts", "TypeScript", 96, 0, 0, 0, 0, 2, 18, 116
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\services\loginAuthService.ts", "TypeScript", 43, 0, 0, 0, 0, 17, 5, 65
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\login\types\auth.ts", "TypeScript", 26, 0, 0, 0, 0, 0, 4, 30
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\auth\services\authService.ts", "TypeScript", 32, 0, 0, 0, 0, 2, 7, 41
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\common\Sidebar.tsx", "TypeScript JSX", 0, 0, 185, 0, 0, 8, 12, 205
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\common\table.tsx", "TypeScript JSX", 0, 0, 115, 0, 0, 4, 5, 124
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\home\DashboardHomePage.tsx", "TypeScript JSX", 0, 0, 117, 0, 0, 3, 7, 127
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\home\components\MetricCard.tsx", "TypeScript JSX", 0, 0, 29, 0, 0, 0, 4, 33
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\home\components\TransactionChart.tsx", "TypeScript JSX", 0, 0, 136, 0, 0, 0, 11, 147
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\home\components\TransactionTable.tsx", "TypeScript JSX", 0, 0, 200, 0, 0, 4, 8, 212
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\home\services\dashboardService.ts", "TypeScript", 63, 0, 0, 0, 0, 0, 5, 68
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\NotificationsPage.tsx", "TypeScript JSX", 0, 0, 17, 0, 0, 0, 3, 20
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\components\AddNotificationModal.tsx", "TypeScript JSX", 0, 0, 385, 0, 0, 3, 9, 397
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\components\NotificationModal.tsx", "TypeScript JSX", 0, 0, 159, 0, 0, 2, 6, 167
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\components\NotificationsTable.tsx", "TypeScript JSX", 0, 0, 272, 0, 0, 6, 10, 288
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\components\UpdateNotificationModal.tsx", "TypeScript JSX", 0, 0, 364, 0, 0, 3, 8, 375
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\hooks\useNotificationsTable.ts", "TypeScript", 187, 0, 0, 0, 0, 5, 12, 204
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\services\notificationService.ts", "TypeScript", 342, 0, 0, 0, 0, 12, 32, 386
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\notifications\types\types.ts", "TypeScript", 38, 0, 0, 0, 0, 0, 2, 40
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\ProductsPage.tsx", "TypeScript JSX", 0, 0, 18, 0, 0, 0, 4, 22
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\components\AddProductModal.tsx", "TypeScript JSX", 0, 0, 537, 0, 0, 1, 15, 553
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\components\ProductModal.tsx", "TypeScript JSX", 0, 0, 856, 0, 0, 2, 19, 877
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\components\ProductsTable.tsx", "TypeScript JSX", 0, 0, 485, 0, 0, 5, 18, 508
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useCategories.ts", "TypeScript", 61, 0, 0, 0, 0, 0, 9, 70
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useProductFilters.ts", "TypeScript", 27, 0, 0, 0, 0, 0, 4, 31
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useProductForm.ts", "TypeScript", 222, 0, 0, 0, 0, 3, 18, 243
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useProductModal.ts", "TypeScript", 25, 0, 0, 0, 0, 0, 4, 29
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useProducts.ts", "TypeScript", 135, 0, 0, 0, 0, 1, 14, 150
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\hooks\useWarrantyProviders.ts", "TypeScript", 62, 0, 0, 0, 0, 0, 9, 71
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\services\productService.ts", "TypeScript", 547, 0, 0, 0, 0, 0, 25, 572
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\products\types\types.ts", "TypeScript", 82, 0, 0, 0, 0, 0, 8, 90
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\ProfilePage.tsx", "TypeScript JSX", 0, 0, 26, 0, 0, 1, 4, 31
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\components\ApiKeyInput.tsx", "TypeScript JSX", 0, 0, 45, 0, 0, 0, 3, 48
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\components\ProfileForm.tsx", "TypeScript JSX", 0, 0, 289, 0, 0, 3, 13, 305
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\hooks\useProfileForm.ts", "TypeScript", 234, 0, 0, 0, 0, 8, 23, 265
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\services\companyService.ts", "TypeScript", 19, 0, 0, 0, 0, 0, 4, 23
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\profile\types\company.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 3, 33
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\RecordsPage.tsx", "TypeScript JSX", 0, 0, 18, 0, 0, 1, 5, 24
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\components\AddRecordModal.tsx", "TypeScript JSX", 0, 0, 312, 0, 0, 4, 15, 331
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\components\RecordModal.tsx", "TypeScript JSX", 0, 0, 254, 0, 0, 4, 8, 266
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\components\RecordsTable.tsx", "TypeScript JSX", 0, 0, 400, 0, 0, 5, 13, 418
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\components\VerifiedRecordModal.tsx", "TypeScript JSX", 0, 0, 391, 0, 0, 1, 12, 404
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\components\VerifyRecordModal.tsx", "TypeScript JSX", 0, 0, 207, 0, 0, 1, 15, 223
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\hooks\useRecordsTable.ts", "TypeScript", 161, 0, 0, 0, 0, 2, 15, 178
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\services\recordService.ts", "TypeScript", 268, 0, 0, 0, 0, 3, 12, 283
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\records\types\types.ts", "TypeScript", 42, 0, 0, 0, 0, 2, 4, 48
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\ReviewsPage.tsx", "TypeScript JSX", 0, 0, 18, 0, 0, 0, 4, 22
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\components\ReviewModal.tsx", "TypeScript JSX", 0, 0, 110, 0, 0, 0, 6, 116
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\components\ReviewsTable.tsx", "TypeScript JSX", 0, 0, 296, 0, 0, 4, 9, 309
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\hooks\useReviews.ts", "TypeScript", 64, 0, 0, 0, 0, 0, 6, 70
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\services\reviewService.ts", "TypeScript", 46, 0, 0, 0, 0, 0, 5, 51
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\reviews\types\types.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 1, 8
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\UsersPage.tsx", "TypeScript JSX", 0, 0, 166, 0, 0, 1, 11, 178
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\components\AddUserModal.tsx", "TypeScript JSX", 0, 0, 195, 0, 0, 4, 14, 213
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\components\UpdateUserModal.tsx", "TypeScript JSX", 0, 0, 169, 0, 0, 3, 12, 184
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\components\UsersTable.tsx", "TypeScript JSX", 0, 0, 147, 0, 0, 3, 6, 156
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\hooks\useUsers.ts", "TypeScript", 55, 0, 0, 0, 0, 0, 6, 61
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\services\userService.ts", "TypeScript", 109, 0, 0, 0, 0, 0, 9, 118
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\users\types\types.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 1, 8
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\WarrantyProvidersPage.tsx", "TypeScript JSX", 0, 0, 70, 0, 0, 0, 8, 78
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\components\AddWarrantyProviderModal.tsx", "TypeScript JSX", 0, 0, 536, 0, 0, 0, 19, 555
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\components\StatusMessage.tsx", "TypeScript JSX", 0, 0, 57, 0, 0, 0, 6, 63
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\components\WarrantyProviderModal.tsx", "TypeScript JSX", 0, 0, 563, 0, 0, 1, 26, 590
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\components\WarrantyProvidersTable.tsx", "TypeScript JSX", 0, 0, 133, 0, 0, 2, 6, 141
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\hooks\useProviders.ts", "TypeScript", 80, 0, 0, 0, 0, 2, 7, 89
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\hooks\useWarrantyProviderState.ts", "TypeScript", 160, 0, 0, 0, 0, 0, 11, 171
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\services\warrantyProviderService.ts", "TypeScript", 133, 0, 0, 0, 0, 0, 10, 143
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\features\dashboard\warranty_providers\types\types.ts", "TypeScript", 17, 0, 0, 0, 0, 0, 2, 19
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\hooks\useDebounce.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 5, 18
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\i18n.ts", "TypeScript", 99, 0, 0, 0, 0, 3, 7, 109
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\layouts\AuthLayout.tsx", "TypeScript JSX", 0, 0, 17, 0, 0, 1, 3, 21
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\layouts\CompanyDashboardLayout.tsx", "TypeScript JSX", 0, 0, 27, 0, 0, 0, 4, 31
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\lib\supabase.ts", "TypeScript", 20, 0, 0, 0, 0, 2, 6, 28
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\common.json", "JSON", 0, 0, 0, 23, 0, 0, 1, 24
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\dashboard.json", "JSON", 0, 0, 0, 60, 0, 0, 1, 61
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\login.json", "JSON", 0, 0, 0, 18, 0, 0, 1, 19
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\notifications.json", "JSON", 0, 0, 0, 89, 0, 0, 1, 90
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\products.json", "JSON", 0, 0, 0, 133, 0, 0, 1, 134
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\profile.json", "JSON", 0, 0, 0, 53, 0, 0, 1, 54
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\records.json", "JSON", 0, 0, 0, 134, 0, 0, 1, 135
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\register.json", "JSON", 0, 0, 0, 113, 0, 0, 0, 113
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\reviews.json", "JSON", 0, 0, 0, 37, 0, 0, 1, 38
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\users.json", "JSON", 0, 0, 0, 68, 0, 0, 1, 69
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\ar\warranty_providers.json", "JSON", 0, 0, 0, 89, 0, 0, 1, 90
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\common.json", "JSON", 0, 0, 0, 23, 0, 0, 1, 24
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\dashboard.json", "JSON", 0, 0, 0, 60, 0, 0, 1, 61
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\login.json", "JSON", 0, 0, 0, 18, 0, 0, 1, 19
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\notifications.json", "JSON", 0, 0, 0, 89, 0, 0, 1, 90
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\products.json", "JSON", 0, 0, 0, 133, 0, 0, 1, 134
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\profile.json", "JSON", 0, 0, 0, 53, 0, 0, 0, 53
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\records.json", "JSON", 0, 0, 0, 134, 0, 0, 1, 135
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\register.json", "JSON", 0, 0, 0, 115, 0, 0, 1, 116
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\reviews.json", "JSON", 0, 0, 0, 37, 0, 0, 1, 38
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\users.json", "JSON", 0, 0, 0, 68, 0, 0, 1, 69
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\locales\en\warranty_providers.json", "JSON", 0, 0, 0, 89, 0, 0, 1, 90
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\main.tsx", "TypeScript JSX", 0, 0, 40, 0, 0, 1, 3, 44
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\routes\ProtectedRoute.tsx", "TypeScript JSX", 0, 0, 19, 0, 0, 0, 6, 25
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\routes\index.tsx", "TypeScript JSX", 0, 0, 52, 0, 0, 8, 6, 66
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\services\api.ts", "TypeScript", 41, 0, 0, 0, 0, 4, 5, 50
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\services\supabaseUploadService.ts", "TypeScript", 21, 0, 0, 0, 0, 12, 6, 39
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\styles\index.css", "CSS", 0, 32, 0, 0, 0, 0, 6, 38
+"c:\Users\abdu1\Desktop\Programmig\Dhamani-Project\dhamani-company-web\src\vite-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 1, 1, 2
+"Total", "-", 3976, 32, 9565, 1636, 1, 186, 848, 16244

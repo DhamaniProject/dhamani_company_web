@@ -71,6 +71,8 @@ export const useRecordsTable = () => {
           ) || enProductTranslation;
 
         const now = new Date();
+        const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+        
         const eligibleTypes: string[] = [];
 
         if (!item.is_active) {
@@ -100,8 +102,11 @@ export const useRecordsTable = () => {
         const warrantyDaysRemaining = item.warranty_end_date
           ? Math.max(
               Math.ceil(
-                (new Date(item.warranty_end_date).getTime() - now.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (new Date(Date.UTC(
+                  new Date(item.warranty_end_date).getFullYear(),
+                  new Date(item.warranty_end_date).getMonth(),
+                  new Date(item.warranty_end_date).getDate()
+                )).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
               ),
               0
             )
@@ -109,8 +114,11 @@ export const useRecordsTable = () => {
         const exchangeDaysRemaining = item.exchange_end_date
           ? Math.max(
               Math.ceil(
-                (new Date(item.exchange_end_date).getTime() - now.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (new Date(Date.UTC(
+                  new Date(item.exchange_end_date).getFullYear(),
+                  new Date(item.exchange_end_date).getMonth(),
+                  new Date(item.exchange_end_date).getDate()
+                )).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
               ),
               0
             )
@@ -118,8 +126,11 @@ export const useRecordsTable = () => {
         const returnDaysRemaining = item.return_end_date
           ? Math.max(
               Math.ceil(
-                (new Date(item.return_end_date).getTime() - now.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (new Date(Date.UTC(
+                  new Date(item.return_end_date).getFullYear(),
+                  new Date(item.return_end_date).getMonth(),
+                  new Date(item.return_end_date).getDate()
+                )).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
               ),
               0
             )

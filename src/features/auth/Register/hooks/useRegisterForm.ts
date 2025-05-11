@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { registerCompany } from "../services/companyRegisterService";
 import { CompanyRegisterRequest } from "../types/companyRegister";
 import { registerUser } from "../services/userRegisterService";
 import { UserRegisterRequest } from "../types/userRegister";
+import { uploadToSupabaseStorage } from '../../../../services/supabaseUploadService';
 
 interface FormData {
   companyNameEn: string;
@@ -51,7 +51,6 @@ interface FormMessage {
 export const useRegisterForm = () => {
   const { t } = useTranslation("register");
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -157,6 +156,16 @@ export const useRegisterForm = () => {
     if (!validateCompanyInfo()) return;
     setIsLoading(true);
     try {
+      let logoUrl: string | null = null;
+      if (formData.logo instanceof File) {
+        // Upload the logo and get the public URL
+        logoUrl = await uploadToSupabaseStorage(
+          formData.logo,
+          'company-logos',
+          formData.companyNameEn.replace(/\s+/g, '_')
+        );
+      }
+
       // Prepare request body
       const reqBody: CompanyRegisterRequest = {
         company_data: {
@@ -165,7 +174,7 @@ export const useRegisterForm = () => {
           phone_number: formData.phoneNumber,
           website_url: formData.companyWebsite,
           address_url: formData.addressUrl,
-          company_logo: null, // logo upload skipped for now
+          
         },
         translations: [
           {
@@ -182,10 +191,7 @@ export const useRegisterForm = () => {
           },
         ],
       };
-      if (formData.logo) {
-        // If you have a logo upload endpoint, handle it here and set company_logo to the URL
-        // For now, skip
-      } else {
+      if (!logoUrl) {
         delete reqBody.company_data.company_logo;
       }
       const response = await registerCompany(reqBody);
@@ -224,14 +230,29 @@ export const useRegisterForm = () => {
         password: data.password,
       };
       const response = await registerUser(reqBody);
-      if (response.success) {
-        setFormMessage({ type: "success", text: "userRegister.success" });
-        navigate("/auth/login");
+      if (response.user_id) {
+        setFormMessage({ 
+          type: "success", 
+          text: response.message || "userRegister.success" 
+        });
+        // If there's a warning, show it as an error message
+        if (response.warning) {
+          setFormMessage({ 
+            type: "error", 
+            text: response.warning 
+          });
+        }
       } else {
-        setFormMessage({ type: "error", text: response.message || "userRegister.genericError" });
+        setFormMessage({ 
+          type: "error", 
+          text: response.message || "userRegister.genericError" 
+        });
       }
     } catch (error: any) {
-      setFormMessage({ type: "error", text: error.message || "userRegister.genericError" });
+      setFormMessage({ 
+        type: "error", 
+        text: error.message || "userRegister.genericError" 
+      });
     } finally {
       setIsLoading(false);
     }

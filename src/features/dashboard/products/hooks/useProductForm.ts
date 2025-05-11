@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Product, ProductType } from "../types/types";
+import { uploadToSupabaseStorage } from '../../../../services/supabaseUploadService';
 
 interface FormState {
   product_name: { en: string; ar: string };
   product_description: { en: string | null; ar: string | null };
   terms_and_notes: { en: string | null; ar: string | null };
-  product_image: string;
+  product_image: string | File;
   types: ProductType[];
   sku: string;
   upc: string;
@@ -48,6 +49,7 @@ interface ProductFormHook {
   handleTypeChange: (type: ProductType) => void;
   validateForm: (isUpdate?: boolean) => boolean;
   resetForm: () => void;
+  uploadProductImage: (file: File, companyId: string) => Promise<string>;
 }
 
 export const useProductForm = (initialProduct?: Product): ProductFormHook => {
@@ -107,7 +109,7 @@ export const useProductForm = (initialProduct?: Product): ProductFormHook => {
     if (file) {
       setState((prev) => ({
         ...prev,
-        formState: { ...prev.formState, product_image: file.name },
+        formState: { ...prev.formState, product_image: file },
         editedFields: { ...prev.editedFields, product_image: true },
         imagePreview: URL.createObjectURL(file),
       }));
@@ -219,6 +221,11 @@ export const useProductForm = (initialProduct?: Product): ProductFormHook => {
     });
   };
 
+  // Add a function to upload the image using the reusable service
+  const uploadProductImage = async (file: File, companyId: string) => {
+    return await uploadToSupabaseStorage(file, 'product-images', companyId);
+  };
+
   return {
     formState: state.formState,
     editedFields: state.editedFields,
@@ -230,5 +237,6 @@ export const useProductForm = (initialProduct?: Product): ProductFormHook => {
     handleTypeChange,
     validateForm,
     resetForm,
+    uploadProductImage,
   };
 };

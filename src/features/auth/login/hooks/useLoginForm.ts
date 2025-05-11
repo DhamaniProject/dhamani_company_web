@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { login } from "../services/loginAuthService";
 import { useAuth } from "../../../../context/AuthContext";
+import { supabase } from "../../../../lib/supabase";
+
 
 export interface FormState {
   email: string;
@@ -54,53 +56,49 @@ export const useLoginForm = () => {
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("handleSubmit: Form submitted"); // Debug log
+    console.log("handleSubmit: Form submitted");
 
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      console.log("Validation errors:", errors); // Debug log
       return;
     }
 
     setIsLoading(true);
     setFieldErrors({});
     setGlobalError(null);
-    setIsSubmitting(true); // Disable useQuery
+    setIsSubmitting(true);
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
 
     try {
+      // Only authenticate with your backend
       const response = await login({
         email: formState.email,
         password: formState.password,
       });
 
+      // Store your backend tokens
       localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("refresh_token", response.refresh_token);
-      console.log("Tokens stored, calling refetchUser"); // Debug log
+
+      await supabase.auth.setSession({
+        access_token: response.access_token,
+        refresh_token: response.refresh_token,
+      });
 
       await refetchUser();
-      console.log("refetchUser complete, calling onSuccess"); // Debug log
       onSuccess(response.access_token);
     } catch (error: any) {
-      console.error("Login error:", error); // Debug log
-      const errorCode =
-        error.code || error.response?.data?.code || "serverError";
-      const newError =
-        errorCode === "INVALID_CREDENTIALS" || error.response?.status === 401
-          ? "invalidCredentials"
-          : "serverError";
-      console.log("Setting globalError:", newError); // Debug log
+      console.error("Login error:", error);
+      const errorCode = error.code || error.response?.data?.code || "serverError";
+      const newError = errorCode === "INVALID_CREDENTIALS" || error.response?.status === 401
+        ? "invalidCredentials"
+        : "serverError";
       setGlobalError(newError);
-      // Log to check persistence
-      setTimeout(() => {
-        console.log("After 3s, globalError is:", globalError); // Debug log
-      }, 3000);
     } finally {
       setIsLoading(false);
-      setIsSubmitting(false); // Re-enable useQuery
-      console.log("Form submission complete, isLoading:", false); // Debug log
+      setIsSubmitting(false);
     }
   };
 
