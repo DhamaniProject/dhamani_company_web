@@ -47,11 +47,18 @@ export const useWarrantyProviderState = () => {
           address_url: newProvider.addressUrl || "",
           website_url: newProvider.websiteUrl || "",
         },
-        translations: newProvider.translations.map((translation) => ({
-          language_id: translation.language_id,
-          provider_name: translation.provider_name,
-          notes: translation.notes || "",
-        })),
+        translations: [
+          {
+            language_id: 1, // English
+            provider_name: newProvider.translations.find(t => t.language_id === 1)?.provider_name || "",
+            notes: newProvider.translations.find(t => t.language_id === 1)?.notes || "",
+          },
+          {
+            language_id: 2, // Arabic
+            provider_name: newProvider.translations.find(t => t.language_id === 2)?.provider_name || "",
+            notes: newProvider.translations.find(t => t.language_id === 2)?.notes || "",
+          }
+        ],
       };
       const response = await createWarrantyProvider(
         user.company_id,
