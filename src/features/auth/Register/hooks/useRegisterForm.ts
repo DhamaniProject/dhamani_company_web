@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { registerCompany } from "../services/companyRegisterService";
 import { CompanyRegisterRequest } from "../types/companyRegister";
@@ -52,7 +51,6 @@ interface FormMessage {
 export const useRegisterForm = () => {
   const { t } = useTranslation("register");
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -176,7 +174,7 @@ export const useRegisterForm = () => {
           phone_number: formData.phoneNumber,
           website_url: formData.companyWebsite,
           address_url: formData.addressUrl,
-          company_logo: logoUrl,
+          
         },
         translations: [
           {
@@ -232,14 +230,29 @@ export const useRegisterForm = () => {
         password: data.password,
       };
       const response = await registerUser(reqBody);
-      if (response.success) {
-        setFormMessage({ type: "success", text: "userRegister.success" });
-        navigate("/auth/login");
+      if (response.user_id) {
+        setFormMessage({ 
+          type: "success", 
+          text: response.message || "userRegister.success" 
+        });
+        // If there's a warning, show it as an error message
+        if (response.warning) {
+          setFormMessage({ 
+            type: "error", 
+            text: response.warning 
+          });
+        }
       } else {
-        setFormMessage({ type: "error", text: response.message || "userRegister.genericError" });
+        setFormMessage({ 
+          type: "error", 
+          text: response.message || "userRegister.genericError" 
+        });
       }
     } catch (error: any) {
-      setFormMessage({ type: "error", text: error.message || "userRegister.genericError" });
+      setFormMessage({ 
+        type: "error", 
+        text: error.message || "userRegister.genericError" 
+      });
     } finally {
       setIsLoading(false);
     }
