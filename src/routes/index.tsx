@@ -21,6 +21,8 @@ import UsersPage from "../features/dashboard/users/UsersPage";
 
 import WarrantyProvidersPage from "../features/dashboard/warranty_providers/WarrantyProvidersPage";
 
+import ForgotPasswordPage from "../features/auth/forgot-password/ForgotPasswordPage";
+
 import ProtectedRoute from "./ProtectedRoute";
 import { ROUTES } from "../constants/routes";
 
@@ -36,6 +38,7 @@ const AppRoutes = () => {
       children: [
         { path: "login", element: <LoginPage /> },
         { path: "register", element: <RegisterPage /> },
+        { path: "forgot-password", element: <ForgotPasswordPage /> },
       ],
     },
     {

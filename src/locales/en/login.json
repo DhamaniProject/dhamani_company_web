@@ -4,6 +4,7 @@
   "password": "Password",
   "rememberMe": "Remember me",
   "forgotPassword": "Forgot password?",
+  "forgotPasswordLinkAria": "Navigate to forgot password page",
   "signUpPrompt": "Would you like to join Dhamani?",
   "signUpHere": " Sign up",
   "signUpLinkAria": "Navigate to sign up page",

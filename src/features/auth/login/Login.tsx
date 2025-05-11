@@ -28,16 +28,27 @@ const Login: React.FC = () => {
         <div className="mt-5">
           <AuthForm onSuccess={handleSuccess} ariaLabelledBy="login-title" />
         </div>
-        <p className="mt-4 text-sm text-gray-600 text-center font-normal">
-          {t("signUpPrompt")}
-          <Link
-            to={ROUTES.REGISTER}
-            className="text-[var(--color-primary)] hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-            aria-label={t("signUpLinkAria")}
-          >
-            {t("signUpHere")}
-          </Link>
-        </p>
+        <div className="mt-4 space-y-4">
+          <p className="text-sm text-gray-600 text-center font-normal">
+            {t("signUpPrompt")}
+            <Link
+              to={ROUTES.REGISTER}
+              className="text-[var(--color-primary)] hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              aria-label={t("signUpLinkAria")}
+            >
+              {t("signUpHere")}
+            </Link>
+          </p>
+          <p className="text-sm text-gray-600 text-center font-normal">
+            <Link
+              to={ROUTES.FORGOT_PASSWORD}
+              className="text-[var(--color-primary)] hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              aria-label={t("forgotPasswordLinkAria")}
+            >
+              {t("forgotPassword")}
+            </Link>
+          </p>
+        </div>
       </div>
     </>
   );
