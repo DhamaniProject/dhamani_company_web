@@ -116,7 +116,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                                 "https://via.placeholder.com/40"
                               }
                               alt={transaction.product.name}
-                              className="w-10 h-10 rounded-full"
+                              className="w-10 h-10"
                             />
                             <span className="text-sm text-gray-800 font-normal">
                               {transaction.product.name}

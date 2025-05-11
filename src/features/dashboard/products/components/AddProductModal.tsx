@@ -5,7 +5,7 @@ import AuthInput from "../../../auth/common/AuthInput";
 import { useCategories } from "../hooks/useCategories";
 import { useWarrantyProviders } from "../hooks/useWarrantyProviders";
 import { useAuth } from "../../../../context/AuthContext";
-import { createProduct } from "../services/productService";
+import { createProduct, uploadProductImage } from "../services/productService";
 import { useProductForm } from "../hooks/useProductForm";
 import { Product, ProductType } from "../types/types";
 
@@ -398,6 +398,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     handleTypeChange,
     validateForm,
     resetForm,
+    uploadProductImage,
   } = useProductForm();
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -423,7 +424,26 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         throw new Error("noCompanyId");
       }
 
-      const createdProduct = await createProduct(user.company_id, formState);
+      let productImageUrl = formState.product_image;
+      console.log('formState.product_image:', formState.product_image);
+      if (formState.product_image instanceof File) {
+        console.log('Uploading product image...');
+        try {
+          productImageUrl = await uploadProductImage(formState.product_image, user.company_id);
+          console.log('Uploaded image URL:', productImageUrl);
+        } catch (err) {
+          console.error('Product image upload error:', err);
+          setError('Product image upload error: ' + (err?.message || err));
+          setIsLoading(false);
+          setShowConfirm(false);
+          return;
+        }
+      }
+
+      const createdProduct = await createProduct(user.company_id, {
+        ...formState,
+        product_image: productImageUrl,
+      });
       if (typeof onAdd === "function") {
         await onAdd(createdProduct);
       } else {

@@ -5,6 +5,7 @@ import {
   AuthErrorResponse,
   User,
 } from "../types/auth";
+import { supabase } from '../../../../lib/supabase';
 
 /**
  * Logs in a company user
@@ -45,15 +46,19 @@ export const getCurrentUser = async (): Promise<User> => {
  */
 export const logout = async (): Promise<void> => {
   try {
-    // Optional: Call backend logout endpoint
+    // Logout from your backend
     await api.post("/api/v1/auth/logout");
+    
+    // Logout from Supabase
+    await supabase.auth.signOut();
   } catch (error: any) {
     console.error("authService.logout error:", error);
-    // Continue with client-side cleanup even if backend fails
   } finally {
-    // Clear tokens from storage
+    // Clear all tokens and credentials
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_email");
+    localStorage.removeItem("user_password");
     sessionStorage.removeItem("refresh_token");
   }
 };

@@ -6,6 +6,7 @@ import { registerCompany } from "../services/companyRegisterService";
 import { CompanyRegisterRequest } from "../types/companyRegister";
 import { registerUser } from "../services/userRegisterService";
 import { UserRegisterRequest } from "../types/userRegister";
+import { uploadToSupabaseStorage } from '../../../../services/supabaseUploadService';
 
 interface FormData {
   companyNameEn: string;
@@ -157,6 +158,16 @@ export const useRegisterForm = () => {
     if (!validateCompanyInfo()) return;
     setIsLoading(true);
     try {
+      let logoUrl: string | null = null;
+      if (formData.logo instanceof File) {
+        // Upload the logo and get the public URL
+        logoUrl = await uploadToSupabaseStorage(
+          formData.logo,
+          'company-logos',
+          formData.companyNameEn.replace(/\s+/g, '_')
+        );
+      }
+
       // Prepare request body
       const reqBody: CompanyRegisterRequest = {
         company_data: {
@@ -165,7 +176,7 @@ export const useRegisterForm = () => {
           phone_number: formData.phoneNumber,
           website_url: formData.companyWebsite,
           address_url: formData.addressUrl,
-          company_logo: null, // logo upload skipped for now
+          company_logo: logoUrl,
         },
         translations: [
           {
@@ -182,10 +193,7 @@ export const useRegisterForm = () => {
           },
         ],
       };
-      if (formData.logo) {
-        // If you have a logo upload endpoint, handle it here and set company_logo to the URL
-        // For now, skip
-      } else {
+      if (!logoUrl) {
         delete reqBody.company_data.company_logo;
       }
       const response = await registerCompany(reqBody);

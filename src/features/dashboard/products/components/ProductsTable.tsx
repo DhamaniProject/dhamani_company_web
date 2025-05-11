@@ -97,7 +97,7 @@ const TableRow: React.FC<TableRowProps> = ({
           <img
             src={product.product_image || "https://via.placeholder.com/150"}
             alt={product.product_name.en}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10"
           />
           <span className="text-sm text-gray-800 font-normal">
             {i18n.language === "ar"

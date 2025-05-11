@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import { fetchCompanyById, updateCompanyById, fetchCompanyApiKey, regenerateCompanyApiKey } from "../services/companyService";
 import { Company, CompanyTranslation } from "../types/company";
+import { supabase } from '../../../../lib/supabase';
+import { uploadToSupabaseStorage } from '../../../../../src/services/supabaseUploadService';
 
 interface TranslationForm {
   language: string;
@@ -153,39 +155,72 @@ export const useProfileForm = () => {
     }));
   };
 
+  const uploadLogo = async (file: File) => {
+    if (!user?.company_id) {
+      console.error('No user company_id found');
+      return null;
+    }
+    try {
+      return await uploadToSupabaseStorage(file, 'company-logos', user.company_id);
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      throw error;
+    }
+  };
+
   const updateCompany = async () => {
     if (!user?.company_id) return;
 
-    // Prepare company object (only include fields with values)
-    const company: any = {};
-    if (formData.companyName) company.company_name = formData.companyName;
-    if (formData.communicationEmail) company.communication_email = formData.communicationEmail;
-    if (formData.phoneNumber) company.phone_number = formData.phoneNumber;
-    if (formData.companyWebsite) company.website_url = formData.companyWebsite;
-    if (formData.addressUrl) company.address_url = formData.addressUrl;
-    // If you handle logo as a URL or file, add logic here
-
-    // Prepare translations
-    const translations = formData.translations.map(t => ({
-      language_id: t.language === "en" ? 1 : 2,
-      company_name: t.name,
-      company_description: t.description,
-      terms_and_conditions: t.terms,
-    }));
-
-    const payload = {
-      company,
-      translations,
-    };
-
-    // Call the API
     try {
       setIsLoading(true);
+      
+      // Check Supabase session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Authentication error');
+      }
+      if (!session) {
+        console.error('No active session');
+        throw new Error('Please sign in to continue');
+      }
+
+      // If there's a new logo file, upload it first
+      let newLogoUrl: string | null = logoUrl;
+      if (formData.logo instanceof File) {
+        console.log('Attempting to upload new logo file');
+        newLogoUrl = await uploadLogo(formData.logo);
+        console.log('Logo upload result:', newLogoUrl);
+      }
+
+      // Prepare company object
+      const company: any = {
+        company_name: formData.companyName,
+        communication_email: formData.communicationEmail,
+        phone_number: formData.phoneNumber,
+        website_url: formData.companyWebsite,
+        address_url: formData.addressUrl,
+        company_logo: newLogoUrl
+      };
+
+      // Prepare translations
+      const translations = formData.translations.map(t => ({
+        language_id: t.language === "en" ? 1 : 2,
+        company_name: t.name,
+        company_description: t.description,
+        terms_and_conditions: t.terms,
+      }));
+
+      const payload = {
+        company,
+        translations,
+      };
+
       const response = await updateCompanyById(user.company_id, payload);
-      // Optionally update state with response.data
       setApiError(null);
-      // Show success message, etc.
+      // Show success message
     } catch (error: any) {
+      console.error('Update error:', error);
       setApiError(error?.message || "Failed to update company data");
     } finally {
       setIsLoading(false);
