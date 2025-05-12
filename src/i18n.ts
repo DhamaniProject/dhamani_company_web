@@ -24,6 +24,8 @@ import enUsers from "./locales/en/users.json";
 import arUsers from "./locales/ar/users.json";
 import enWarranty from "./locales/en/warranty_providers.json";
 import arWarranty from "./locales/ar/warranty_providers.json";
+import enForgotPassword from "./locales/en/forgotPassword.json";
+import arForgotPassword from "./locales/ar/forgotPassword.json";
 
 const resources = {
   en: {
@@ -38,6 +40,7 @@ const resources = {
     reviews: enReviews,
     users: enUsers,
     warrantyProviders: enWarranty,
+    forgotPassword: enForgotPassword,
   },
   ar: {
     login: arLogin,
@@ -51,6 +54,7 @@ const resources = {
     reviews: arReviews,
     users: arUsers,
     warrantyProviders: arWarranty,
+    forgotPassword: arForgotPassword,
   },
 };
 
@@ -76,6 +80,7 @@ i18n
       "reviews",
       "users",
       "warrantyProviders",
+      "forgotPassword",
     ],
     defaultNS: "common",
     interpolation: {
